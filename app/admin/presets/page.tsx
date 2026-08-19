@@ -11,11 +11,11 @@ export default async function AdminPresetsPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex items-end justify-between">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-6">
         <div className="flex flex-col gap-2">
           <BracketLabel>{t.admin.presets.eyebrow}</BracketLabel>
           <h1
-            className={`text-[40px] font-bold leading-[0.95] text-on-dark ${locale === "en" ? "uppercase tracking-[-0.02em]" : ""}`}
+            className={`text-[40px] font-bold leading-[0.95] text-on-dark break-words ${locale === "en" ? "uppercase tracking-[-0.02em]" : ""}`}
           >
             {t.admin.presets.title}
           </h1>

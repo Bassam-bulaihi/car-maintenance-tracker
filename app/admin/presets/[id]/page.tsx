@@ -9,7 +9,7 @@ import { AddServiceItemForm } from "@/components/admin/add-service-item-form";
 import { RecommendedPartsList } from "@/components/admin/recommended-parts-list";
 import { BackLink } from "@/components/ui/back-link";
 import { BracketLabel } from "@/components/ui/bracket-label";
-import { SectionHeader } from "@/components/admin/section-header";
+import { SectionHeader } from "@/components/ui/section-header";
 
 export default async function EditPresetPage({
   params,
@@ -30,11 +30,11 @@ export default async function EditPresetPage({
     <div className="flex flex-col gap-12">
       <div className="flex flex-col gap-6">
         <BackLink href="/admin/presets">{t.admin.presets.title}</BackLink>
-        <div className="flex items-center justify-between">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-6">
           <div className="flex flex-col gap-2">
             <BracketLabel>UNIT / {preset.id.slice(0, 8)}</BracketLabel>
             <h1
-              className={`text-[40px] font-bold leading-[0.95] text-on-dark ${locale === "en" ? "uppercase tracking-[-0.02em]" : ""}`}
+              className={`text-[40px] font-bold leading-[0.95] text-on-dark break-words ${locale === "en" ? "uppercase tracking-[-0.02em]" : ""}`}
             >
               {preset.make} {preset.model}{" "}
               <span className="font-mono text-body">/ {preset.year}</span>

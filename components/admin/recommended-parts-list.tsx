@@ -6,7 +6,7 @@ import { addRecommendedPart, deleteRecommendedPart } from "@/lib/admin/actions";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import { TextInput } from "@/components/ui/text-input";
 import { Button } from "@/components/ui/button";
-import { DataLabel } from "@/components/admin/data-label";
+import { DataLabel } from "@/components/ui/data-label";
 
 export function RecommendedPartsList({
   presetId,

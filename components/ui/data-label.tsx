@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 
-// Admin-only micro-typography treatment (industrial-brutalist blend) —
-// telemetry-style field labels. Scoped to admin so the rest of the app
-// keeps docs/DESIGN.md's plain field-label style.
+// Industrial-brutalist micro-typography treatment — telemetry-style field
+// labels. Extended app-wide from its original admin-only scope once the
+// dashboard adopted the same structural/typographic blend.
 export function DataLabel({ htmlFor, children }: { htmlFor?: string; children: ReactNode }) {
   return (
     <label
