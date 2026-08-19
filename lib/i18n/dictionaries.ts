@@ -115,6 +115,66 @@ const ar = {
       duplicatePreset: "يوجد بالفعل نموذج بنفس الصانع والموديل والسنة.",
     },
   },
+  home: {
+    brand: "Car Auto",
+    nav: {
+      login: "تسجيل الدخول",
+      signup: "إنشاء حساب",
+    },
+    hero: {
+      eyebrow: "صيانة سيارتك، بلا نسيان",
+      title: "لا تفوّت موعد صيانة سيارتك مرة أخرى",
+      subtitle:
+        "سجّل سيارتك، ودعنا نتابع العداد ونذكّرك بمواعيد الصيانة عبر واتساب — في الوقت المناسب دائماً.",
+      ctaPrimary: "ابدأ الآن",
+      ctaSecondary: "تسجيل الدخول",
+    },
+    howItWorks: {
+      eyebrow: "كيف يعمل",
+      title: "ثلاث خطوات فقط",
+      steps: [
+        {
+          title: "سجّل سيارتك",
+          desc: "اختر الصانع والموديل والسنة، ونحمّل جدول الصيانة الموصى به تلقائياً.",
+        },
+        {
+          title: "نتابع عبر واتساب",
+          desc: "نسألك عن قراءة العداد بشكل دوري، وتُحدَّث حالة سيارتك تلقائياً.",
+        },
+        {
+          title: "أكّد عند الإنجاز",
+          desc: "عند استحقاق خدمة، نرسل تنبيهاً — ورد بـ«تم» أو «لم يتم» مباشرة من واتساب.",
+        },
+      ],
+    },
+    features: {
+      eyebrow: "لماذا Car Auto",
+      title: "مصمم حول واتساب",
+      items: [
+        {
+          title: "تنبيهات واتساب",
+          desc: "لا تطبيق إضافي لتتذكره — التنبيهات تصلك حيث أنت بالفعل.",
+        },
+        {
+          title: "أكثر من سيارة",
+          desc: "تابع كل مركباتك من لوحة تحكم واحدة، لكل سيارة سجلّها الخاص.",
+        },
+        {
+          title: "عربي وإنجليزي",
+          desc: "الواجهة والرسائل بلغتك المفضلة، مع دعم كامل للاتجاه من اليمين لليسار.",
+        },
+      ],
+    },
+    cta: {
+      title: "جاهز تبدأ؟",
+      subtitle: "التسجيل يستغرق أقل من دقيقة.",
+      button: "إنشاء حساب مجاني",
+    },
+    footer: {
+      tagline: "تتبّع صيانة سيارتك، بلا تعقيد.",
+      copyright: "جميع الحقوق محفوظة.",
+    },
+  },
 };
 
 const en: typeof ar = {
@@ -228,6 +288,66 @@ const en: typeof ar = {
       partName: "Part name",
       makeModelRequired: "Please enter a make, model, and valid year.",
       duplicatePreset: "A preset with this make, model, and year already exists.",
+    },
+  },
+  home: {
+    brand: "Car Auto",
+    nav: {
+      login: "Log in",
+      signup: "Sign up",
+    },
+    hero: {
+      eyebrow: "Maintenance, remembered for you",
+      title: "Never miss a service again",
+      subtitle:
+        "Register your car and we'll track the odometer and remind you when service is due — right on WhatsApp, right on time.",
+      ctaPrimary: "Get Started",
+      ctaSecondary: "Log in",
+    },
+    howItWorks: {
+      eyebrow: "How It Works",
+      title: "Just three steps",
+      steps: [
+        {
+          title: "Register your car",
+          desc: "Pick your make, model, and year — we load the recommended service schedule automatically.",
+        },
+        {
+          title: "We check in on WhatsApp",
+          desc: "We ask for your odometer reading periodically, and your car's status updates automatically.",
+        },
+        {
+          title: "Confirm when it's done",
+          desc: "When a service is due, we send a reminder — reply Done or Not Done, right from WhatsApp.",
+        },
+      ],
+    },
+    features: {
+      eyebrow: "Why Car Auto",
+      title: "Built around WhatsApp",
+      items: [
+        {
+          title: "WhatsApp Reminders",
+          desc: "No extra app to remember — reminders reach you where you already are.",
+        },
+        {
+          title: "Multiple Vehicles",
+          desc: "Track every car from one dashboard, each with its own maintenance record.",
+        },
+        {
+          title: "Arabic & English",
+          desc: "The interface and messages in your preferred language, with full RTL support.",
+        },
+      ],
+    },
+    cta: {
+      title: "Ready to get started?",
+      subtitle: "Sign-up takes less than a minute.",
+      button: "Create Free Account",
+    },
+    footer: {
+      tagline: "Track your car's maintenance, without the hassle.",
+      copyright: "All rights reserved.",
     },
   },
 };
