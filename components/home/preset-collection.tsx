@@ -24,9 +24,12 @@ export function PresetCollection({ locale, t }: { locale: Locale; t: Dictionary 
     { key: "pickup", label: t.home.collection.tabs.pickup },
   ];
 
-  const visible = SHOWCASE_PRESETS.filter((p) =>
-    active === "popular" ? p.popular : p.category === active,
-  );
+  // The default tab is the full grid (six cards, as in the Figma frame),
+  // ordered so the popular models lead; the rest filter by body type.
+  const visible =
+    active === "popular"
+      ? [...SHOWCASE_PRESETS].sort((a, b) => Number(b.popular) - Number(a.popular))
+      : SHOWCASE_PRESETS.filter((p) => p.category === active);
 
   const upper = locale === "en" ? "uppercase tracking-[-0.02em]" : "";
   const tabCase = locale === "en" ? "uppercase tracking-[1.5px]" : "";
