@@ -9,8 +9,12 @@ type Size = "md" | "sm";
 // letterspacing/uppercase treatment only applies to Latin script (Arabic has
 // no case and tracking breaks letter-joining), so it's locale-gated here per
 // docs/arabic-web-design.md.
+// Pressed feedback (translate-y) and a visible keyboard focus ring apply to
+// every variant; disabled buttons keep neither.
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-none border font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
+  "inline-flex items-center justify-center gap-2 rounded-none border font-bold transition-colors duration-200 " +
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-on-dark " +
+  "active:translate-y-px disabled:opacity-50 disabled:cursor-not-allowed disabled:active:translate-y-0";
 
 // Every variant inverts fully on hover (border color as resting-state
 // hierarchy cue, but the same fill+invert interaction across the board) —

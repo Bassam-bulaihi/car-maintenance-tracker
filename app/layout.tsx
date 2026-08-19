@@ -18,9 +18,29 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const SITE_NAME = "Car Auto";
+const SITE_DESCRIPTION =
+  "Register your car and get WhatsApp reminders when a service is due — oil, filters, brakes, tracked by odometer and by date.";
+
 export const metadata: Metadata = {
-  title: "Car Maintenance Tracker",
-  description: "Track vehicle maintenance and get WhatsApp reminders.",
+  metadataBase: new URL("https://car-auto-app.vercel.app"),
+  title: {
+    default: `${SITE_NAME} — WhatsApp car maintenance reminders`,
+    template: `%s · ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} — WhatsApp car maintenance reminders`,
+    description: SITE_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} — WhatsApp car maintenance reminders`,
+    description: SITE_DESCRIPTION,
+  },
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {

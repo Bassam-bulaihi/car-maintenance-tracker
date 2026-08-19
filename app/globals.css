@@ -68,9 +68,37 @@
   --font-latin: var(--font-inter);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+/* Respect users who ask the OS to reduce motion. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 body {
   background: var(--color-canvas);
   color: var(--color-on-dark);
+}
+
+::selection {
+  background: var(--color-on-dark);
+  color: var(--color-canvas);
+}
+
+/* Numeric data lines up in columns wherever it is rendered. */
+.font-mono {
+  font-variant-numeric: tabular-nums;
 }
 
 /* Number inputs never show the native increment/decrement spinner,

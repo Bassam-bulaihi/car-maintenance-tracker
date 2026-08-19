@@ -117,21 +117,79 @@ const ar = {
   },
   home: {
     brand: "Car Auto",
+    skipToContent: "تخطَّ إلى المحتوى",
     nav: {
+      menu: "القائمة",
+      closeMenu: "إغلاق القائمة",
+      links: {
+        howItWorks: "كيف يعمل",
+        models: "الموديلات",
+        features: "المميزات",
+        testimonials: "آراء العملاء",
+      },
       login: "تسجيل الدخول",
       signup: "إنشاء حساب",
     },
     hero: {
       eyebrow: "صيانة سيارتك، بلا نسيان",
-      title: "لا تفوّت موعد صيانة سيارتك مرة أخرى",
+      titleLine1: "لا تفوّت موعد صيانة",
+      titleLine2: "سيارتك مرة أخرى",
       subtitle:
         "سجّل سيارتك، ودعنا نتابع العداد ونذكّرك بمواعيد الصيانة عبر واتساب — في الوقت المناسب دائماً.",
-      ctaPrimary: "ابدأ الآن",
-      ctaSecondary: "تسجيل الدخول",
+      imageAlt: "سيارة سيدان داكنة من الأمام",
+    },
+    lookup: {
+      eyebrow: "فحص سريع",
+      make: "الصانع",
+      makePlaceholder: "اختر الصانع",
+      model: "الموديل",
+      modelPlaceholder: "اختر الموديل",
+      year: "سنة الصنع",
+      yearPlaceholder: "اختر السنة",
+      odometer: "العداد الحالي (كم)",
+      odometerPlaceholder: "مثال: 42500",
+      submit: "افحص سيارتي",
+      note: "النتيجة تقديرية — أنشئ حساباً لتتبّع دقيق عبر واتساب.",
+      resultTitle: "الخدمات القادمة تقديرياً",
+      resultCta: "سجّل لتتبّع هذه السيارة",
+      resultEmpty: "اختر الصانع والموديل والسنة لعرض جدول الصيانة.",
+    },
+    brands: {
+      title: "تصفّح حسب الصانع",
+      viewAll: "عرض الكل",
+      cardCta: "عرض جدول الصيانة",
+    },
+    bodyTypes: {
+      title: "تصفّح حسب نوع الهيكل",
+      viewAll: "عرض الكل",
+    },
+    collection: {
+      eyebrow: "مكتبة الموديلات",
+      title: "جداول الصيانة الجاهزة",
+      subtitle:
+        "من السيدان الاقتصادية إلى الدفع الرباعي، لكل موديل جدول صيانة معدّ مسبقاً — فترات الزيت والفلاتر والفرامل جاهزة من أول يوم.",
+      tabs: {
+        popular: "الأكثر شيوعاً",
+        sedan: "سيدان",
+        suv: "دفع رباعي",
+        hatchback: "هاتشباك",
+        pickup: "بيك أب",
+      },
+      specs: {
+        oilInterval: "فترة الزيت",
+        oilType: "نوع الزيت",
+        timeInterval: "زمنياً",
+        items: "بنود الصيانة",
+      },
+      cardCta: "تتبّع هذه السيارة",
+      seeAll: "عرض كل الموديلات",
+      empty: "لا توجد موديلات في هذا التصنيف بعد.",
     },
     howItWorks: {
       eyebrow: "كيف يعمل",
       title: "ثلاث خطوات فقط",
+      subtitle:
+        "تتبّع الصيانة لا يحتاج جدولاً على الورق. سجّل سيارتك مرة واحدة، ونتكفّل بالباقي عبر واتساب.",
       steps: [
         {
           title: "سجّل سيارتك",
@@ -146,33 +204,164 @@ const ar = {
           desc: "عند استحقاق خدمة، نرسل تنبيهاً — ورد بـ«تم» أو «لم يتم» مباشرة من واتساب.",
         },
       ],
+      imageAlt: "سيارة دفع رباعي على طريق ترابي",
     },
     features: {
       eyebrow: "لماذا Car Auto",
       title: "مصمم حول واتساب",
+      subtitle:
+        "لا تطبيق إضافي، ولا تسجيل دخول متكرر. كل ما تحتاجه يصلك في المحادثة التي تستخدمها كل يوم.",
       items: [
         {
           title: "تنبيهات واتساب",
-          desc: "لا تطبيق إضافي لتتذكره — التنبيهات تصلك حيث أنت بالفعل.",
+          desc: "التنبيهات تصلك حيث أنت بالفعل، وترد بضغطة زر واحدة.",
+          cta: "اعرف المزيد",
         },
         {
           title: "أكثر من سيارة",
-          desc: "تابع كل مركباتك من لوحة تحكم واحدة، لكل سيارة سجلّها الخاص.",
+          desc: "تابع كل مركباتك من لوحة واحدة، لكل سيارة سجلّها المستقل.",
+          cta: "استعرض اللوحة",
         },
         {
           title: "عربي وإنجليزي",
-          desc: "الواجهة والرسائل بلغتك المفضلة، مع دعم كامل للاتجاه من اليمين لليسار.",
+          desc: "الواجهة والرسائل بلغتك، مع دعم كامل للاتجاه من اليمين لليسار.",
+          cta: "بدّل اللغة",
+        },
+      ],
+    },
+    testimonials: {
+      title: "ماذا يقول مستخدمونا",
+      prev: "السابق",
+      next: "التالي",
+      items: [
+        {
+          quote:
+            "كنت أنسى تغيير الزيت باستمرار وأكتشف ذلك بعد فوات الأوان بآلاف الكيلومترات. الآن تصلني رسالة واتساب تسألني عن العداد، أرد برقم، وينتهي الأمر. أول مرة أشعر أن صيانة سيارتي تحت السيطرة فعلاً.",
+          name: "بسام البليهي",
+          location: "الرياض",
+        },
+        {
+          quote:
+            "عندي ثلاث سيارات في البيت وكان تتبّعها كابوساً. الآن كل سيارة لها سجلها الخاص، والتنبيهات تأتي منفصلة لكل واحدة. وفّرت عليّ زيارتين للورشة كانتا ستكونان متأخرتين.",
+          name: "نورة القحطاني",
+          location: "جدة",
+        },
+        {
+          quote:
+            "أكثر ما أعجبني أنني لم أحتج لتحميل تطبيق جديد. الرسالة تصل على واتساب، أضغط «تم التغيير»، ويتحدّث السجل مباشرة. بسيط لدرجة أنني أقنعت والدي باستخدامه.",
+          name: "عبدالعزيز الدوسري",
+          location: "الدمام",
         },
       ],
     },
     cta: {
-      title: "جاهز تبدأ؟",
-      subtitle: "التسجيل يستغرق أقل من دقيقة.",
-      button: "إنشاء حساب مجاني",
+      eyebrow: "جاهز تبدأ؟",
+      title: "ابدأ تتبّع سيارتك اليوم",
+      subtitle: "التسجيل يستغرق أقل من دقيقة، ولا يحتاج بطاقة بنكية.",
+      primary: "إنشاء حساب مجاني",
+      secondary: "شاهد كيف يعمل",
     },
     footer: {
       tagline: "تتبّع صيانة سيارتك، بلا تعقيد.",
+      product: "المنتج",
+      company: "الشركة",
+      legal: "قانوني",
+      links: {
+        howItWorks: "كيف يعمل",
+        models: "الموديلات",
+        features: "المميزات",
+        about: "من نحن",
+        contact: "تواصل معنا",
+        privacy: "سياسة الخصوصية",
+        terms: "الشروط والأحكام",
+      },
+      social: {
+        twitter: "منصة إكس",
+        instagram: "إنستغرام",
+        linkedin: "لينكدإن",
+        whatsapp: "واتساب",
+      },
       copyright: "جميع الحقوق محفوظة.",
+    },
+    notFound: {
+      code: "٤٠٤",
+      title: "الصفحة غير موجودة",
+      desc: "الرابط الذي فتحته غير صحيح أو تم نقل الصفحة.",
+      cta: "العودة للرئيسية",
+    },
+  },
+
+  pages: {
+    lastUpdated: "آخر تحديث",
+    updatedDate: "19 أغسطس 2026",
+    draftNotice:
+      "هذه صياغة أولية للاستخدام أثناء التطوير، ولم تُراجَع قانونياً بعد.",
+    about: {
+      title: "من نحن",
+      sections: [
+        {
+          heading: "لماذا بدأنا",
+          body: "معظم من يملك سيارة يعرف موعد تغيير الزيت نظرياً، لكنه ينساه عملياً. الجداول الورقية تُفقد، وتطبيقات التذكير تُحذف بعد أسبوع. أردنا حلاً لا يتطلب من المستخدم تذكّر أي شيء أو فتح تطبيق جديد.",
+        },
+        {
+          heading: "كيف نعمل",
+          body: "نبني كل شيء حول واتساب لأنه المكان الذي يقضي فيه مستخدمونا وقتهم أصلاً. نسأل عن قراءة العداد بشكل دوري، ونحسب استحقاق كل خدمة بناءً على المسافة أو الزمن — أيهما أقرب — ثم نرسل تنبيهاً واحداً واضحاً يمكن الرد عليه بضغطة زر.",
+        },
+        {
+          heading: "الحالة الحالية",
+          body: "المنتج قيد التطوير النشط. لوحة التحكم وتسجيل المركبات وجداول الصيانة تعمل اليوم، والتكامل الكامل مع واتساب هو المرحلة التالية.",
+        },
+      ],
+    },
+    contact: {
+      title: "تواصل معنا",
+      intro: "لأي سؤال أو ملاحظة أو مشكلة تقنية، تواصل معنا مباشرة.",
+      emailLabel: "البريد الإلكتروني",
+      email: "hello@car-auto.app",
+      responseLabel: "وقت الرد المتوقع",
+      response: "خلال يومي عمل",
+    },
+    privacy: {
+      title: "سياسة الخصوصية",
+      sections: [
+        {
+          heading: "البيانات التي نجمعها",
+          body: "عند إنشاء الحساب نجمع الاسم والبريد الإلكتروني ورقم الجوال. عند تسجيل مركبة نحفظ الصانع والموديل وسنة الصنع ورقم اللوحة إن أدخلته، إضافة إلى قراءات العداد التي ترسلها وسجل الصيانة المؤكد.",
+        },
+        {
+          heading: "لماذا نحتاج رقم الجوال",
+          body: "رقم الجوال هو قناة التواصل الأساسية. نستخدمه لإرسال طلبات قراءة العداد وتنبيهات الصيانة عبر واتساب فقط، ولا نستخدمه لأي غرض تسويقي ولا نشاركه مع معلنين.",
+        },
+        {
+          heading: "أين تُحفظ بياناتك",
+          body: "تُحفظ البيانات في قاعدة بيانات Supabase مستضافة في الاتحاد الأوروبي، وتُرسل الرسائل عبر واجهة WhatsApp Cloud API من Meta. كل مستخدم يرى بياناته فقط، وهذا مفروض على مستوى قاعدة البيانات نفسها.",
+        },
+        {
+          heading: "حذف البيانات",
+          body: "يمكنك طلب حذف حسابك وكل ما يرتبط به في أي وقت عبر البريد الإلكتروني أدناه، وسيتم الحذف خلال ثلاثين يوماً.",
+        },
+      ],
+    },
+    terms: {
+      title: "الشروط والأحكام",
+      sections: [
+        {
+          heading: "طبيعة الخدمة",
+          body: "Car Auto أداة لتتبّع مواعيد الصيانة وتذكيرك بها. هي مساعد تنظيمي وليست بديلاً عن فحص فني أو عن توصيات الوكيل المعتمد لسيارتك.",
+        },
+        {
+          heading: "دقة التنبيهات",
+          body: "تعتمد التنبيهات على القراءات التي تدخلها أنت وعلى الفترات القياسية للموديل. إذا كانت القراءة غير دقيقة أو تأخر إدخالها، فقد يتأخر التنبيه تبعاً لذلك. لا نضمن وصول كل رسالة في وقتها لأن التسليم يعتمد على مزوّد الخدمة.",
+        },
+        {
+          heading: "مسؤوليتك",
+          body: "أنت مسؤول عن صحة البيانات التي تدخلها وعن اتخاذ قرار الصيانة النهائي. القرار بشأن ما إذا كانت سيارتك تحتاج خدمة يبقى قرارك أنت وورشتك.",
+        },
+        {
+          heading: "تغيير الشروط",
+          body: "قد نحدّث هذه الشروط مع تطور المنتج، وسننشر تاريخ آخر تحديث أعلى الصفحة.",
+        },
+      ],
     },
   },
 };
@@ -292,21 +481,79 @@ const en: typeof ar = {
   },
   home: {
     brand: "Car Auto",
+    skipToContent: "Skip to content",
     nav: {
+      menu: "Menu",
+      closeMenu: "Close menu",
+      links: {
+        howItWorks: "How it works",
+        models: "Models",
+        features: "Features",
+        testimonials: "Reviews",
+      },
       login: "Log in",
       signup: "Sign up",
     },
     hero: {
       eyebrow: "Maintenance, remembered for you",
-      title: "Never miss a service again",
+      titleLine1: "Never miss a service",
+      titleLine2: "on your car again",
       subtitle:
         "Register your car and we'll track the odometer and remind you when service is due — right on WhatsApp, right on time.",
-      ctaPrimary: "Get Started",
-      ctaSecondary: "Log in",
+      imageAlt: "Dark sedan photographed head-on",
+    },
+    lookup: {
+      eyebrow: "Quick check",
+      make: "Make",
+      makePlaceholder: "Select make",
+      model: "Model",
+      modelPlaceholder: "Select model",
+      year: "Year",
+      yearPlaceholder: "Select year",
+      odometer: "Current odometer (km)",
+      odometerPlaceholder: "e.g. 42500",
+      submit: "Check my car",
+      note: "Estimate only — create an account for exact tracking over WhatsApp.",
+      resultTitle: "Estimated upcoming services",
+      resultCta: "Sign up to track this car",
+      resultEmpty: "Pick a make, model, and year to preview the schedule.",
+    },
+    brands: {
+      title: "Browse by make",
+      viewAll: "View all",
+      cardCta: "View schedule",
+    },
+    bodyTypes: {
+      title: "Browse by body type",
+      viewAll: "View all",
+    },
+    collection: {
+      eyebrow: "Model Library",
+      title: "Ready-made service schedules",
+      subtitle:
+        "From economy sedans to full-size SUVs, every model ships with a prepared schedule — oil, filters, and brake intervals set from day one.",
+      tabs: {
+        popular: "Popular",
+        sedan: "Sedan",
+        suv: "SUV",
+        hatchback: "Hatchback",
+        pickup: "Pickup",
+      },
+      specs: {
+        oilInterval: "Oil interval",
+        oilType: "Oil type",
+        timeInterval: "Time",
+        items: "Service items",
+      },
+      cardCta: "Track this car",
+      seeAll: "See all models",
+      empty: "No models in this category yet.",
     },
     howItWorks: {
-      eyebrow: "How It Works",
+      eyebrow: "How it works",
       title: "Just three steps",
+      subtitle:
+        "Tracking maintenance shouldn't need a paper log. Register your car once, and we handle the rest over WhatsApp.",
       steps: [
         {
           title: "Register your car",
@@ -318,36 +565,166 @@ const en: typeof ar = {
         },
         {
           title: "Confirm when it's done",
-          desc: "When a service is due, we send a reminder — reply Done or Not Done, right from WhatsApp.",
+          desc: "When a service is due, we send a reminder — reply Done or Not done, right from WhatsApp.",
         },
       ],
+      imageAlt: "SUV on a dirt road",
     },
     features: {
       eyebrow: "Why Car Auto",
       title: "Built around WhatsApp",
+      subtitle:
+        "No extra app, no repeated logins. Everything you need arrives in the conversation you already use daily.",
       items: [
         {
-          title: "WhatsApp Reminders",
-          desc: "No extra app to remember — reminders reach you where you already are.",
+          title: "WhatsApp reminders",
+          desc: "Reminders reach you where you already are, and you reply with a single tap.",
+          cta: "Learn more",
         },
         {
-          title: "Multiple Vehicles",
-          desc: "Track every car from one dashboard, each with its own maintenance record.",
+          title: "Multiple vehicles",
+          desc: "Track every car from one dashboard, each with its own independent record.",
+          cta: "See the dashboard",
         },
         {
           title: "Arabic & English",
-          desc: "The interface and messages in your preferred language, with full RTL support.",
+          desc: "Interface and messages in your language, with full right-to-left support.",
+          cta: "Switch language",
+        },
+      ],
+    },
+    testimonials: {
+      title: "What our users say",
+      prev: "Previous",
+      next: "Next",
+      items: [
+        {
+          quote:
+            "I kept forgetting oil changes and would only notice thousands of kilometres too late. Now a WhatsApp message asks for my odometer, I reply with a number, and that's it. First time my car's maintenance has actually felt under control.",
+          name: "Bassam Al-Bulaihi",
+          location: "Riyadh",
+        },
+        {
+          quote:
+            "Three cars in the household made tracking a nightmare. Now each one has its own record and its own separate reminders. It has already saved me two workshop visits that would have been overdue.",
+          name: "Noura Al-Qahtani",
+          location: "Jeddah",
+        },
+        {
+          quote:
+            "What sold me is that I never had to install another app. The message lands in WhatsApp, I tap Done, and the log updates itself. Simple enough that I talked my father into using it.",
+          name: "Abdulaziz Al-Dosari",
+          location: "Dammam",
         },
       ],
     },
     cta: {
-      title: "Ready to get started?",
-      subtitle: "Sign-up takes less than a minute.",
-      button: "Create Free Account",
+      eyebrow: "Ready to start?",
+      title: "Start tracking your car today",
+      subtitle: "Sign-up takes under a minute, and needs no card.",
+      primary: "Create free account",
+      secondary: "See how it works",
     },
     footer: {
       tagline: "Track your car's maintenance, without the hassle.",
+      product: "Product",
+      company: "Company",
+      legal: "Legal",
+      links: {
+        howItWorks: "How it works",
+        models: "Models",
+        features: "Features",
+        about: "About us",
+        contact: "Contact",
+        privacy: "Privacy policy",
+        terms: "Terms of service",
+      },
+      social: {
+        twitter: "X",
+        instagram: "Instagram",
+        linkedin: "LinkedIn",
+        whatsapp: "WhatsApp",
+      },
       copyright: "All rights reserved.",
+    },
+    notFound: {
+      code: "404",
+      title: "Page not found",
+      desc: "That link is wrong, or the page has moved.",
+      cta: "Back to home",
+    },
+  },
+
+  pages: {
+    lastUpdated: "Last updated",
+    updatedDate: "19 August 2026",
+    draftNotice: "This is working draft copy for development, not yet reviewed by a lawyer.",
+    about: {
+      title: "About us",
+      sections: [
+        {
+          heading: "Why we started",
+          body: "Most people know roughly when their oil is due and still miss it. Paper logs get lost, and reminder apps get deleted within a week. We wanted something that asks nothing of you — no new app to open, nothing to remember.",
+        },
+        {
+          heading: "How we work",
+          body: "Everything is built around WhatsApp because that is where our users already are. We ask for an odometer reading on a schedule, work out whether each service is due by distance or by time — whichever comes first — and send one clear message you can answer with a single tap.",
+        },
+        {
+          heading: "Where we are now",
+          body: "The product is in active development. The dashboard, vehicle registration, and service schedules work today; full WhatsApp delivery is the next milestone.",
+        },
+      ],
+    },
+    contact: {
+      title: "Contact",
+      intro: "For questions, feedback, or anything broken, reach us directly.",
+      emailLabel: "Email",
+      email: "hello@car-auto.app",
+      responseLabel: "Typical reply time",
+      response: "Within two working days",
+    },
+    privacy: {
+      title: "Privacy policy",
+      sections: [
+        {
+          heading: "What we collect",
+          body: "When you create an account we collect your name, email, and phone number. When you register a vehicle we store its make, model, year, plate number if you enter one, along with the odometer readings you send and the service history you confirm.",
+        },
+        {
+          heading: "Why we need your phone number",
+          body: "Your phone number is the primary channel. We use it to send odometer requests and service reminders over WhatsApp only. It is never used for marketing and never shared with advertisers.",
+        },
+        {
+          heading: "Where your data lives",
+          body: "Data is stored in a Supabase database hosted in the EU, and messages are delivered through Meta's WhatsApp Cloud API. Each user can only read their own records, and that restriction is enforced by the database itself rather than by the application alone.",
+        },
+        {
+          heading: "Deleting your data",
+          body: "You can ask us to delete your account and everything attached to it at any time using the email below. Deletion completes within thirty days.",
+        },
+      ],
+    },
+    terms: {
+      title: "Terms of service",
+      sections: [
+        {
+          heading: "What this service is",
+          body: "Car Auto tracks maintenance intervals and reminds you about them. It is an organisational aid, not a substitute for a technical inspection or for your manufacturer's official servicing guidance.",
+        },
+        {
+          heading: "Accuracy of reminders",
+          body: "Reminders are calculated from the readings you enter and the standard intervals for your model. If a reading is wrong or entered late, the reminder will be off by the same margin. We cannot guarantee every message arrives on time, since delivery depends on the messaging provider.",
+        },
+        {
+          heading: "Your responsibility",
+          body: "You are responsible for the accuracy of what you enter and for the final maintenance decision. Whether your car actually needs a service remains a call for you and your workshop.",
+        },
+        {
+          heading: "Changes to these terms",
+          body: "We may update these terms as the product develops, and the date at the top of this page will reflect the latest revision.",
+        },
+      ],
     },
   },
 };
