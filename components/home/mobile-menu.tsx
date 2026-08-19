@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
+import { Logo } from "@/components/brand/logo";
 
 type NavLink = { href: string; label: string };
 
@@ -54,9 +55,9 @@ export function MobileMenu({
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-canvas">
+        <div className="fixed inset-0 z-50 flex flex-col bg-canvas/95 backdrop-blur-md">
           <div className="flex h-16 items-center justify-between border-b border-hairline px-6">
-            <span className="text-lg font-bold text-on-dark">Car Auto</span>
+            <Logo markClassName="h-8" className="text-on-dark" />
             <button
               type="button"
               onClick={() => setOpen(false)}
@@ -67,13 +68,13 @@ export function MobileMenu({
             </button>
           </div>
 
-          <nav className="flex flex-col gap-px bg-hairline">
+          <nav className="flex flex-col gap-px bg-hairline/60">
             {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="bg-canvas px-6 py-5 text-lg text-on-dark transition-colors hover:bg-surface-card"
+                className="bg-canvas px-6 py-5 text-lg text-on-dark transition-colors hover:bg-surface-card/70 backdrop-blur-sm"
               >
                 {link.label}
               </Link>

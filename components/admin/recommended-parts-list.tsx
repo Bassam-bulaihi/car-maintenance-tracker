@@ -25,7 +25,7 @@ export function RecommendedPartsList({
   );
 
   return (
-    <div className="border border-hairline bg-surface-card px-6 py-2">
+    <div className="border border-hairline bg-surface-card/70 backdrop-blur-sm px-6 py-2">
       {parts.length === 0 ? (
         <p className="py-4 text-body">{t.admin.presets.noParts}</p>
       ) : (

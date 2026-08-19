@@ -37,9 +37,9 @@ export function ContentPage({
         </div>
 
         {sections && (
-          <div className="flex flex-col gap-px bg-hairline">
+          <div className="flex flex-col gap-px bg-hairline/60">
             {sections.map((section) => (
-              <section key={section.heading} className="flex flex-col gap-3 bg-canvas py-8">
+              <section key={section.heading} className="flex flex-col gap-3 bg-transparent py-8">
                 <h2 className="text-xl font-bold text-on-dark">{section.heading}</h2>
                 <p className="text-pretty font-light leading-relaxed text-body">{section.body}</p>
               </section>

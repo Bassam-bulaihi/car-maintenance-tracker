@@ -38,8 +38,8 @@ export function PresetCard({
   ];
 
   return (
-    <article className="flex flex-col border border-hairline bg-surface-card transition-colors hover:border-hairline-strong">
-      <div className="relative h-44 border-b border-hairline bg-surface-soft">
+    <article className="flex flex-col border border-hairline bg-surface-card/70 backdrop-blur-sm transition-colors hover:border-hairline-strong">
+      <div className="relative h-44 border-b border-hairline bg-surface-soft/50 backdrop-blur-sm">
         <Image
           src={`/cars/${preset.slug}.jpg`}
           alt={`${preset.make} ${preset.model} ${preset.year}`}
@@ -62,9 +62,9 @@ export function PresetCard({
           <span className="font-mono text-sm text-body">{preset.year}</span>
         </div>
 
-        <dl className="grid grid-cols-2 gap-px border border-hairline bg-hairline">
+        <dl className="grid grid-cols-2 gap-px border border-hairline bg-hairline/60">
           {specs.map((spec) => (
-            <div key={spec.label} className="flex items-center gap-2 bg-surface-card px-3 py-2.5">
+            <div key={spec.label} className="flex items-center gap-2 bg-surface-card/70 backdrop-blur-sm px-3 py-2.5">
               <spec.icon className="h-4 w-4 shrink-0 text-muted" aria-hidden="true" />
               <div className="flex min-w-0 flex-col">
                 <dt className="truncate font-mono text-[10px] text-muted ltr:uppercase ltr:tracking-[0.06em]">

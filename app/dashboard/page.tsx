@@ -67,7 +67,7 @@ export default async function DashboardPage() {
         </div>
 
         {vehicles.length === 0 ? (
-          <div className="flex flex-col items-center gap-4 border border-hairline bg-surface-card px-6 py-16 text-center">
+          <div className="flex flex-col items-center gap-4 border border-hairline bg-surface-card/70 backdrop-blur-sm px-6 py-16 text-center">
             <Car className="h-10 w-10 text-muted" aria-hidden="true" />
             <p className="text-body">{t.dashboard.empty}</p>
             <Link href="/dashboard/vehicles/new">

@@ -13,8 +13,8 @@ export default async function ContactPage() {
     <ContentPage title={t.pages.contact.title} locale={locale} t={t}>
       <p className="text-pretty font-light leading-relaxed text-body">{t.pages.contact.intro}</p>
 
-      <dl className="grid grid-cols-1 gap-px border border-hairline bg-hairline sm:grid-cols-2">
-        <div className="flex items-start gap-4 bg-surface-card p-6">
+      <dl className="grid grid-cols-1 gap-px border border-hairline bg-hairline/60 sm:grid-cols-2">
+        <div className="flex items-start gap-4 bg-surface-card/70 backdrop-blur-sm p-6">
           <Mail className="mt-1 h-5 w-5 shrink-0 text-muted" aria-hidden="true" />
           <div className="flex min-w-0 flex-col gap-1">
             <dt>
@@ -32,7 +32,7 @@ export default async function ContactPage() {
           </div>
         </div>
 
-        <div className="flex items-start gap-4 bg-surface-card p-6">
+        <div className="flex items-start gap-4 bg-surface-card/70 backdrop-blur-sm p-6">
           <Clock className="mt-1 h-5 w-5 shrink-0 text-muted" aria-hidden="true" />
           <div className="flex flex-col gap-1">
             <dt>

@@ -15,7 +15,7 @@ export function ServiceHistoryList({
   }
 
   return (
-    <div className="border border-hairline bg-surface-card px-6">
+    <div className="border border-hairline bg-surface-card/70 backdrop-blur-sm px-6">
       {history.map((entry) => (
         <div
           key={entry.id}

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ArrowLeft, ArrowRight, Quote, User } from "lucide-react";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
+import { Reveal } from "@/components/motion/reveal";
 import { BracketLabel } from "@/components/ui/bracket-label";
 
 // Figma testimonial block: heading, a pair of circular prev/next arrow
@@ -46,7 +47,7 @@ export function Testimonials({ locale, t }: { locale: Locale; t: Dictionary }) {
         </div>
       </div>
 
-      <figure className="flex flex-col gap-8 border border-hairline bg-surface-card p-8 sm:p-12">
+      <Reveal as="figure" className="flex flex-col gap-8 border border-hairline bg-surface-card/70 backdrop-blur-sm p-8 sm:p-12">
         <Quote className="h-8 w-8 text-hairline rtl:scale-x-[-1]" aria-hidden="true" />
         <blockquote className="text-pretty text-xl font-light leading-relaxed text-body-strong sm:text-2xl">
           {current.quote}
@@ -54,7 +55,7 @@ export function Testimonials({ locale, t }: { locale: Locale; t: Dictionary }) {
         <figcaption className="flex items-center gap-4 border-t border-hairline pt-6">
           <span
             aria-hidden="true"
-            className="flex h-12 w-12 items-center justify-center border border-hairline bg-surface-elevated"
+            className="flex h-12 w-12 items-center justify-center border border-hairline bg-surface-elevated/80"
           >
             <User className="h-5 w-5 text-muted" />
           </span>
@@ -63,7 +64,7 @@ export function Testimonials({ locale, t }: { locale: Locale; t: Dictionary }) {
             <span className="font-mono text-xs text-muted">{current.location}</span>
           </span>
         </figcaption>
-      </figure>
+      </Reveal>
     </section>
   );
 }

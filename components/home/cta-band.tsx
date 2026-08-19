@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MessageCircle, ArrowRight } from "lucide-react";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
+import { Reveal } from "@/components/motion/reveal";
 import { BracketLabel } from "@/components/ui/bracket-label";
 import { MStripeDivider } from "@/components/layout/m-stripe-divider";
 
@@ -14,7 +15,7 @@ export function CtaBand({ locale, t }: { locale: Locale; t: Dictionary }) {
   return (
     <section aria-labelledby="cta-heading" className="border-t border-hairline">
       <MStripeDivider />
-      <div className="mx-auto flex max-w-[1440px] flex-col items-center gap-6 px-6 py-20 text-center">
+      <Reveal as="div" className="mx-auto flex max-w-[1440px] flex-col items-center gap-6 px-6 py-20 text-center">
         <BracketLabel>{t.home.cta.eyebrow}</BracketLabel>
         <h2
           id="cta-heading"
@@ -40,7 +41,7 @@ export function CtaBand({ locale, t }: { locale: Locale; t: Dictionary }) {
             <ArrowRight className="h-4 w-4 rtl:scale-x-[-1]" aria-hidden="true" />
           </Link>
         </div>
-      </div>
+      </Reveal>
     </section>
   );
 }

@@ -30,12 +30,12 @@ export default async function AdminPresetsPage() {
       {presets.length === 0 ? (
         <p className="text-body">{t.admin.presets.empty}</p>
       ) : (
-        <div className="grid grid-cols-1 gap-px border border-hairline bg-hairline">
+        <div className="grid grid-cols-1 gap-px border border-hairline bg-hairline/60">
           {presets.map((preset, index) => (
             <Link
               key={preset.id}
               href={`/admin/presets/${preset.id}`}
-              className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-4 bg-surface-card px-6 py-4 hover:bg-surface-elevated"
+              className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-4 bg-surface-card/70 backdrop-blur-sm px-6 py-4 hover:bg-surface-elevated/80"
             >
               <span className="font-mono text-xs text-muted">
                 {String(index + 1).padStart(2, "0")}

@@ -2,9 +2,7 @@ import { getDictionary } from "@/lib/i18n/locale";
 import { SiteHeader } from "@/components/home/site-header";
 import { Hero } from "@/components/home/hero";
 import { VehicleLookupWidget } from "@/components/home/vehicle-lookup-widget";
-import { BrowseByBrand } from "@/components/home/browse-by-brand";
-import { BrowseByBodyType } from "@/components/home/browse-by-body-type";
-import { PresetCollection } from "@/components/home/preset-collection";
+import { ModelsExplorer } from "@/components/home/models-explorer";
 import { HowItWorks } from "@/components/home/how-it-works";
 import { ServicesBenefits } from "@/components/home/services-benefits";
 import { Testimonials } from "@/components/home/testimonials";
@@ -28,9 +26,7 @@ export default async function Home() {
       <main id="main" className="flex flex-1 flex-col">
         <Hero locale={locale} t={t} />
         <VehicleLookupWidget locale={locale} t={t} />
-        <BrowseByBrand locale={locale} t={t} />
-        <BrowseByBodyType locale={locale} t={t} />
-        <PresetCollection locale={locale} t={t} />
+        <ModelsExplorer locale={locale} t={t} />
         <HowItWorks locale={locale} t={t} />
         <ServicesBenefits locale={locale} t={t} />
         <Testimonials locale={locale} t={t} />

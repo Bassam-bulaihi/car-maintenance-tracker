@@ -45,7 +45,7 @@ export default async function VehicleDetailPage({
 
       <section className="flex flex-col gap-3">
         <SectionHeader>{t.dashboard.servicesSectionTitle}</SectionHeader>
-        <div className="border border-hairline bg-surface-card px-6">
+        <div className="border border-hairline bg-surface-card/70 backdrop-blur-sm px-6">
           {vehicle.vehicle_service_items.map((item) => (
             <ServiceStatusRow
               key={item.id}

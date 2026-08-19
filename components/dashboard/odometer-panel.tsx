@@ -27,7 +27,7 @@ export function OdometerPanel({
   );
 
   return (
-    <div className="border border-hairline bg-surface-card p-6">
+    <div className="border border-hairline bg-surface-card/70 backdrop-blur-sm p-6">
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-6">
         <div className="flex flex-col gap-1">
           <DataLabel>{t.dashboard.currentOdometer}</DataLabel>

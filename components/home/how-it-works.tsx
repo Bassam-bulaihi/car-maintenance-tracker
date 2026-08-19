@@ -2,6 +2,7 @@ import Image from "next/image";
 import { UserPlus, MessageCircle, CheckCircle2 } from "lucide-react";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import { SectionHeading } from "@/components/home/section-heading";
+import { Reveal } from "@/components/motion/reveal";
 
 const STEP_ICONS = [UserPlus, MessageCircle, CheckCircle2];
 
@@ -14,6 +15,7 @@ export function HowItWorks({ locale, t }: { locale: Locale; t: Dictionary }) {
       aria-labelledby="how-it-works-heading"
       className="mx-auto flex w-full max-w-[1440px] scroll-mt-20 flex-col gap-10 px-6 py-24"
     >
+      <Reveal>
       <SectionHeading
         id="how-it-works-heading"
         eyebrow={t.home.howItWorks.eyebrow}
@@ -21,15 +23,18 @@ export function HowItWorks({ locale, t }: { locale: Locale; t: Dictionary }) {
         subtitle={t.home.howItWorks.subtitle}
         locale={locale}
       />
+      </Reveal>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_minmax(0,420px)]">
-        <ol className="grid grid-cols-1 gap-px bg-hairline">
+        <ol className="grid grid-cols-1 gap-px bg-hairline/60">
           {t.home.howItWorks.steps.map((step, i) => {
             const Icon = STEP_ICONS[i];
             return (
-              <li
+              <Reveal
+                as="li"
                 key={step.title}
-                className="grid grid-cols-[auto_auto_1fr] items-start gap-5 bg-surface-card p-6"
+                delay={i * 90}
+                className="grid grid-cols-[auto_auto_1fr] items-start gap-5 bg-surface-card/70 p-6 backdrop-blur-sm"
               >
                 <span className="font-mono text-sm text-muted" aria-hidden="true">
                   {String(i + 1).padStart(2, "0")}
@@ -41,12 +46,12 @@ export function HowItWorks({ locale, t }: { locale: Locale; t: Dictionary }) {
                   <h3 className="text-lg font-bold text-on-dark">{step.title}</h3>
                   <p className="text-pretty font-light leading-relaxed text-body">{step.desc}</p>
                 </div>
-              </li>
+              </Reveal>
             );
           })}
         </ol>
 
-        <div className="relative min-h-[260px] border border-hairline bg-surface-soft lg:min-h-full">
+        <div className="relative min-h-[260px] border border-hairline bg-surface-soft/50 backdrop-blur-sm lg:min-h-full">
           <Image
             src="/cars/howitworks.jpg"
             alt={t.home.howItWorks.imageAlt}

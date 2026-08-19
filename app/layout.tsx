@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Noto_Sans_Arabic } from "next/font/google";
 import { getLocale } from "@/lib/i18n/locale";
+import { NeatBackground } from "@/components/layout/neat-background";
 import "./globals.css";
 
 // Arabic UI/editorial text — docs/arabic-web-design.md: "do not substitute
@@ -53,9 +54,17 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       dir={dir}
       className={`${notoSansArabic.variable} ${inter.variable} h-full antialiased`}
     >
+      <head>
+        {/* Without JS the IntersectionObserver never fires, so scroll-reveal
+            content would stay at opacity:0. Force it visible instead. */}
+        <noscript>
+          <style>{`.reveal{opacity:1 !important;transform:none !important}`}</style>
+        </noscript>
+      </head>
       <body
         className={`min-h-full flex flex-col ${locale === "ar" ? "font-arabic" : "font-latin"}`}
       >
+        <NeatBackground />
         {children}
       </body>
     </html>

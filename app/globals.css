@@ -87,7 +87,10 @@ html {
 }
 
 body {
-  background: var(--color-canvas);
+  /* Transparent so the fixed <NeatBackground> canvas shows through; the
+     canvas element itself paints the base colour, so there is no flash of
+     unstyled white before it mounts. */
+  background: transparent;
   color: var(--color-on-dark);
 }
 
@@ -99,6 +102,30 @@ body {
 /* Numeric data lines up in columns wherever it is rendered. */
 .font-mono {
   font-variant-numeric: tabular-nums;
+}
+
+/* Scroll-entry animation driven by <Reveal>. Transform + opacity only, so
+   it stays on the compositor. */
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  transition:
+    opacity 620ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 620ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.reveal[data-reveal="in"] {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 /* Number inputs never show the native increment/decrement spinner,

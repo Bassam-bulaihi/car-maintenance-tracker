@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BellRing, Layers, Languages, ArrowRight } from "lucide-react";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import { SectionHeading } from "@/components/home/section-heading";
+import { Reveal } from "@/components/motion/reveal";
 
 const FEATURE_ICONS = [BellRing, Layers, Languages];
 const FEATURE_HREFS = ["#how-it-works", "/signup", "#top"];
@@ -14,9 +15,10 @@ export function ServicesBenefits({ locale, t }: { locale: Locale; t: Dictionary 
     <section
       id="features"
       aria-labelledby="features-heading"
-      className="border-y border-hairline bg-surface-soft"
+      className="border-y border-hairline bg-surface-soft/50 backdrop-blur-sm"
     >
       <div className="mx-auto flex max-w-[1440px] scroll-mt-20 flex-col gap-12 px-6 py-24">
+        <Reveal>
         <SectionHeading
           id="features-heading"
           eyebrow={t.home.features.eyebrow}
@@ -25,14 +27,17 @@ export function ServicesBenefits({ locale, t }: { locale: Locale; t: Dictionary 
           locale={locale}
           align="center"
         />
+        </Reveal>
 
-        <div className="grid grid-cols-1 gap-px bg-hairline md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-px bg-hairline/60 md:grid-cols-3">
           {t.home.features.items.map((item, i) => {
             const Icon = FEATURE_ICONS[i];
             return (
-              <article
+              <Reveal
+                as="article"
                 key={item.title}
-                className="flex flex-col items-start gap-4 bg-surface-soft p-8"
+                delay={i * 90}
+                className="flex flex-col items-start gap-4 bg-surface-soft/50 p-8 backdrop-blur-sm"
               >
                 <span className="flex h-12 w-12 items-center justify-center border border-hairline">
                   <Icon className="h-6 w-6 text-on-dark" aria-hidden="true" />
@@ -48,7 +53,7 @@ export function ServicesBenefits({ locale, t }: { locale: Locale; t: Dictionary 
                   {item.cta}
                   <ArrowRight className="h-4 w-4 rtl:scale-x-[-1]" aria-hidden="true" />
                 </Link>
-              </article>
+              </Reveal>
             );
           })}
         </div>

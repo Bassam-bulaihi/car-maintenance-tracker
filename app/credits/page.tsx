@@ -22,9 +22,9 @@ export default async function CreditsPage() {
     <ContentPage title={t.pages.credits.title} locale={locale} t={t}>
       <p className="text-pretty font-light leading-relaxed text-body">{t.pages.credits.intro}</p>
 
-      <ul className="grid grid-cols-1 gap-px border border-hairline bg-hairline">
+      <ul className="grid grid-cols-1 gap-px border border-hairline bg-hairline/60">
         {entries.map(([slug, c]) => (
-          <li key={slug} className="flex flex-col gap-2 bg-surface-card p-5">
+          <li key={slug} className="flex flex-col gap-2 bg-surface-card/70 backdrop-blur-sm p-5">
             <span className="font-mono text-[11px] text-muted ltr:uppercase ltr:tracking-[0.08em]">
               {slug}
             </span>

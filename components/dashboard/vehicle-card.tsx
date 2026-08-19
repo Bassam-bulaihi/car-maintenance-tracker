@@ -38,9 +38,9 @@ export function VehicleCard({
   return (
     <Link
       href={`/dashboard/vehicles/${vehicle.id}`}
-      className="flex flex-col border border-hairline bg-surface-card hover:bg-surface-elevated"
+      className="flex flex-col border border-hairline bg-surface-card/70 backdrop-blur-sm hover:bg-surface-elevated/80"
     >
-      <div className="flex h-32 items-center justify-center border-b border-hairline bg-surface-soft">
+      <div className="flex h-32 items-center justify-center border-b border-hairline bg-surface-soft/50 backdrop-blur-sm">
         <Car className="h-10 w-10 text-muted" aria-hidden="true" />
       </div>
 

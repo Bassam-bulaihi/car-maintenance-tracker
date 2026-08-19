@@ -52,7 +52,7 @@ export function VehicleLookupWidget({ locale, t }: { locale: Locale; t: Dictiona
 
   return (
     <section aria-labelledby="lookup-heading" className="relative z-10 px-6">
-      <div className="mx-auto -mt-12 max-w-[1216px] border border-hairline bg-surface-card">
+      <div className="mx-auto -mt-12 max-w-[1216px] border border-hairline bg-surface-card/70 backdrop-blur-sm">
         <div className="flex items-center gap-3 border-b border-hairline px-6 py-4">
           <Search className="h-4 w-4 text-muted" aria-hidden="true" />
           <BracketLabel>{t.home.lookup.eyebrow}</BracketLabel>
@@ -66,9 +66,9 @@ export function VehicleLookupWidget({ locale, t }: { locale: Locale; t: Dictiona
             e.preventDefault();
             setSubmitted(true);
           }}
-          className="grid grid-cols-1 gap-px bg-hairline md:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1fr_auto]"
+          className="grid grid-cols-1 gap-px bg-hairline/60 md:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1fr_auto]"
         >
-          <div className="flex flex-col gap-1.5 bg-surface-card p-5">
+          <div className="flex flex-col gap-1.5 bg-surface-card/70 backdrop-blur-sm p-5">
             <DataLabel htmlFor="lookup-make">{t.home.lookup.make}</DataLabel>
             <Select
               uiSize="sm"
@@ -89,7 +89,7 @@ export function VehicleLookupWidget({ locale, t }: { locale: Locale; t: Dictiona
             </Select>
           </div>
 
-          <div className="flex flex-col gap-1.5 bg-surface-card p-5">
+          <div className="flex flex-col gap-1.5 bg-surface-card/70 backdrop-blur-sm p-5">
             <DataLabel htmlFor="lookup-model">{t.home.lookup.model}</DataLabel>
             <Select
               uiSize="sm"
@@ -110,7 +110,7 @@ export function VehicleLookupWidget({ locale, t }: { locale: Locale; t: Dictiona
             </Select>
           </div>
 
-          <div className="flex flex-col gap-1.5 bg-surface-card p-5">
+          <div className="flex flex-col gap-1.5 bg-surface-card/70 backdrop-blur-sm p-5">
             <DataLabel htmlFor="lookup-year">{t.home.lookup.year}</DataLabel>
             <Select
               uiSize="sm"
@@ -128,7 +128,7 @@ export function VehicleLookupWidget({ locale, t }: { locale: Locale; t: Dictiona
             </Select>
           </div>
 
-          <div className="flex flex-col gap-1.5 bg-surface-card p-5">
+          <div className="flex flex-col gap-1.5 bg-surface-card/70 backdrop-blur-sm p-5">
             <DataLabel htmlFor="lookup-odometer">{t.home.lookup.odometer}</DataLabel>
             <TextInput
               uiSize="sm"
@@ -144,7 +144,7 @@ export function VehicleLookupWidget({ locale, t }: { locale: Locale; t: Dictiona
             />
           </div>
 
-          <div className="flex items-end bg-surface-card p-5">
+          <div className="flex items-end bg-surface-card/70 backdrop-blur-sm p-5">
             <Button
               type="submit"
               locale={locale}
@@ -162,8 +162,8 @@ export function VehicleLookupWidget({ locale, t }: { locale: Locale; t: Dictiona
               <span className="font-mono text-xs text-muted ltr:uppercase ltr:tracking-[0.08em]">
                 {t.home.lookup.resultTitle}
               </span>
-              <dl className="grid grid-cols-1 gap-px bg-hairline sm:grid-cols-3">
-                <div className="flex items-center gap-3 bg-surface-card p-4">
+              <dl className="grid grid-cols-1 gap-px bg-hairline/60 sm:grid-cols-3">
+                <div className="flex items-center gap-3 bg-surface-card/70 backdrop-blur-sm p-4">
                   <Gauge className="h-5 w-5 shrink-0 text-muted" aria-hidden="true" />
                   <div className="flex flex-col">
                     <dt className="font-mono text-[11px] text-muted ltr:uppercase">
@@ -174,7 +174,7 @@ export function VehicleLookupWidget({ locale, t }: { locale: Locale; t: Dictiona
                     </dd>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 bg-surface-card p-4">
+                <div className="flex items-center gap-3 bg-surface-card/70 backdrop-blur-sm p-4">
                   <Droplet className="h-5 w-5 shrink-0 text-muted" aria-hidden="true" />
                   <div className="flex flex-col">
                     <dt className="font-mono text-[11px] text-muted ltr:uppercase">
@@ -183,7 +183,7 @@ export function VehicleLookupWidget({ locale, t }: { locale: Locale; t: Dictiona
                     <dd className="font-mono text-lg font-bold text-on-dark">{estimate.oilType}</dd>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 bg-surface-card p-4">
+                <div className="flex items-center gap-3 bg-surface-card/70 backdrop-blur-sm p-4">
                   <CalendarClock className="h-5 w-5 shrink-0 text-muted" aria-hidden="true" />
                   <div className="flex flex-col">
                     <dt className="font-mono text-[11px] text-muted ltr:uppercase">

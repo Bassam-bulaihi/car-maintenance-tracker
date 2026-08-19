@@ -15,7 +15,7 @@ const uiSizes = {
 type UiSize = keyof typeof uiSizes;
 
 const base =
-  "w-full rounded-none border border-hairline bg-surface-card text-on-dark placeholder:text-muted focus:border-on-dark focus:outline-none";
+  "w-full rounded-none border border-hairline bg-surface-card/70 backdrop-blur-sm text-on-dark placeholder:text-muted focus:border-on-dark focus:outline-none";
 
 export function TextInput({
   uiSize = "md",

@@ -3,6 +3,7 @@ import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import { LanguageToggle } from "@/components/layout/language-toggle";
 import { MobileMenu } from "@/components/home/mobile-menu";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/brand/logo";
 
 // Figma header row: logo (left) · hamburger · Login/Register (right).
 // docs/DESIGN.md {component.top-nav} — 64px canvas bar, hairline base.
@@ -15,13 +16,14 @@ export function SiteHeader({ locale, t }: { locale: Locale; t: Dictionary }) {
   ];
 
   return (
-    <header className="sticky top-0 z-40 border-b border-hairline bg-canvas/95 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-hairline bg-canvas/70 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-4 px-6">
         <Link
           href="/"
-          className="text-lg font-bold tracking-tight text-on-dark focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-on-dark"
+          aria-label={t.home.brand}
+          className="text-on-dark transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-on-dark"
         >
-          {t.home.brand}
+          <Logo markClassName="h-8" />
         </Link>
 
         <nav aria-label={t.home.nav.menu} className="hidden items-center gap-8 md:flex">

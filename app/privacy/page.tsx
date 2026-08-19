@@ -14,7 +14,7 @@ export default async function PrivacyPage() {
       locale={locale}
       t={t}
     >
-      <p className="border border-hairline bg-surface-card p-4 text-sm text-muted">
+      <p className="border border-hairline bg-surface-card/70 backdrop-blur-sm p-4 text-sm text-muted">
         {t.pages.draftNotice}
       </p>
     </ContentPage>

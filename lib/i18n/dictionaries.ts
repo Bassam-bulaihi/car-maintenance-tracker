@@ -158,6 +158,7 @@ const ar = {
       title: "تصفّح حسب الصانع",
       viewAll: "عرض الكل",
       cardCta: "عرض جدول الصيانة",
+      soon: "قريباً",
     },
     bodyTypes: {
       title: "تصفّح حسب نوع الهيكل",
@@ -184,6 +185,10 @@ const ar = {
       cardCta: "تتبّع هذه السيارة",
       seeAll: "عرض كل الموديلات",
       empty: "لا توجد موديلات في هذا التصنيف بعد.",
+      emptyFiltered: "لم نُعدّ جدول صيانة لـ{name} بعد.",
+      emptyCta: "اطلب هذا الموديل",
+      filteredBy: "التصفية",
+      clearFilter: "إزالة التصفية",
     },
     howItWorks: {
       eyebrow: "كيف يعمل",
@@ -528,6 +533,7 @@ const en: typeof ar = {
       title: "Browse by make",
       viewAll: "View all",
       cardCta: "View schedule",
+      soon: "Soon",
     },
     bodyTypes: {
       title: "Browse by body type",
@@ -554,6 +560,10 @@ const en: typeof ar = {
       cardCta: "Track this car",
       seeAll: "See all models",
       empty: "No models in this category yet.",
+      emptyFiltered: "We haven't prepared a schedule for {name} yet.",
+      emptyCta: "Request this model",
+      filteredBy: "Filtered by",
+      clearFilter: "Clear filter",
     },
     howItWorks: {
       eyebrow: "How it works",

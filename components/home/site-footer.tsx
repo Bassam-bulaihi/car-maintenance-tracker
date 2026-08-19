@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FaXTwitter, FaInstagram, FaLinkedinIn, FaWhatsapp } from "react-icons/fa6";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
+import { Logo } from "@/components/brand/logo";
 
 // Figma "Footer / Mini / 5": brand heading, a row of social icon links,
 // and a row of navigation links. Extended with the product/company/legal
@@ -42,10 +43,10 @@ export function SiteFooter({ t }: { t: Dictionary }) {
   ];
 
   return (
-    <footer className="border-t border-hairline bg-canvas">
+    <footer className="border-t border-hairline bg-canvas/60 backdrop-blur-sm">
       <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-10 px-6 py-16 md:grid-cols-[2fr_1fr_1fr_1fr]">
         <div className="flex flex-col gap-4">
-          <span className="text-lg font-bold text-on-dark">{t.home.brand}</span>
+          <Logo markClassName="h-9" className="text-on-dark" />
           <p className="max-w-xs text-sm font-light text-body">{t.home.footer.tagline}</p>
           <ul className="flex items-center gap-3 pt-2">
             {social.map((s) => (
