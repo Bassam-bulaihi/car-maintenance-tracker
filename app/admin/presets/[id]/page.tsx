@@ -8,6 +8,8 @@ import { ServiceItemRow } from "@/components/admin/service-item-row";
 import { AddServiceItemForm } from "@/components/admin/add-service-item-form";
 import { RecommendedPartsList } from "@/components/admin/recommended-parts-list";
 import { BackLink } from "@/components/ui/back-link";
+import { BracketLabel } from "@/components/ui/bracket-label";
+import { SectionHeader } from "@/components/admin/section-header";
 
 export default async function EditPresetPage({
   params,
@@ -29,9 +31,15 @@ export default async function EditPresetPage({
       <div className="flex flex-col gap-6">
         <BackLink href="/admin/presets">{t.admin.presets.title}</BackLink>
         <div className="flex items-center justify-between">
-          <h1 className="text-[32px] font-bold leading-tight text-on-dark">
-            {preset.make} {preset.model} — {preset.year}
-          </h1>
+          <div className="flex flex-col gap-2">
+            <BracketLabel>UNIT / {preset.id.slice(0, 8)}</BracketLabel>
+            <h1
+              className={`text-[40px] font-bold leading-[0.95] text-on-dark ${locale === "en" ? "uppercase tracking-[-0.02em]" : ""}`}
+            >
+              {preset.make} {preset.model}{" "}
+              <span className="font-mono text-body">/ {preset.year}</span>
+            </h1>
+          </div>
           <PresetActiveToggle
             presetId={preset.id}
             isActive={preset.is_active}
@@ -49,8 +57,8 @@ export default async function EditPresetPage({
         t={t}
       />
 
-      <section className="flex flex-col gap-2">
-        <h2 className="text-[24px] font-bold text-on-dark">{t.admin.presets.serviceIntervals}</h2>
+      <section className="flex flex-col gap-3">
+        <SectionHeader>{t.admin.presets.serviceIntervals}</SectionHeader>
         <div className="border border-hairline bg-surface-card px-6">
           {preset.preset_service_items.length === 0 ? (
             <p className="py-4 text-body">{t.admin.presets.noServiceItems}</p>
@@ -63,8 +71,8 @@ export default async function EditPresetPage({
         </div>
       </section>
 
-      <section className="flex flex-col gap-2">
-        <h2 className="text-[24px] font-bold text-on-dark">{t.admin.presets.recommendedParts}</h2>
+      <section className="flex flex-col gap-3">
+        <SectionHeader>{t.admin.presets.recommendedParts}</SectionHeader>
         <RecommendedPartsList
           presetId={preset.id}
           parts={preset.preset_recommended_parts}

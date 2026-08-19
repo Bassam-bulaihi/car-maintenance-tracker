@@ -3,8 +3,9 @@
 import { useActionState } from "react";
 import type { AdminFormState } from "@/lib/admin/actions";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
-import { TextInput, FieldLabel } from "@/components/ui/text-input";
+import { TextInput } from "@/components/ui/text-input";
 import { Button } from "@/components/ui/button";
+import { DataLabel } from "@/components/admin/data-label";
 
 type PresetFormAction = (
   state: AdminFormState,
@@ -35,17 +36,17 @@ export function PresetForm({
     <form action={formAction} className="flex w-full max-w-md flex-col gap-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-1.5">
-          <FieldLabel htmlFor="make">{t.admin.presets.make}</FieldLabel>
+          <DataLabel htmlFor="make">{t.admin.presets.make}</DataLabel>
           <TextInput id="make" name="make" required defaultValue={initial?.make} />
         </div>
         <div className="flex flex-col gap-1.5">
-          <FieldLabel htmlFor="model">{t.admin.presets.model}</FieldLabel>
+          <DataLabel htmlFor="model">{t.admin.presets.model}</DataLabel>
           <TextInput id="model" name="model" required defaultValue={initial?.model} />
         </div>
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <FieldLabel htmlFor="year">{t.admin.presets.year}</FieldLabel>
+        <DataLabel htmlFor="year">{t.admin.presets.year}</DataLabel>
         <TextInput
           id="year"
           name="year"
@@ -55,11 +56,12 @@ export function PresetForm({
           required
           defaultValue={initial?.year}
           dir="ltr"
+          className="font-mono"
         />
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <FieldLabel htmlFor="recommended_oil">{t.admin.presets.recommendedOil}</FieldLabel>
+        <DataLabel htmlFor="recommended_oil">{t.admin.presets.recommendedOil}</DataLabel>
         <TextInput
           id="recommended_oil"
           name="recommended_oil"

@@ -7,6 +7,7 @@ import { serviceTypesFor } from "@/lib/admin/service-types";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import { TextInput, Select } from "@/components/ui/text-input";
 import { Button } from "@/components/ui/button";
+import { DataLabel } from "@/components/admin/data-label";
 
 export function AddServiceItemForm({
   presetId,
@@ -33,7 +34,7 @@ export function AddServiceItemForm({
   return (
     <form action={formAction} className="flex flex-wrap items-end gap-3 pt-4">
       <div className="flex flex-col gap-1">
-        <label className="text-xs text-muted">{t.admin.presets.serviceType}</label>
+        <DataLabel>{t.admin.presets.serviceType}</DataLabel>
         <Select name="service_type" required className="w-48" defaultValue="">
           <option value="" disabled>
             {t.admin.presets.choose}
@@ -46,12 +47,12 @@ export function AddServiceItemForm({
         </Select>
       </div>
       <div className="flex flex-col gap-1">
-        <label className="text-xs text-muted">{t.common.km}</label>
-        <TextInput name="interval_km" type="number" min={1} dir="ltr" className="w-28" />
+        <DataLabel>{t.common.km}</DataLabel>
+        <TextInput name="interval_km" type="number" min={1} dir="ltr" className="w-28 font-mono" />
       </div>
       <div className="flex flex-col gap-1">
-        <label className="text-xs text-muted">{t.common.months}</label>
-        <TextInput name="interval_months" type="number" min={1} dir="ltr" className="w-28" />
+        <DataLabel>{t.common.months}</DataLabel>
+        <TextInput name="interval_months" type="number" min={1} dir="ltr" className="w-28 font-mono" />
       </div>
       <Button type="submit" size="sm" disabled={pending} locale={locale} icon={<Plus className="h-4 w-4" />}>
         {t.common.add}

@@ -48,11 +48,13 @@ const ar = {
   },
   admin: {
     nav: {
+      eyebrow: "وحدة التحكم",
       title: "لوحة تحكم المشرف",
       presets: "النماذج",
       backToDashboard: "لوحة التحكم",
     },
     presets: {
+      eyebrow: "قاعدة بيانات النماذج",
       title: "النماذج المسبقة للمركبات",
       addPreset: "إضافة نموذج",
       empty: "لا توجد نماذج بعد.",
@@ -126,11 +128,13 @@ const en: typeof ar = {
   },
   admin: {
     nav: {
+      eyebrow: "Admin Console",
       title: "Admin — Maintenance Presets",
       presets: "Presets",
       backToDashboard: "Dashboard",
     },
     presets: {
+      eyebrow: "Preset Database",
       title: "Vehicle Maintenance Presets",
       addPreset: "Add preset",
       empty: "No presets yet.",

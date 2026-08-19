@@ -6,6 +6,7 @@ import { addRecommendedPart, deleteRecommendedPart } from "@/lib/admin/actions";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import { TextInput } from "@/components/ui/text-input";
 import { Button } from "@/components/ui/button";
+import { DataLabel } from "@/components/admin/data-label";
 
 export function RecommendedPartsList({
   presetId,
@@ -28,12 +29,17 @@ export function RecommendedPartsList({
       {parts.length === 0 ? (
         <p className="py-4 text-body">{t.admin.presets.noParts}</p>
       ) : (
-        parts.map((part) => (
+        parts.map((part, index) => (
           <div
             key={part.id}
-            className="flex items-center justify-between border-b border-hairline py-4 last:border-b-0"
+            className="flex items-center justify-between gap-4 border-b border-hairline py-4 last:border-b-0"
           >
-            <span className="text-on-dark">{part.part_name}</span>
+            <span className="flex items-center gap-3">
+              <span className="font-mono text-xs text-muted">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <span className="text-on-dark">{part.part_name}</span>
+            </span>
             <form action={deleteRecommendedPart.bind(null, part.id, presetId)}>
               <Button
                 type="submit"
@@ -51,7 +57,7 @@ export function RecommendedPartsList({
 
       <form action={formAction} className="flex flex-wrap items-end gap-3 py-4">
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted">{t.admin.presets.partName}</label>
+          <DataLabel>{t.admin.presets.partName}</DataLabel>
           <TextInput name="part_name" required className="w-64" />
         </div>
         <Button

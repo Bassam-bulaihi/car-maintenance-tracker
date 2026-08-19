@@ -7,6 +7,7 @@ import { serviceTypeLabel } from "@/lib/admin/service-types";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import { TextInput } from "@/components/ui/text-input";
 import { Button } from "@/components/ui/button";
+import { DataLabel } from "@/components/admin/data-label";
 
 export function ServiceItemRow({
   item,
@@ -36,25 +37,25 @@ export function ServiceItemRow({
 
         <form action={formAction} className="flex flex-wrap items-end gap-3">
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-muted">{t.common.km}</label>
+            <DataLabel>{t.common.km}</DataLabel>
             <TextInput
               name="interval_km"
               type="number"
               min={1}
               dir="ltr"
               defaultValue={item.interval_km ?? ""}
-              className="w-28"
+              className="w-28 font-mono"
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-muted">{t.common.months}</label>
+            <DataLabel>{t.common.months}</DataLabel>
             <TextInput
               name="interval_months"
               type="number"
               min={1}
               dir="ltr"
               defaultValue={item.interval_months ?? ""}
-              className="w-28"
+              className="w-28 font-mono"
             />
           </div>
           <Button type="submit" variant="outline" size="sm" disabled={pending} locale={locale}>
