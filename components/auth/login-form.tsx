@@ -2,14 +2,21 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
+import { LogIn } from "lucide-react";
 import { login, type AuthFormState } from "@/lib/auth/actions";
+import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
+import { TextInput, FieldLabel } from "@/components/ui/text-input";
+import { Button } from "@/components/ui/button";
 
-const inputClass =
-  "h-12 w-full rounded-none border border-hairline bg-surface-card px-4 text-on-dark placeholder:text-muted focus:border-on-dark focus:outline-none";
-
-const labelClass = "text-sm text-body";
-
-export function LoginForm({ confirmEmail }: { confirmEmail?: boolean }) {
+export function LoginForm({
+  confirmEmail,
+  locale,
+  t,
+}: {
+  confirmEmail?: boolean;
+  locale: Locale;
+  t: Dictionary;
+}) {
   const [state, action, pending] = useActionState<AuthFormState, FormData>(
     login,
     undefined,
@@ -17,38 +24,16 @@ export function LoginForm({ confirmEmail }: { confirmEmail?: boolean }) {
 
   return (
     <form action={action} className="flex w-full max-w-sm flex-col gap-4">
-      {confirmEmail && (
-        <p className="text-sm text-success">
-          تم إنشاء الحساب. تحقق من بريدك الإلكتروني لتأكيد الحساب ثم سجّل الدخول.
-        </p>
-      )}
+      {confirmEmail && <p className="text-sm text-success">{t.auth.login.confirmed}</p>}
 
       <div className="flex flex-col gap-1.5">
-        <label className={labelClass} htmlFor="email">
-          البريد الإلكتروني
-        </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          required
-          className={inputClass}
-          dir="ltr"
-        />
+        <FieldLabel htmlFor="email">{t.auth.login.email}</FieldLabel>
+        <TextInput id="email" name="email" type="email" required dir="ltr" />
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label className={labelClass} htmlFor="password">
-          كلمة المرور
-        </label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          required
-          className={inputClass}
-          dir="ltr"
-        />
+        <FieldLabel htmlFor="password">{t.auth.login.password}</FieldLabel>
+        <TextInput id="password" name="password" type="password" required dir="ltr" />
       </div>
 
       {state?.error && (
@@ -57,18 +42,20 @@ export function LoginForm({ confirmEmail }: { confirmEmail?: boolean }) {
         </p>
       )}
 
-      <button
+      <Button
         type="submit"
         disabled={pending}
-        className="mt-2 h-12 rounded-none border border-on-dark px-8 text-sm font-bold text-on-dark transition-colors hover:bg-on-dark hover:text-canvas disabled:opacity-50"
+        locale={locale}
+        icon={<LogIn className="h-4 w-4" />}
+        className="mt-2"
       >
-        {pending ? "جارِ الدخول..." : "تسجيل الدخول"}
-      </button>
+        {pending ? t.auth.login.submitting : t.auth.login.submit}
+      </Button>
 
       <p className="text-sm text-muted">
-        ليس لديك حساب؟{" "}
+        {t.auth.login.noAccount}{" "}
         <Link href="/signup" className="text-on-dark underline">
-          إنشاء حساب جديد
+          {t.auth.login.signupLink}
         </Link>
       </p>
     </form>

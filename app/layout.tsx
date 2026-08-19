@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Noto_Sans_Arabic } from "next/font/google";
+import { getLocale } from "@/lib/i18n/locale";
 import "./globals.css";
 
 // Arabic UI/editorial text — docs/arabic-web-design.md: "do not substitute
@@ -22,14 +23,21 @@ export const metadata: Metadata = {
   description: "Track vehicle maintenance and get WhatsApp reminders.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const locale = await getLocale();
+  const dir = locale === "ar" ? "rtl" : "ltr";
+
   return (
     <html
-      lang="ar"
-      dir="rtl"
+      lang={locale}
+      dir={dir}
       className={`${notoSansArabic.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-arabic">{children}</body>
+      <body
+        className={`min-h-full flex flex-col ${locale === "ar" ? "font-arabic" : "font-latin"}`}
+      >
+        {children}
+      </body>
     </html>
   );
 }

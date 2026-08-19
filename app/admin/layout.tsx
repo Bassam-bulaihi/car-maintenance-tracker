@@ -1,25 +1,50 @@
 import Link from "next/link";
+import { LayoutDashboard, LogOut } from "lucide-react";
 import { requireAdmin } from "@/lib/admin/data";
 import { logout } from "@/lib/auth/actions";
+import { getDictionary } from "@/lib/i18n/locale";
+import { LanguageToggle } from "@/components/layout/language-toggle";
+import { MStripeDivider } from "@/components/layout/m-stripe-divider";
 
 export default async function AdminLayout({
   children,
 }: LayoutProps<"/admin">) {
   await requireAdmin();
+  const { locale, t } = await getDictionary();
 
   return (
     <div className="flex flex-1 flex-col">
+      <MStripeDivider />
       <header className="flex items-center justify-between border-b border-hairline px-6 py-4">
-        <Link href="/admin/presets" className="text-sm font-bold text-on-dark">
-          لوحة تحكم المشرف — نماذج الصيانة
+        <Link
+          href="/admin/presets"
+          className="text-[14px] font-bold uppercase tracking-[1.5px] text-on-dark"
+        >
+          {t.admin.nav.title}
         </Link>
-        <form action={logout}>
-          <button type="submit" className="text-sm text-muted hover:text-on-dark">
-            تسجيل الخروج
-          </button>
-        </form>
+        <div className="flex items-center gap-3">
+          <LanguageToggle locale={locale} />
+          <Link
+            href="/dashboard"
+            className="flex h-10 items-center gap-2 rounded-none border border-hairline px-3 text-sm text-body hover:border-on-dark hover:text-on-dark"
+          >
+            <LayoutDashboard className="h-4 w-4" aria-hidden="true" />
+            {t.admin.nav.backToDashboard}
+          </Link>
+          <form action={logout}>
+            <button
+              type="submit"
+              className="flex h-10 items-center gap-2 rounded-none border border-hairline px-3 text-sm text-body hover:border-on-dark hover:text-on-dark"
+            >
+              <LogOut className="h-4 w-4" aria-hidden="true" />
+              {t.common.logout}
+            </button>
+          </form>
+        </div>
       </header>
-      <main className="flex flex-1 flex-col px-6 py-8">{children}</main>
+      <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-16 px-6 py-12">
+        {children}
+      </main>
     </div>
   );
 }

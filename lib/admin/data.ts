@@ -36,7 +36,7 @@ export async function getPresetWithItems(presetId: string) {
   const { supabase } = await requireAdmin();
   const { data, error } = await supabase
     .from("vehicle_presets")
-    .select("*, preset_service_items(*)")
+    .select("*, preset_service_items(*), preset_recommended_parts(*)")
     .eq("id", presetId)
     .single();
 

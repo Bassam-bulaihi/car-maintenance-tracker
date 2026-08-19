@@ -103,6 +103,35 @@ export type Database = {
           },
         ]
       }
+      preset_recommended_parts: {
+        Row: {
+          created_at: string
+          id: string
+          part_name: string
+          preset_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          part_name: string
+          preset_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          part_name?: string
+          preset_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "preset_recommended_parts_preset_id_fkey"
+            columns: ["preset_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_presets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       preset_service_items: {
         Row: {
           created_at: string
@@ -208,7 +237,6 @@ export type Database = {
           make: string
           model: string
           recommended_oil: string | null
-          recommended_parts: string | null
           year: number
         }
         Insert: {
@@ -218,7 +246,6 @@ export type Database = {
           make: string
           model: string
           recommended_oil?: string | null
-          recommended_parts?: string | null
           year: number
         }
         Update: {
@@ -228,7 +255,6 @@ export type Database = {
           make?: string
           model?: string
           recommended_oil?: string | null
-          recommended_parts?: string | null
           year?: number
         }
         Relationships: []

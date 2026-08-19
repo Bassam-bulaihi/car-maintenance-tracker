@@ -1,63 +1,61 @@
 "use client";
 
 import { useActionState } from "react";
+import { Plus } from "lucide-react";
 import { addServiceItem } from "@/lib/admin/actions";
-import { SERVICE_TYPES } from "@/lib/admin/service-types";
-
-const inputClass =
-  "h-10 w-28 rounded-none border border-hairline bg-surface-card px-3 text-on-dark focus:border-on-dark focus:outline-none";
+import { serviceTypesFor } from "@/lib/admin/service-types";
+import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
+import { TextInput, Select } from "@/components/ui/text-input";
+import { Button } from "@/components/ui/button";
 
 export function AddServiceItemForm({
   presetId,
-  availableTypes,
+  usedTypes,
+  locale,
+  t,
 }: {
   presetId: string;
-  availableTypes: typeof SERVICE_TYPES[number][];
+  usedTypes: Set<string>;
+  locale: Locale;
+  t: Dictionary;
 }) {
   const [state, formAction, pending] = useActionState(
     addServiceItem.bind(null, presetId),
     undefined,
   );
 
+  const availableTypes = serviceTypesFor(locale).filter((s) => !usedTypes.has(s.value));
+
   if (availableTypes.length === 0) {
-    return <p className="text-sm text-muted">تمت إضافة جميع أنواع الخدمة لهذا النموذج.</p>;
+    return <p className="text-sm text-muted">{t.admin.presets.allServiceTypesAdded}</p>;
   }
 
   return (
     <form action={formAction} className="flex flex-wrap items-end gap-3 pt-4">
       <div className="flex flex-col gap-1">
-        <label className="text-xs text-muted">نوع الخدمة</label>
-        <select
-          name="service_type"
-          required
-          className={`${inputClass} w-48`}
-          defaultValue=""
-        >
+        <label className="text-xs text-muted">{t.admin.presets.serviceType}</label>
+        <Select name="service_type" required className="w-48" defaultValue="">
           <option value="" disabled>
-            اختر...
+            {t.admin.presets.choose}
           </option>
           {availableTypes.map((type) => (
             <option key={type.value} value={type.value}>
               {type.label}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
       <div className="flex flex-col gap-1">
-        <label className="text-xs text-muted">كم</label>
-        <input name="interval_km" type="number" min={1} dir="ltr" className={inputClass} />
+        <label className="text-xs text-muted">{t.common.km}</label>
+        <TextInput name="interval_km" type="number" min={1} dir="ltr" className="w-28" />
       </div>
       <div className="flex flex-col gap-1">
-        <label className="text-xs text-muted">أشهر</label>
-        <input name="interval_months" type="number" min={1} dir="ltr" className={inputClass} />
+        <label className="text-xs text-muted">{t.common.months}</label>
+        <TextInput name="interval_months" type="number" min={1} dir="ltr" className="w-28" />
       </div>
-      <button
-        type="submit"
-        disabled={pending}
-        className="h-10 rounded-none border border-on-dark px-4 text-sm font-bold text-on-dark hover:bg-on-dark hover:text-canvas disabled:opacity-50"
-      >
-        إضافة
-      </button>
+      <Button type="submit" size="sm" disabled={pending} locale={locale} icon={<Plus className="h-4 w-4" />}>
+        {t.common.add}
+      </Button>
       {state?.error && (
         <p className="w-full text-sm text-m-red" role="alert">
           {state.error}

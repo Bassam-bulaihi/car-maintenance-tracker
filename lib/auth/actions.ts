@@ -2,6 +2,8 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getLocale } from "@/lib/i18n/locale";
+import { dictionaries } from "@/lib/i18n/dictionaries";
 
 export type AuthFormState = { error: string } | undefined;
 
@@ -13,19 +15,22 @@ export async function signup(
   _prevState: AuthFormState,
   formData: FormData,
 ): Promise<AuthFormState> {
+  const locale = await getLocale();
+  const t = dictionaries[locale].auth.errors;
+
   const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
   const phoneNumber = String(formData.get("phone_number") ?? "").trim();
   const password = String(formData.get("password") ?? "");
 
   if (name.length < 2) {
-    return { error: "الرجاء إدخال الاسم الكامل." };
+    return { error: t.name };
   }
   if (!E164_PHONE.test(phoneNumber)) {
-    return { error: "رقم الجوال غير صالح. استخدم الصيغة الدولية، مثال: 966501234567+" };
+    return { error: t.phone };
   }
   if (password.length < 8) {
-    return { error: "كلمة المرور يجب أن تكون 8 أحرف على الأقل." };
+    return { error: t.password };
   }
 
   const supabase = await createClient();
@@ -36,7 +41,7 @@ export async function signup(
       data: {
         name,
         phone_number: phoneNumber,
-        language: "ar",
+        language: locale,
       },
     },
   });
@@ -63,7 +68,8 @@ export async function login(
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    return { error: "البريد الإلكتروني أو كلمة المرور غير صحيحة." };
+    const locale = await getLocale();
+    return { error: dictionaries[locale].auth.errors.invalidCredentials };
   }
 
   redirect("/dashboard");

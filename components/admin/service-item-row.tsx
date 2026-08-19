@@ -1,18 +1,28 @@
 "use client";
 
 import { useActionState } from "react";
+import { Trash2 } from "lucide-react";
 import { updateServiceItem, deleteServiceItem } from "@/lib/admin/actions";
 import { serviceTypeLabel } from "@/lib/admin/service-types";
-
-const inputClass =
-  "h-10 w-28 rounded-none border border-hairline bg-surface-card px-3 text-on-dark focus:border-on-dark focus:outline-none";
+import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
+import { TextInput } from "@/components/ui/text-input";
+import { Button } from "@/components/ui/button";
 
 export function ServiceItemRow({
   item,
   presetId,
+  locale,
+  t,
 }: {
-  item: { id: string; service_type: string; interval_km: number | null; interval_months: number | null };
+  item: {
+    id: string;
+    service_type: string;
+    interval_km: number | null;
+    interval_months: number | null;
+  };
   presetId: string;
+  locale: Locale;
+  t: Dictionary;
 }) {
   const [state, formAction, pending] = useActionState(
     updateServiceItem.bind(null, item.id, presetId),
@@ -22,44 +32,40 @@ export function ServiceItemRow({
   return (
     <div className="flex flex-col gap-2 border-b border-hairline py-4 last:border-b-0">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <span className="text-on-dark">{serviceTypeLabel(item.service_type)}</span>
+        <span className="text-on-dark">{serviceTypeLabel(item.service_type, locale)}</span>
 
         <form action={formAction} className="flex flex-wrap items-end gap-3">
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-muted">كم</label>
-            <input
+            <label className="text-xs text-muted">{t.common.km}</label>
+            <TextInput
               name="interval_km"
               type="number"
               min={1}
               dir="ltr"
               defaultValue={item.interval_km ?? ""}
-              className={inputClass}
+              className="w-28"
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-muted">أشهر</label>
-            <input
+            <label className="text-xs text-muted">{t.common.months}</label>
+            <TextInput
               name="interval_months"
               type="number"
               min={1}
               dir="ltr"
               defaultValue={item.interval_months ?? ""}
-              className={inputClass}
+              className="w-28"
             />
           </div>
-          <button
-            type="submit"
-            disabled={pending}
-            className="h-10 rounded-none border border-hairline px-4 text-sm text-on-dark hover:border-on-dark disabled:opacity-50"
-          >
-            حفظ
-          </button>
+          <Button type="submit" variant="outline" size="sm" disabled={pending} locale={locale}>
+            {t.common.save}
+          </Button>
         </form>
 
         <form action={deleteServiceItem.bind(null, item.id, presetId)}>
-          <button type="submit" className="text-sm text-m-red hover:underline">
-            حذف
-          </button>
+          <Button type="submit" variant="danger" size="sm" locale={locale} icon={<Trash2 className="h-4 w-4" />}>
+            {t.common.delete}
+          </Button>
         </form>
       </div>
       {state?.error && (
