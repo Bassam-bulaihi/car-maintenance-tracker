@@ -1,4 +1,11 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## local env:
+
+npx create-next-app@latest car-maintenance-tracker
+cd car-maintenance-tracker
+git init
+git remote add origin https://github.com/Bassam-bulaihi/car-maintenance-tracker.git
+git pull 
 
 ## Getting Started
 
