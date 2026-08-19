@@ -32,8 +32,10 @@ export function ServiceItemRow({
 
   return (
     <div className="flex flex-col gap-2 border-b border-hairline py-4 last:border-b-0">
-      <div className="flex flex-wrap items-end justify-between gap-6">
-        <span className="text-on-dark">{serviceTypeLabel(item.service_type, locale)}</span>
+      <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-4">
+        <span className="text-on-dark break-words">
+          {serviceTypeLabel(item.service_type, locale)}
+        </span>
 
         <form action={formAction} className="flex flex-wrap items-end gap-4">
           <div className="flex flex-col gap-1">

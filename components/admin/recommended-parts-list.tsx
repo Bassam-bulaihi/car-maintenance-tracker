@@ -32,13 +32,13 @@ export function RecommendedPartsList({
         parts.map((part, index) => (
           <div
             key={part.id}
-            className="flex items-center justify-between gap-4 border-b border-hairline py-4 last:border-b-0"
+            className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-b border-hairline py-4 last:border-b-0"
           >
             <span className="flex items-center gap-3">
               <span className="font-mono text-xs text-muted">
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <span className="text-on-dark">{part.part_name}</span>
+              <span className="text-on-dark break-words">{part.part_name}</span>
             </span>
             <form action={deleteRecommendedPart.bind(null, part.id, presetId)}>
               <Button

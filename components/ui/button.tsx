@@ -12,10 +12,14 @@ type Size = "md" | "sm";
 const base =
   "inline-flex items-center justify-center gap-2 rounded-none border font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
 
+// Every variant inverts fully on hover (border color as resting-state
+// hierarchy cue, but the same fill+invert interaction across the board) —
+// a mix of "just the border changes" and "everything inverts" read as
+// inconsistent between adjacent buttons.
 const variants: Record<Variant, string> = {
   primary: "border-on-dark text-on-dark hover:bg-on-dark hover:text-canvas",
-  outline: "border-hairline text-body hover:border-on-dark hover:text-on-dark",
-  danger: "border-hairline text-m-red hover:border-m-red",
+  outline: "border-hairline text-body hover:bg-on-dark hover:border-on-dark hover:text-canvas",
+  danger: "border-hairline text-m-red hover:bg-m-red hover:border-m-red hover:text-canvas",
 };
 
 const sizes: Record<Size, string> = {
