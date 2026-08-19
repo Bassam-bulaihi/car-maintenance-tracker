@@ -240,6 +240,23 @@ components:
     textColor: "{colors.body}"
     typography: "{typography.body-sm}"
     padding: 64px
+  admin-bracket-label:
+    backgroundColor: transparent
+    textColor: "{colors.muted}"
+    typography: "{typography.caption}"
+  admin-section-header:
+    backgroundColor: transparent
+    textColor: "{colors.on-dark}"
+    typography: "{typography.title-md}"
+  admin-data-label:
+    backgroundColor: transparent
+    textColor: "{colors.muted}"
+    typography: "{typography.caption}"
+  admin-data-row:
+    backgroundColor: "{colors.surface-card}"
+    textColor: "{colors.on-dark}"
+    rounded: "{rounded.none}"
+    padding: 0 24px
 ---
 
 ## Overview
@@ -390,6 +407,8 @@ Hero photography fills full-width with no rounding. Photo cards inside grids ret
 
 **`button-primary-outline`** — Same shape as primary but with transparent background and white outline only. Used over photography where a filled button would clash with the image.
 
+**Hover rule (applies to every button variant, including `-outline` and destructive/danger buttons):** the button fully inverts on hover — background fills with the button's border color, text flips to `{colors.canvas}`. A mix of "only the border/text color shifts" on some variants and "everything inverts" on others reads as inconsistent between adjacent buttons in the same row; every variant gets the same interaction, only the resting-state border/text color differs between variants.
+
 **`button-on-light`** — Used on rare light-surface contexts (configurator, account dialogs). Background `{colors.canvas}`, text `{colors.on-dark}` — black button with white text, inverted from the dark-canvas default.
 
 **`button-icon`** — Circular icon buttons (carousel controls, share, favorite). 48 × 48px, background `{colors.surface-card}`, white icon centered, rounded `{rounded.full}`. The only non-rectangular button shape in the system.
@@ -418,7 +437,7 @@ Hero photography fills full-width with no rounding. Photo cards inside grids ret
 
 ### Inputs & Forms
 
-**`text-input`** — Standard text input on dark surfaces. Background `{colors.surface-card}`, text `{colors.on-dark}`, type `{typography.body-md}`, rounded `{rounded.none}` (0px), padding 12px × 16px, height 48px. 1px hairline border. Focus state thickens the border to white.
+**`text-input`** — Standard text input on dark surfaces. Background `{colors.surface-card}`, text `{colors.on-dark}`, type `{typography.body-md}`, rounded `{rounded.none}` (0px), padding 12px × 16px, height 48px. 1px hairline border. Focus state thickens the border to white. **`type="number"` inputs never show the native increment/decrement spinner, anywhere in the system** — suppressed globally via `appearance: textfield` plus the `-webkit-*-spin-button` pseudo-elements.
 
 **`cookie-consent-card`** — A right-side cookie-banner card visible on the homepage. Background `{colors.canvas}` with 1px hairline, rounded `{rounded.none}`, padding `{spacing.lg}` (24px). Body text in `{typography.body-sm}` (14px / 300) — Light weight even for legal text. Two buttons stacked at bottom: primary outline + text-link.
 
@@ -431,6 +450,25 @@ Hero photography fills full-width with no rounding. Photo cards inside grids ret
 ### Footer
 
 **`footer`** — Black footer that closes every page. Background `{colors.canvas}`, text `{colors.body}`. 4-column link list at desktop covering BMW M Models / BMW M Lifestyle / Owners / Company. Vertical padding 64px. Bottom row carries the BMW corporate disclaimer in `{typography.caption}` and language selector. The footer never inverts — it stays black even when the body might transition.
+
+## Admin Console Extension (Industrial-Brutalist Blend)
+
+**Scope: `/admin/*` only.** The customer-facing surfaces (marketing, auth, dashboard) stay pure BMW M — nothing in this section touches them. The admin console is an internal ops tool for managing vehicle presets, and layers a raw/mechanical/high-density treatment on top of the *same* color tokens and fonts documented above — no new colors, no new font families were introduced. This keeps the hard project rule ("never invent tokens outside this file") intact while giving the admin console its own operational character.
+
+- **`{component.admin-bracket-label}`** — Small ASCII-bracket-framed eyebrow (`[ PRESET DATABASE ]`), `{typography.caption}` size, `{colors.muted}`, monospace. Sits above a large page title as context, not as the title itself. ASCII brackets auto-mirror correctly under `dir="rtl"` via the browser's bidi algorithm — no extra handling needed for Arabic.
+- **`{component.admin-section-header}`** — Bracket-framed section divider (`[ SERVICE INTERVALS ]`), bolder and larger than the bracket-label eyebrow, monospace, breaks admin content into distinct operational blocks in place of a plain `title-lg` heading.
+- **`{component.admin-data-label}`** — Micro-typography field label for form/data-row inputs (`KM`, `MONTHS`, `SERVICE TYPE`), monospace, `{colors.muted}`.
+- **`{component.admin-data-row}`** — A data row inside a bordered `{colors.surface-card}` list (service intervals, recommended parts). Built as a CSS Grid — `grid-template-columns: minmax(0,1fr) auto auto` — never flexbox with `justify-between`. The label column is flexible and wraps in place when its content is long; the control columns are fixed-width and never shift position because of a sibling row's label length. This is a deliberate fix for a real bug: flexbox rows let a long label push the save/delete controls sideways, misaligning across rows.
+- **Grid-line dividers** — Lists (preset list, data rows) use the `display: grid; gap: 1px` technique with `{colors.hairline}` as the parent background and `{colors.surface-card}` on each child, instead of `divide-y` borders. Produces the same hairline-thin division with mathematically exact grid tracks.
+- **Monospace data** — Numeric/technical values (km, months, year, row index, the `UNIT / <id>` tag on a preset's detail page) render in the system monospace stack (`font-mono` — no new font added; this is the browser/OS default monospace fallback chain, e.g. `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`). Visually separates "data" from "label" at a glance.
+- **Compact inline inputs** — Dense data rows (service interval km/months, add-part name) use a 40px-tall input variant instead of the standard 48px `{component.text-input}`, sized to match the 40px `sm` button sitting beside it in the same row. This is an admin-only deviation from the documented 48px input height — do not apply it outside dense inline rows, and never to standalone form fields (preset make/model/year keep the standard 48px input).
+- **Row tags** — List rows carry a small monospace index (`01`, `02`, ...) or unit tag, evoking a system log / manifest rather than a generic list.
+
+### Locale gating (critical)
+Arabic has no letterform case and breaks visually under positive letter-spacing (glyphs stop joining correctly). Every uppercase/tracked/negative-tracking treatment above is **English-locale only**, applied via Tailwind's `ltr:` variant (keys off the ancestor `dir` attribute) or an explicit `locale === "en"` check — never applied unconditionally. Arabic admin text keeps normal case, normal tracking, and the standard font weight/size scale from the base system. This is not optional styling — it is required for the Arabic UI to remain legible per `docs/arabic-web-design.md`.
+
+### What was deliberately left out
+The industrial-brutalist skill this extension is based on also specifies its own color palette (off-white/red print, or `#0A0A0A`/red/terminal-green CRT), its own font families (Archivo Black, JetBrains Mono as a *brand* font rather than the system fallback), and analog-degradation textures (CRT scanlines, halftone, noise). None of that was adopted — scanlines/noise use CSS gradients, which conflicts with this file's explicit "no gradient backdrops" rule, and new fonts/colors would violate the "never invent tokens" rule. The extension is structural and typographic only.
 
 ## Do's and Don'ts
 
@@ -487,7 +525,7 @@ Hero photography fills full-width with no rounding. Photo cards inside grids ret
 2. New components default to `{rounded.none}` (0px). Only use `{rounded.full}` if it's a circular icon button.
 3. Variants (`-active`, `-disabled`) live as separate entries in `components:`.
 4. Use `{token.refs}` everywhere — never inline hex.
-5. Never document hover states. Default and Active/Pressed only.
+5. Never document per-component hover states. Default and Active/Pressed only — the one exception is the global button hover-invert rule under Buttons, which is documented once and applies uniformly rather than being redefined per variant.
 6. Display headlines stay UPPERCASE 700; body stays sentence-case 300. Never blur the contrast.
 7. The M tricolor is brand-identity-only — never extend it to system tokens for "primary action."
 8. When in doubt about emphasis: bigger photography before bigger type.
