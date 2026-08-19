@@ -6,6 +6,8 @@ import type { Locale } from "@/lib/i18n/dictionaries";
 
 export type Brand = { slug: string; name: string; modelCount: number };
 
+// Every make here has a real brand mark available in react-icons/si, so the
+// grid renders actual logos rather than letter placeholders.
 export const BRANDS: Brand[] = [
   { slug: "toyota", name: "Toyota", modelCount: 18 },
   { slug: "hyundai", name: "Hyundai", modelCount: 14 },
@@ -16,9 +18,9 @@ export const BRANDS: Brand[] = [
   { slug: "chevrolet", name: "Chevrolet", modelCount: 8 },
   { slug: "mazda", name: "Mazda", modelCount: 7 },
   { slug: "mitsubishi", name: "Mitsubishi", modelCount: 6 },
-  { slug: "lexus", name: "Lexus", modelCount: 6 },
-  { slug: "gmc", name: "GMC", modelCount: 5 },
-  { slug: "isuzu", name: "Isuzu", modelCount: 4 },
+  { slug: "suzuki", name: "Suzuki", modelCount: 6 },
+  { slug: "jeep", name: "Jeep", modelCount: 5 },
+  { slug: "volkswagen", name: "Volkswagen", modelCount: 4 },
 ];
 
 export type BodyType = {

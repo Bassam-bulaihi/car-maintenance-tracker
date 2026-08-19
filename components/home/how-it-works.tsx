@@ -1,7 +1,7 @@
-import { UserPlus, MessageCircle, CheckCircle2, Compass } from "lucide-react";
+import Image from "next/image";
+import { UserPlus, MessageCircle, CheckCircle2 } from "lucide-react";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import { SectionHeading } from "@/components/home/section-heading";
-import { ImageSlot } from "@/components/home/image-slot";
 
 const STEP_ICONS = [UserPlus, MessageCircle, CheckCircle2];
 
@@ -46,12 +46,15 @@ export function HowItWorks({ locale, t }: { locale: Locale; t: Dictionary }) {
           })}
         </ol>
 
-        <ImageSlot
-          label={t.home.howItWorks.imageAlt}
-          icon={Compass}
-          className="min-h-[240px] lg:min-h-full"
-          iconClassName="h-16 w-16"
-        />
+        <div className="relative min-h-[260px] border border-hairline bg-surface-soft lg:min-h-full">
+          <Image
+            src="/cars/howitworks.jpg"
+            alt={t.home.howItWorks.imageAlt}
+            fill
+            sizes="(min-width: 1024px) 420px, 100vw"
+            className="object-cover"
+          />
+        </div>
       </div>
     </section>
   );

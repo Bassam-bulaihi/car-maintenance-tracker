@@ -1,8 +1,8 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Gauge, Droplet, CalendarClock, Wrench, Tag } from "lucide-react";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import type { ShowcasePreset } from "@/lib/home/content";
-import { ImageSlot } from "@/components/home/image-slot";
 
 // Mirrors the Figma car card (Group 115): image · badge row · title+metric
 // row · four-up spec strip · CTA button.
@@ -39,11 +39,15 @@ export function PresetCard({
 
   return (
     <article className="flex flex-col border border-hairline bg-surface-card transition-colors hover:border-hairline-strong">
-      <ImageSlot
-        label={`${preset.make} ${preset.model} ${preset.year}`}
-        className="h-40 border-0 border-b border-hairline"
-        iconClassName="h-12 w-12"
-      />
+      <div className="relative h-44 border-b border-hairline bg-surface-soft">
+        <Image
+          src={`/cars/${preset.slug}.jpg`}
+          alt={`${preset.make} ${preset.model} ${preset.year}`}
+          fill
+          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+          className="object-cover"
+        />
+      </div>
 
       <div className="flex flex-1 flex-col gap-4 p-5">
         <span className="inline-flex items-center gap-2 self-start border border-hairline px-2 py-1 font-mono text-[11px] text-muted ltr:uppercase ltr:tracking-[0.08em]">

@@ -136,7 +136,7 @@ const ar = {
       titleLine2: "سيارتك مرة أخرى",
       subtitle:
         "سجّل سيارتك، ودعنا نتابع العداد ونذكّرك بمواعيد الصيانة عبر واتساب — في الوقت المناسب دائماً.",
-      imageAlt: "سيارة سيدان داكنة من الأمام",
+      imageAlt: "حجرة محرك سيارة مفتوحة أثناء الصيانة",
     },
     lookup: {
       eyebrow: "فحص سريع",
@@ -204,7 +204,7 @@ const ar = {
           desc: "عند استحقاق خدمة، نرسل تنبيهاً — ورد بـ«تم» أو «لم يتم» مباشرة من واتساب.",
         },
       ],
-      imageAlt: "سيارة دفع رباعي على طريق ترابي",
+      imageAlt: "سيارة دفع رباعي بيضاء في المعرض",
     },
     features: {
       eyebrow: "لماذا Car Auto",
@@ -274,6 +274,7 @@ const ar = {
         contact: "تواصل معنا",
         privacy: "سياسة الخصوصية",
         terms: "الشروط والأحكام",
+        credits: "حقوق الصور",
       },
       social: {
         twitter: "منصة إكس",
@@ -320,6 +321,11 @@ const ar = {
       email: "hello@car-auto.app",
       responseLabel: "وقت الرد المتوقع",
       response: "خلال يومي عمل",
+    },
+    credits: {
+      title: "حقوق الصور",
+      intro:
+        "صور المركبات في هذا الموقع مرخّصة من ويكيميديا كومنز. رخصتا CC BY و CC BY-SA تشترطان نسب العمل لصاحبه، وفيما يلي المصدر والمؤلف والرخصة لكل صورة.",
     },
     privacy: {
       title: "سياسة الخصوصية",
@@ -500,7 +506,7 @@ const en: typeof ar = {
       titleLine2: "on your car again",
       subtitle:
         "Register your car and we'll track the odometer and remind you when service is due — right on WhatsApp, right on time.",
-      imageAlt: "Dark sedan photographed head-on",
+      imageAlt: "An open engine bay during servicing",
     },
     lookup: {
       eyebrow: "Quick check",
@@ -568,7 +574,7 @@ const en: typeof ar = {
           desc: "When a service is due, we send a reminder — reply Done or Not done, right from WhatsApp.",
         },
       ],
-      imageAlt: "SUV on a dirt road",
+      imageAlt: "A white SUV in a showroom",
     },
     features: {
       eyebrow: "Why Car Auto",
@@ -638,6 +644,7 @@ const en: typeof ar = {
         contact: "Contact",
         privacy: "Privacy policy",
         terms: "Terms of service",
+        credits: "Image credits",
       },
       social: {
         twitter: "X",
@@ -683,6 +690,11 @@ const en: typeof ar = {
       email: "hello@car-auto.app",
       responseLabel: "Typical reply time",
       response: "Within two working days",
+    },
+    credits: {
+      title: "Image credits",
+      intro:
+        "Vehicle photography on this site is licensed from Wikimedia Commons. CC BY and CC BY-SA both require attribution, so each image is credited below with its author, licence, and source.",
     },
     privacy: {
       title: "Privacy policy",

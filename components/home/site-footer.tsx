@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AtSign, Camera, Briefcase, MessageCircle } from "lucide-react";
+import { FaXTwitter, FaInstagram, FaLinkedinIn, FaWhatsapp } from "react-icons/fa6";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 // Figma "Footer / Mini / 5": brand heading, a row of social icon links,
@@ -8,14 +8,11 @@ import type { Dictionary } from "@/lib/i18n/dictionaries";
 export function SiteFooter({ t }: { t: Dictionary }) {
   const year = new Date().getFullYear();
 
-  // Lucide v1 dropped its brand glyphs (trademark), and CLAUDE.md pins the
-  // project to Lucide only — so these are generic marks, identified by
-  // their accessible labels rather than by logo.
   const social = [
-    { icon: AtSign, label: t.home.footer.social.twitter, href: "https://x.com" },
-    { icon: Camera, label: t.home.footer.social.instagram, href: "https://instagram.com" },
-    { icon: Briefcase, label: t.home.footer.social.linkedin, href: "https://linkedin.com" },
-    { icon: MessageCircle, label: t.home.footer.social.whatsapp, href: "https://whatsapp.com" },
+    { icon: FaXTwitter, label: t.home.footer.social.twitter, href: "https://x.com" },
+    { icon: FaInstagram, label: t.home.footer.social.instagram, href: "https://instagram.com" },
+    { icon: FaLinkedinIn, label: t.home.footer.social.linkedin, href: "https://linkedin.com" },
+    { icon: FaWhatsapp, label: t.home.footer.social.whatsapp, href: "https://whatsapp.com" },
   ];
 
   const columns = [
@@ -39,6 +36,7 @@ export function SiteFooter({ t }: { t: Dictionary }) {
       links: [
         { label: t.home.footer.links.privacy, href: "/privacy" },
         { label: t.home.footer.links.terms, href: "/terms" },
+        { label: t.home.footer.links.credits, href: "/credits" },
       ],
     },
   ];

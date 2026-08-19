@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Car } from "lucide-react";
+import Image from "next/image";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import { Button } from "@/components/ui/button";
 import { BracketLabel } from "@/components/ui/bracket-label";
@@ -11,14 +11,18 @@ export function Hero({ locale, t }: { locale: Locale; t: Dictionary }) {
 
   return (
     <section className="relative isolate overflow-hidden border-b border-hairline">
-      {/* Photo band stand-in — the design's `image 23` node. */}
-      <div
-        role="img"
-        aria-label={t.home.hero.imageAlt}
-        className="absolute inset-0 -z-10 flex items-center justify-center bg-surface-soft"
-      >
-        <Car className="h-64 w-64 text-hairline" aria-hidden="true" strokeWidth={0.75} />
-      </div>
+      {/* The design's `image 23` full-bleed photo node. A flat scrim (not a
+          gradient — docs/DESIGN.md forbids those behind hero type) keeps the
+          headline legible over the photograph. */}
+      <Image
+        src="/cars/hero.jpg"
+        alt={t.home.hero.imageAlt}
+        fill
+        priority
+        sizes="100vw"
+        className="-z-20 object-cover"
+      />
+      <div aria-hidden="true" className="absolute inset-0 -z-10 bg-canvas/75" />
 
       <div className="mx-auto flex max-w-[1440px] flex-col items-start gap-6 px-6 py-24 md:py-32">
         <BracketLabel>{t.home.hero.eyebrow}</BracketLabel>
