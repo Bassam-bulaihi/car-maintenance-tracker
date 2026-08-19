@@ -32,10 +32,10 @@ export function AddServiceItemForm({
   }
 
   return (
-    <form action={formAction} className="flex flex-wrap items-end gap-3 pt-4">
+    <form action={formAction} className="flex flex-wrap items-end gap-4 pt-4">
       <div className="flex flex-col gap-1">
         <DataLabel>{t.admin.presets.serviceType}</DataLabel>
-        <Select name="service_type" required className="w-48" defaultValue="">
+        <Select uiSize="sm" name="service_type" required className="w-44" defaultValue="">
           <option value="" disabled>
             {t.admin.presets.choose}
           </option>
@@ -48,11 +48,25 @@ export function AddServiceItemForm({
       </div>
       <div className="flex flex-col gap-1">
         <DataLabel>{t.common.km}</DataLabel>
-        <TextInput name="interval_km" type="number" min={1} dir="ltr" className="w-28 font-mono" />
+        <TextInput
+          uiSize="sm"
+          name="interval_km"
+          type="number"
+          min={1}
+          dir="ltr"
+          className="w-24 font-mono"
+        />
       </div>
       <div className="flex flex-col gap-1">
         <DataLabel>{t.common.months}</DataLabel>
-        <TextInput name="interval_months" type="number" min={1} dir="ltr" className="w-28 font-mono" />
+        <TextInput
+          uiSize="sm"
+          name="interval_months"
+          type="number"
+          min={1}
+          dir="ltr"
+          className="w-24 font-mono"
+        />
       </div>
       <Button type="submit" size="sm" disabled={pending} locale={locale} icon={<Plus className="h-4 w-4" />}>
         {t.common.add}

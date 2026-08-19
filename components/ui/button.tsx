@@ -15,7 +15,7 @@ const base =
 const variants: Record<Variant, string> = {
   primary: "border-on-dark text-on-dark hover:bg-on-dark hover:text-canvas",
   outline: "border-hairline text-body hover:border-on-dark hover:text-on-dark",
-  danger: "border-transparent text-m-red hover:underline",
+  danger: "border-hairline text-m-red hover:border-m-red",
 };
 
 const sizes: Record<Size, string> = {

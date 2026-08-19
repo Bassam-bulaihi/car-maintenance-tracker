@@ -25,7 +25,7 @@ export function RecommendedPartsList({
   );
 
   return (
-    <div className="border border-hairline bg-surface-card px-6">
+    <div className="border border-hairline bg-surface-card px-6 py-2">
       {parts.length === 0 ? (
         <p className="py-4 text-body">{t.admin.presets.noParts}</p>
       ) : (
@@ -55,10 +55,10 @@ export function RecommendedPartsList({
         ))
       )}
 
-      <form action={formAction} className="flex flex-wrap items-end gap-3 py-4">
+      <form action={formAction} className="flex flex-wrap items-end gap-4 py-4">
         <div className="flex flex-col gap-1">
           <DataLabel>{t.admin.presets.partName}</DataLabel>
-          <TextInput name="part_name" required className="w-64" />
+          <TextInput uiSize="sm" name="part_name" required className="w-64" />
         </div>
         <Button
           type="submit"

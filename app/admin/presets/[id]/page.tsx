@@ -59,7 +59,7 @@ export default async function EditPresetPage({
 
       <section className="flex flex-col gap-3">
         <SectionHeader>{t.admin.presets.serviceIntervals}</SectionHeader>
-        <div className="border border-hairline bg-surface-card px-6">
+        <div className="border border-hairline bg-surface-card px-6 py-2">
           {preset.preset_service_items.length === 0 ? (
             <p className="py-4 text-body">{t.admin.presets.noServiceItems}</p>
           ) : (

@@ -72,3 +72,16 @@ body {
   background: var(--color-canvas);
   color: var(--color-on-dark);
 }
+
+/* Number inputs never show the native increment/decrement spinner,
+   anywhere in the app — permanent, project-wide rule. */
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+}
