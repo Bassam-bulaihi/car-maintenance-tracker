@@ -93,6 +93,11 @@ const ar = {
     saving: "جارِ الحفظ...",
     success: "تم تحديث بياناتك بنجاح.",
   },
+  whatsappBot: {
+    clarification:
+      'لم أفهم ردك. يرجى الرد بـ "تم التغيير" أو "لم يتم"، أو إرسال رقم العداد الحالي إذا طُلب منك ذلك.',
+    help: 'لم نتعرف على هذه الرسالة. إذا كنت تحاول الرد على تذكير سابق، أرسل "تم التغيير" أو "لم يتم".',
+  },
   admin: {
     nav: {
       eyebrow: "وحدة التحكم",
@@ -480,6 +485,11 @@ const en: typeof ar = {
     save: "Save changes",
     saving: "Saving...",
     success: "Your details have been updated.",
+  },
+  whatsappBot: {
+    clarification:
+      'Sorry, I didn\'t understand that. Reply "Done" or "Not done", or send your current odometer number if that\'s what we asked for.',
+    help: 'We didn\'t recognize that message. If you\'re replying to an earlier reminder, send "Done" or "Not done".',
   },
   admin: {
     nav: {

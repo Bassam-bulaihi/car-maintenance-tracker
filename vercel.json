@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [
+    {
+      "path": "/api/cron/odometer-requests",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/due-service-check",
+      "schedule": "30 6 * * *"
+    },
+    {
+      "path": "/api/cron/service-reminders",
+      "schedule": "0 7 * * *"
+    }
+  ]
+}

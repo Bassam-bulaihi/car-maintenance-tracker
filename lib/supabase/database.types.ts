@@ -20,7 +20,7 @@ export type Database = {
           delivery_status: Database["public"]["Enums"]["notification_delivery_status"]
           id: string
           message_type: Database["public"]["Enums"]["notification_message_type"]
-          outbound_wamid: string | null
+          provider_message_sid: string | null
           responded_at: string | null
           response: Database["public"]["Enums"]["notification_response"] | null
           response_text: string | null
@@ -33,7 +33,7 @@ export type Database = {
           delivery_status?: Database["public"]["Enums"]["notification_delivery_status"]
           id?: string
           message_type: Database["public"]["Enums"]["notification_message_type"]
-          outbound_wamid?: string | null
+          provider_message_sid?: string | null
           responded_at?: string | null
           response?: Database["public"]["Enums"]["notification_response"] | null
           response_text?: string | null
@@ -46,7 +46,7 @@ export type Database = {
           delivery_status?: Database["public"]["Enums"]["notification_delivery_status"]
           id?: string
           message_type?: Database["public"]["Enums"]["notification_message_type"]
-          outbound_wamid?: string | null
+          provider_message_sid?: string | null
           responded_at?: string | null
           response?: Database["public"]["Enums"]["notification_response"] | null
           response_text?: string | null
@@ -350,18 +350,18 @@ export type Database = {
           },
         ]
       }
-      whatsapp_inbound_events: {
+      inbound_message_events: {
         Row: {
           received_at: string
-          wamid: string
+          message_sid: string
         }
         Insert: {
           received_at?: string
-          wamid: string
+          message_sid: string
         }
         Update: {
           received_at?: string
-          wamid?: string
+          message_sid?: string
         }
         Relationships: []
       }
