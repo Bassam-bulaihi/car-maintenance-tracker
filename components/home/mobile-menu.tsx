@@ -15,12 +15,20 @@ export function MobileMenu({
   signupLabel,
   menuLabel,
   closeLabel,
+  isAuthenticated = false,
+  dashboardLabel,
+  logoutLabel,
+  logoutAction,
 }: {
   links: NavLink[];
   loginLabel: string;
   signupLabel: string;
   menuLabel: string;
   closeLabel: string;
+  isAuthenticated?: boolean;
+  dashboardLabel?: string;
+  logoutLabel?: string;
+  logoutAction?: () => void | Promise<void>;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -82,20 +90,44 @@ export function MobileMenu({
           </nav>
 
           <div className="mt-auto flex flex-col gap-3 border-t border-hairline p-6">
-            <Link
-              href="/login"
-              onClick={() => setOpen(false)}
-              className="flex h-12 items-center justify-center border border-hairline text-sm font-bold text-body transition-colors hover:border-on-dark hover:bg-on-dark hover:text-canvas"
-            >
-              {loginLabel}
-            </Link>
-            <Link
-              href="/signup"
-              onClick={() => setOpen(false)}
-              className="flex h-12 items-center justify-center border border-on-dark text-sm font-bold text-on-dark transition-colors hover:bg-on-dark hover:text-canvas"
-            >
-              {signupLabel}
-            </Link>
+            {isAuthenticated ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  onClick={() => setOpen(false)}
+                  className="flex h-12 items-center justify-center border border-on-dark text-sm font-bold text-on-dark transition-colors hover:bg-on-dark hover:text-canvas"
+                >
+                  {dashboardLabel}
+                </Link>
+                {logoutAction && (
+                  <form action={logoutAction}>
+                    <button
+                      type="submit"
+                      className="flex h-12 w-full items-center justify-center border border-hairline text-sm font-bold text-body transition-colors hover:border-on-dark hover:bg-on-dark hover:text-canvas"
+                    >
+                      {logoutLabel}
+                    </button>
+                  </form>
+                )}
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  onClick={() => setOpen(false)}
+                  className="flex h-12 items-center justify-center border border-hairline text-sm font-bold text-body transition-colors hover:border-on-dark hover:bg-on-dark hover:text-canvas"
+                >
+                  {loginLabel}
+                </Link>
+                <Link
+                  href="/signup"
+                  onClick={() => setOpen(false)}
+                  className="flex h-12 items-center justify-center border border-on-dark text-sm font-bold text-on-dark transition-colors hover:bg-on-dark hover:text-canvas"
+                >
+                  {signupLabel}
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}

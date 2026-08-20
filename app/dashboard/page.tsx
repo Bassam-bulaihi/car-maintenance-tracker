@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LogOut, Shield, Plus, Car } from "lucide-react";
+import { LogOut, Shield, Plus, Car, UserCog } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/lib/auth/actions";
 import { getDictionary } from "@/lib/i18n/locale";
@@ -9,6 +9,7 @@ import { MStripeDivider } from "@/components/layout/m-stripe-divider";
 import { Button } from "@/components/ui/button";
 import { BracketLabel } from "@/components/ui/bracket-label";
 import { VehicleCard } from "@/components/dashboard/vehicle-card";
+import { Logo } from "@/components/brand/logo";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -28,12 +29,27 @@ export default async function DashboardPage() {
     <div className="flex flex-1 flex-col">
       <MStripeDivider />
       <header className="flex items-center justify-between border-b border-hairline px-6 py-4">
-        <span className="text-[15px] font-bold text-on-dark">
-          {t.dashboard.welcome}
-          {profile?.name ? `، ${profile.name}` : ""}
-        </span>
+        <div className="flex items-center gap-4">
+          <Link
+            href="/"
+            aria-label={t.home.brand}
+            className="text-on-dark transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-on-dark"
+          >
+            <Logo markClassName="h-7" />
+          </Link>
+          <span className="hidden h-6 w-px bg-hairline sm:block" aria-hidden="true" />
+          <span className="hidden text-[15px] font-bold text-on-dark sm:inline">
+            {t.dashboard.welcome}
+            {profile?.name ? `، ${profile.name}` : ""}
+          </span>
+        </div>
         <div className="flex items-center gap-3">
           <LanguageToggle locale={locale} />
+          <Link href="/dashboard/account">
+            <Button variant="outline" size="sm" locale={locale} icon={<UserCog className="h-4 w-4" />}>
+              {t.account.navLabel}
+            </Button>
+          </Link>
           {isAdmin && (
             <Link href="/admin/presets">
               <Button variant="outline" size="sm" locale={locale} icon={<Shield className="h-4 w-4" />}>

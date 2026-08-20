@@ -1,14 +1,16 @@
 "use client";
 
-import { Car, Truck, Caravan, CarFront } from "lucide-react";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import { BODY_TYPES } from "@/lib/home/content";
 import { SectionHeading } from "@/components/home/section-heading";
 import { Reveal } from "@/components/motion/reveal";
+import { BODY_TYPE_ICONS } from "@/components/icons/body-type-icons";
 
 // Figma "Rent by body type": same 12-card / 6-across structure as the
-// brand grid, with a silhouette icon instead of a logo mark.
-const ICONS = [Car, Truck, CarFront, Truck, Car, CarFront, Caravan, Car, CarFront, Car, Caravan, Truck];
+// brand grid, with a silhouette icon instead of a logo mark. Lucide has no
+// per-body-type car glyphs, so each card renders its own hand-drawn
+// silhouette (docs/DESIGN.md rule 3 allows non-Lucide icons where Lucide
+// doesn't cover the shape) instead of the same handful of icons repeated.
 
 export function BrowseByBodyType({
   locale,
@@ -43,7 +45,7 @@ export function BrowseByBodyType({
 
       <ul className="grid grid-cols-2 gap-px bg-hairline/60 sm:grid-cols-3 lg:grid-cols-6">
         {BODY_TYPES.map((type, i) => {
-          const Icon = ICONS[i % ICONS.length];
+          const Icon = BODY_TYPE_ICONS[type.slug];
           const isActive = activeBody === type.slug;
           const ready = availableBodies.has(type.slug);
           return (

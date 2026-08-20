@@ -31,8 +31,8 @@ export function SectionHeading({
 
   return (
     <div
-      className={`flex flex-wrap items-end gap-6 ${
-        centered ? "flex-col items-center text-center" : "justify-between"
+      className={`flex flex-wrap gap-6 ${
+        centered ? "flex-col items-center text-center" : "items-end justify-between"
       }`}
     >
       <div className={`flex flex-col gap-3 ${centered ? "items-center" : ""}`}>

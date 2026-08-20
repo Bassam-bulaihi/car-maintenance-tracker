@@ -81,6 +81,18 @@ const ar = {
       odometerImplausible: "الفرق كبير جداً عن القراءة السابقة. تحقق من الرقم.",
     },
   },
+  account: {
+    navLabel: "الحساب",
+    eyebrow: "الحساب",
+    title: "إعدادات الحساب",
+    nameLabel: "الاسم الكامل",
+    emailLabel: "البريد الإلكتروني",
+    emailNote: "لا يمكن تغيير البريد الإلكتروني من هنا.",
+    phoneLabel: "رقم الجوال (واتساب)",
+    save: "حفظ التغييرات",
+    saving: "جارِ الحفظ...",
+    success: "تم تحديث بياناتك بنجاح.",
+  },
   admin: {
     nav: {
       eyebrow: "وحدة التحكم",
@@ -129,6 +141,7 @@ const ar = {
       },
       login: "تسجيل الدخول",
       signup: "إنشاء حساب",
+      dashboard: "لوحة التحكم",
     },
     hero: {
       eyebrow: "صيانة سيارتك، بلا نسيان",
@@ -456,6 +469,18 @@ const en: typeof ar = {
       odometerImplausible: "That's a big jump from the last reading. Double-check the number.",
     },
   },
+  account: {
+    navLabel: "Account",
+    eyebrow: "Account",
+    title: "Account settings",
+    nameLabel: "Full name",
+    emailLabel: "Email",
+    emailNote: "Email can't be changed here.",
+    phoneLabel: "Phone number (WhatsApp)",
+    save: "Save changes",
+    saving: "Saving...",
+    success: "Your details have been updated.",
+  },
   admin: {
     nav: {
       eyebrow: "Admin Console",
@@ -504,6 +529,7 @@ const en: typeof ar = {
       },
       login: "Log in",
       signup: "Sign up",
+      dashboard: "Dashboard",
     },
     hero: {
       eyebrow: "Maintenance, remembered for you",
