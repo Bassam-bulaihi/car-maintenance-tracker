@@ -5,7 +5,15 @@ import { createClient } from "@/lib/supabase/server";
 import { getLocale } from "@/lib/i18n/locale";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 
-export type AuthFormState = { error: string } | undefined;
+export type AuthFormState =
+  | {
+      error: string;
+      // Submitted field values (never the password), echoed back so the
+      // signup form can restore what the user typed after an error —
+      // React clears uncontrolled form fields once the action returns.
+      values?: { name: string; email: string; phone_number: string };
+    }
+  | undefined;
 
 // Phone number is the WhatsApp channel identity (PRD 5.1) — required at
 // signup, not an optional profile field.
@@ -22,15 +30,16 @@ export async function signup(
   const email = String(formData.get("email") ?? "").trim();
   const phoneNumber = String(formData.get("phone_number") ?? "").trim();
   const password = String(formData.get("password") ?? "");
+  const values = { name, email, phone_number: phoneNumber };
 
   if (name.length < 2) {
-    return { error: t.name };
+    return { error: t.name, values };
   }
   if (!E164_PHONE.test(phoneNumber)) {
-    return { error: t.phone };
+    return { error: t.phone, values };
   }
   if (password.length < 8) {
-    return { error: t.password };
+    return { error: t.password, values };
   }
 
   const supabase = await createClient();
@@ -47,7 +56,7 @@ export async function signup(
   });
 
   if (error) {
-    return { error: error.message };
+    return { error: error.message, values };
   }
 
   if (!data.session) {

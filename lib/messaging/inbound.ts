@@ -2,6 +2,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { fromWhatsAppAddress } from "@/lib/messaging/twilio-client";
 import { parseInboundReply } from "@/lib/messaging/reply-parser";
 import { markServiceDone } from "@/lib/dashboard/service-confirmation";
+import { evaluateDueServicesForVehicle } from "@/lib/dashboard/due-service-check";
 import { ODOMETER_MAX_JUMP_KM } from "@/lib/config";
 import { dictionaries, type Locale } from "@/lib/i18n/dictionaries";
 import type { ServiceType } from "@/lib/admin/service-types";
@@ -137,6 +138,8 @@ async function handleOdometerReply(
     .from("notifications")
     .update({ response: "done", response_text: String(reading), responded_at: new Date().toISOString() })
     .eq("id", notification.id);
+
+  await evaluateDueServicesForVehicle(supabase, vehicle.id);
 
   return { reply: null };
 }

@@ -3,11 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import { getLocale } from "@/lib/i18n/locale";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 import { ODOMETER_MAX_JUMP_KM } from "@/lib/config";
 import type { ServiceType } from "@/lib/admin/service-types";
 import { markServiceDone } from "@/lib/dashboard/service-confirmation";
+import { evaluateDueServicesForVehicle } from "@/lib/dashboard/due-service-check";
 
 export type DashboardFormState = { error: string } | undefined;
 
@@ -140,6 +142,10 @@ export async function submitOdometerReading(
     .update({ current_odometer: reading, odometer_updated_at: new Date().toISOString() })
     .eq("id", vehicleId);
   if (updateError) return { error: updateError.message };
+
+  // Notifications inserts aren't granted to authenticated users (RLS) —
+  // this step runs as the service role, same as the cron/webhook paths.
+  await evaluateDueServicesForVehicle(createServiceClient(), vehicleId);
 
   revalidatePath(`/dashboard/vehicles/${vehicleId}`);
   revalidatePath("/dashboard");

@@ -9,13 +9,10 @@ import type { ServiceType } from "@/lib/admin/service-types";
 // per service item (PRD §5.5) — an unresolved engine-oil reminder never
 // blocks a separate brake-fluid one, since each is its own notifications
 // row. Runs at SERVICE_DUE_REMINDER_INTERVAL_DAYS, deliberately more
-// aggressive than the odometer-request cadence.
-//
-// NOTE: this finds nothing to chase until something creates the first
-// service_due notification for a newly-due item — that bridge (evaluating
-// due status and firing the initial notification) is deferred; see
-// docs/unresolved.md. This route is complete and correct plumbing that
-// simply has no rows to act on yet.
+// aggressive than the odometer-request cadence. The initial service_due
+// notification this chases comes from lib/dashboard/due-service-check.ts
+// (triggered on every odometer reading, plus the daily
+// /api/cron/due-service-check sweep for time-only items).
 // Vercel Cron invokes scheduled routes with GET.
 export async function GET(request: NextRequest) {
   const auth = request.headers.get("authorization");
