@@ -12,15 +12,55 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.15"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
+      inbound_message_events: {
+        Row: {
+          message_sid: string
+          received_at: string
+        }
+        Insert: {
+          message_sid: string
+          received_at?: string
+        }
+        Update: {
+          message_sid?: string
+          received_at?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
           delivery_status: Database["public"]["Enums"]["notification_delivery_status"]
           id: string
           message_type: Database["public"]["Enums"]["notification_message_type"]
-          outbound_wamid: string | null
+          provider_message_sid: string | null
           responded_at: string | null
           response: Database["public"]["Enums"]["notification_response"] | null
           response_text: string | null
@@ -33,7 +73,7 @@ export type Database = {
           delivery_status?: Database["public"]["Enums"]["notification_delivery_status"]
           id?: string
           message_type: Database["public"]["Enums"]["notification_message_type"]
-          outbound_wamid?: string | null
+          provider_message_sid?: string | null
           responded_at?: string | null
           response?: Database["public"]["Enums"]["notification_response"] | null
           response_text?: string | null
@@ -46,7 +86,7 @@ export type Database = {
           delivery_status?: Database["public"]["Enums"]["notification_delivery_status"]
           id?: string
           message_type?: Database["public"]["Enums"]["notification_message_type"]
-          outbound_wamid?: string | null
+          provider_message_sid?: string | null
           responded_at?: string | null
           response?: Database["public"]["Enums"]["notification_response"] | null
           response_text?: string | null
@@ -350,21 +390,6 @@ export type Database = {
           },
         ]
       }
-      whatsapp_inbound_events: {
-        Row: {
-          received_at: string
-          wamid: string
-        }
-        Insert: {
-          received_at?: string
-          wamid: string
-        }
-        Update: {
-          received_at?: string
-          wamid?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
@@ -521,6 +546,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       app_language: ["ar", "en"],

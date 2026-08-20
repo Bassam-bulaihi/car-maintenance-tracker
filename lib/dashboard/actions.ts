@@ -7,6 +7,7 @@ import { getLocale } from "@/lib/i18n/locale";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 import { ODOMETER_MAX_JUMP_KM } from "@/lib/config";
 import type { ServiceType } from "@/lib/admin/service-types";
+import { markServiceDone } from "@/lib/dashboard/service-confirmation";
 
 export type DashboardFormState = { error: string } | undefined;
 
@@ -162,24 +163,7 @@ export async function confirmServiceDone(
 
   if (vehicleError || !vehicle) throw vehicleError ?? new Error("vehicle not found");
 
-  const today = new Date().toISOString().slice(0, 10);
-
-  const { error: updateError } = await supabase
-    .from("vehicle_service_items")
-    .update({
-      last_service_odometer: vehicle.current_odometer,
-      last_service_date: today,
-      status: "ok",
-    })
-    .eq("id", itemId);
-  if (updateError) throw updateError;
-
-  const { error: historyError } = await supabase.from("service_history").insert({
-    vehicle_id: vehicleId,
-    service_type: serviceType,
-    odometer_at_service: vehicle.current_odometer,
-  });
-  if (historyError) throw historyError;
+  await markServiceDone(supabase, vehicleId, itemId, serviceType, vehicle.current_odometer);
 
   revalidatePath(`/dashboard/vehicles/${vehicleId}`);
 }
