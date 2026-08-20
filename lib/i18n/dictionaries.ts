@@ -94,9 +94,10 @@ const ar = {
     success: "تم تحديث بياناتك بنجاح.",
   },
   whatsappBot: {
-    clarification:
-      'لم أفهم ردك. يرجى الرد بـ "تم التغيير" أو "لم يتم"، أو إرسال رقم العداد الحالي إذا طُلب منك ذلك.',
-    help: 'لم نتعرف على هذه الرسالة. إذا كنت تحاول الرد على تذكير سابق، أرسل "تم التغيير" أو "لم يتم".',
+    // WhatsApp is send-only for now: we don't process replies, so every
+    // inbound message gets pointed back to the web app instead.
+    webOnly: "شكراً لك. لا نستقبل التحديثات عبر واتساب حالياً — يمكنك تحديث سيارتك مباشرة من هنا:",
+    help: "لم نتعرف على هذه الرسالة. يمكنك إدارة سياراتك وتحديث قراءة العداد من هنا:",
   },
   admin: {
     nav: {
@@ -487,9 +488,11 @@ const en: typeof ar = {
     success: "Your details have been updated.",
   },
   whatsappBot: {
-    clarification:
-      'Sorry, I didn\'t understand that. Reply "Done" or "Not done", or send your current odometer number if that\'s what we asked for.',
-    help: 'We didn\'t recognize that message. If you\'re replying to an earlier reminder, send "Done" or "Not done".',
+    // WhatsApp is send-only for now: we don't process replies, so every
+    // inbound message gets pointed back to the web app instead.
+    webOnly:
+      "Thanks! We don't accept updates over WhatsApp right now — you can update your car directly here:",
+    help: "We didn't recognize that message. You can manage your cars and update your odometer here:",
   },
   admin: {
     nav: {

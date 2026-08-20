@@ -4,6 +4,7 @@ import type { Locale } from "@/lib/i18n/dictionaries";
 import { getTwilioClient, toWhatsAppAddress } from "@/lib/messaging/twilio-client";
 import { getContentSid, odometerRequestVariables, serviceDueVariables } from "@/lib/messaging/templates";
 import { serviceTypeLabel, type ServiceType } from "@/lib/admin/service-types";
+import { vehicleDeepLink } from "@/lib/config";
 
 type ServiceClient = SupabaseClient<Database>;
 
@@ -38,7 +39,10 @@ export async function sendOdometerRequest(
       from: process.env.TWILIO_WHATSAPP_FROM!,
       to: toWhatsAppAddress(user.phone_number),
       contentSid: getContentSid("odometer_request", user.language),
-      contentVariables: odometerRequestVariables(vehicleLabel(vehicle)),
+      contentVariables: odometerRequestVariables(
+        vehicleLabel(vehicle),
+        vehicleDeepLink(vehicle.id),
+      ),
     });
 
     await supabase
@@ -54,11 +58,13 @@ export async function sendOdometerRequest(
 }
 
 /**
- * Sends a "is <service> due?" template with the تم/لم يتم quick-reply
- * buttons and logs it. `messageType` distinguishes the first ask
- * ("service_due") from a later chase on the same item ("re_reminder") —
- * both use the same template/copy, PRD §5.5 only requires the *cadence* to
- * differ, which the caller (cron) controls.
+ * Sends a "<service> is due" notification carrying a deep link to that
+ * vehicle's page, and logs it. WhatsApp is send-only in the current build,
+ * so this is a one-way push — the user confirms the work on the website,
+ * not by replying (see docs/unresolved.md). `messageType` distinguishes the
+ * first ask ("service_due") from a later chase on the same item
+ * ("re_reminder") — both use the same template/copy, PRD §5.5 only requires
+ * the *cadence* to differ, which the caller (cron) controls.
  */
 export async function sendServiceDueNotification(
   supabase: ServiceClient,
@@ -87,6 +93,7 @@ export async function sendServiceDueNotification(
       contentVariables: serviceDueVariables(
         vehicleLabel(vehicle),
         serviceTypeLabel(serviceItem.service_type, user.language),
+        vehicleDeepLink(vehicle.id),
       ),
     });
 

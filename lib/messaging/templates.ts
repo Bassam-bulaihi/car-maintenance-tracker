@@ -29,10 +29,21 @@ export function getContentSid(messageType: OutboundMessageType, locale: Locale):
 
 // Twilio Content API variables are a flat {"1": "...", "2": "..."} object,
 // positionally substituted into the approved template body.
-export function odometerRequestVariables(vehicleLabel: string) {
-  return JSON.stringify({ "1": vehicleLabel });
+//
+// WhatsApp is send-only in the current build: we never ask the user to
+// reply with a number or tap a confirm button, because inbound replies
+// aren't processed (see docs/unresolved.md). Instead the last variable of
+// each template is a deep link to the exact page where the user does the
+// update themselves — so the approved template copy must end with
+// something like "حدّث القراءة من هنا: {{2}}" / "Update it here: {{2}}".
+export function odometerRequestVariables(vehicleLabel: string, link: string) {
+  return JSON.stringify({ "1": vehicleLabel, "2": link });
 }
 
-export function serviceDueVariables(vehicleLabel: string, serviceLabel: string) {
-  return JSON.stringify({ "1": vehicleLabel, "2": serviceLabel });
+export function serviceDueVariables(
+  vehicleLabel: string,
+  serviceLabel: string,
+  link: string,
+) {
+  return JSON.stringify({ "1": vehicleLabel, "2": serviceLabel, "3": link });
 }

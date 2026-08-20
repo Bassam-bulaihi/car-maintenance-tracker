@@ -12,3 +12,22 @@ export const ODOMETER_MAX_JUMP_KM = 5000;
 // so that layer reads from here instead of a new hardcoded value.
 export const ODOMETER_REQUEST_INTERVAL_DAYS = 14;
 export const SERVICE_DUE_REMINDER_INTERVAL_DAYS = 3;
+
+// Public origin used to build the deep links carried inside outbound
+// WhatsApp messages. WhatsApp is send-only in the current build (see
+// docs/unresolved.md) — every notification points the user at the web app
+// to do the actual data entry, so this must be the real deployed origin,
+// not a localhost default that would ship dead links to real phones.
+export const APP_BASE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://car-auto-app.vercel.app"
+).replace(/\/+$/, "");
+
+/** Deep link straight to one vehicle's page — odometer box + due services. */
+export function vehicleDeepLink(vehicleId: string) {
+  return `${APP_BASE_URL}/dashboard/vehicles/${vehicleId}`;
+}
+
+/** Fallback link when we can't tell which vehicle the user means. */
+export function dashboardDeepLink() {
+  return `${APP_BASE_URL}/dashboard`;
+}
