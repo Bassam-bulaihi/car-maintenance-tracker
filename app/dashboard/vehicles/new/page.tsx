@@ -1,11 +1,19 @@
 import { listActivePresets } from "@/lib/dashboard/data";
 import { getDictionary } from "@/lib/i18n/locale";
-import { RegisterVehicleForm } from "@/components/dashboard/register-vehicle-form";
+import { RegisterVehicleForm, type RegisterPreset } from "@/components/dashboard/register-vehicle-form";
 import { BackLink } from "@/components/ui/back-link";
 import { BracketLabel } from "@/components/ui/bracket-label";
 
 export default async function NewVehiclePage() {
-  const [presets, { locale, t }] = await Promise.all([listActivePresets(), getDictionary()]);
+  const [presetRows, { locale, t }] = await Promise.all([listActivePresets(), getDictionary()]);
+  const presets: RegisterPreset[] = presetRows.map((p) => ({
+    id: p.id,
+    make: p.make,
+    model: p.model,
+    year: p.year,
+    recommended_oil: p.recommended_oil,
+    serviceCount: p.preset_service_items.length,
+  }));
 
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-6 py-12">

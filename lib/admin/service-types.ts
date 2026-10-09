@@ -20,3 +20,18 @@ export function serviceTypeLabel(value: string, locale: Locale) {
 export function serviceTypesFor(locale: Locale) {
   return SERVICE_TYPES.map((s) => ({ value: s.value, label: s.label[locale] }));
 }
+
+/**
+ * Starting schedule for a custom vehicle (one not in the preset catalog) —
+ * the "japanese" profile from the catalog seed, a middle-of-the-road
+ * baseline. The user can adjust every interval before registering.
+ */
+export const DEFAULT_SERVICE_SCHEDULE: Record<ServiceType, { interval_km: number | null; interval_months: number | null }> = {
+  engine_oil: { interval_km: 10000, interval_months: 12 },
+  oil_filter: { interval_km: 10000, interval_months: 12 },
+  air_filter: { interval_km: 20000, interval_months: 12 },
+  brake_fluid: { interval_km: null, interval_months: 24 },
+  brake_pads: { interval_km: 40000, interval_months: null },
+  transmission_fluid: { interval_km: 60000, interval_months: 48 },
+  tires: { interval_km: 50000, interval_months: null },
+};
