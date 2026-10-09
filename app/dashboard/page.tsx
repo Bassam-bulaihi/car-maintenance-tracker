@@ -1,65 +1,21 @@
 import Link from "next/link";
-import { LogOut, Shield, Plus, Car, UserCog, Send } from "lucide-react";
+import { Plus, Car, Send } from "lucide-react";
 import { requireProfile } from "@/lib/auth/profile";
 import { getDictionary } from "@/lib/i18n/locale";
 import { listVehicles } from "@/lib/dashboard/data";
-import { LanguageToggle } from "@/components/layout/language-toggle";
-import { MStripeDivider } from "@/components/layout/m-stripe-divider";
 import { Button } from "@/components/ui/button";
 import { BracketLabel } from "@/components/ui/bracket-label";
 import { VehicleCard } from "@/components/dashboard/vehicle-card";
-import { Logo } from "@/components/brand/logo";
-import { LogoutButton } from "@/components/auth/logout-button";
 
 export default async function DashboardPage() {
-  const [{ user, profile }, vehicles, { locale, t }] = await Promise.all([
+  const [{ profile }, vehicles, { locale, t }] = await Promise.all([
     requireProfile(),
     listVehicles(),
     getDictionary(),
   ]);
 
-  const isAdmin = user.isAdmin;
-
   return (
-    <div className="flex flex-1 flex-col">
-      <MStripeDivider />
-      <header className="flex items-center justify-between border-b border-hairline px-6 py-4">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/"
-            aria-label={t.home.brand}
-            className="text-on-dark transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-on-dark"
-          >
-            <Logo markClassName="h-7" />
-          </Link>
-          <span className="hidden h-6 w-px bg-hairline sm:block" aria-hidden="true" />
-          <span className="hidden text-[15px] font-bold text-on-dark sm:inline">
-            {t.dashboard.welcome}
-            {profile?.name ? `، ${profile.name}` : ""}
-          </span>
-        </div>
-        <div className="flex items-center gap-3">
-          <LanguageToggle locale={locale} />
-          <Link href="/dashboard/account">
-            <Button variant="outline" size="sm" locale={locale} icon={<UserCog className="h-4 w-4" />}>
-              {t.account.navLabel}
-            </Button>
-          </Link>
-          {isAdmin && (
-            <Link href="/admin/presets">
-              <Button variant="outline" size="sm" locale={locale} icon={<Shield className="h-4 w-4" />}>
-                {t.admin.nav.title}
-              </Button>
-            </Link>
-          )}
-          <LogoutButton>
-            <Button type="button" variant="outline" size="sm" locale={locale} icon={<LogOut className="h-4 w-4" />}>
-              {t.common.logout}
-            </Button>
-          </LogoutButton>
-        </div>
-      </header>
-
+    <>
       <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 px-6 py-12">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-6">
           <div className="flex flex-col gap-2">
@@ -110,6 +66,6 @@ export default async function DashboardPage() {
           </div>
         )}
       </main>
-    </div>
+    </>
   );
 }

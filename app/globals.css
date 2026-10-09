@@ -104,6 +104,16 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* Monospace fonts carry no proper Arabic shaping — the fallback renders
+   Arabic letters in isolated forms, so mono labels ("بنود الصيانة",
+   "[ نظرة عامة ]") came out disconnected. Under RTL, Noto Sans Arabic leads
+   the stack: Arabic joins correctly, Latin/digits still fall through to the
+   system monospace (docs/arabic-web-design.md — Arabic text uses Noto Sans
+   Arabic only). */
+[dir="rtl"] .font-mono {
+  font-family: var(--font-noto-sans-arabic), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
 /* Scroll-entry animation driven by <Reveal>. Transform + opacity only, so
    it stays on the compositor. */
 .reveal {

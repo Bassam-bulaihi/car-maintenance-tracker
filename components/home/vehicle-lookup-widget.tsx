@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Search, ArrowRight, Gauge, Droplet, CalendarClock } from "lucide-react";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
-import { BRANDS, LOOKUP_YEARS, SHOWCASE_PRESETS } from "@/lib/home/content";
+import type { CatalogModel } from "@/lib/home/catalog";
 import { TextInput, Select } from "@/components/ui/text-input";
 import { Button } from "@/components/ui/button";
 import { DataLabel } from "@/components/ui/data-label";
@@ -14,36 +14,44 @@ import { BracketLabel } from "@/components/ui/bracket-label";
 // card overlapping the hero band, holding four inputs plus a primary
 // action. Semantics adapted from "rent a car" to "preview this car's
 // maintenance schedule".
-export function VehicleLookupWidget({ locale, t }: { locale: Locale; t: Dictionary }) {
+export function VehicleLookupWidget({
+  catalog,
+  locale,
+  t,
+}: {
+  catalog: CatalogModel[];
+  locale: Locale;
+  t: Dictionary;
+}) {
   const [make, setMake] = useState("");
   const [model, setModel] = useState("");
   const [year, setYear] = useState("");
   const [odometer, setOdometer] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
-  const modelsForMake = useMemo(
-    () => SHOWCASE_PRESETS.filter((p) => p.make === make),
-    [make],
-  );
+  // Driven by the real preset catalog (lib/home/catalog.ts), so every make
+  // and model offered here can actually be registered after signup.
+  const makes = useMemo(() => [...new Set(catalog.map((c) => c.make))], [catalog]);
+  const modelsForMake = useMemo(() => catalog.filter((c) => c.make === make), [catalog, make]);
 
   const matched = useMemo(
-    () => SHOWCASE_PRESETS.find((p) => p.make === make && p.model === model),
-    [make, model],
+    () => catalog.find((c) => c.make === make && c.model === model),
+    [catalog, make, model],
   );
 
   // Estimated next-service mileage, rounded up to the next interval
   // boundary from the entered odometer. Deliberately an estimate — exact
   // tracking needs a registered vehicle with real baselines.
   const estimate = useMemo(() => {
-    if (!matched) return null;
+    if (!matched || !matched.oilIntervalKm) return null;
     const odo = Number(odometer);
     const base = Number.isFinite(odo) && odo > 0 ? odo : 0;
     const nextOil = Math.ceil((base + 1) / matched.oilIntervalKm) * matched.oilIntervalKm;
     return {
       nextOil,
       remaining: nextOil - base,
-      oilType: matched.oilType,
-      months: matched.intervalMonths,
+      oilType: matched.oilType ?? "—",
+      months: matched.oilIntervalMonths,
     };
   }, [matched, odometer]);
 
@@ -77,13 +85,14 @@ export function VehicleLookupWidget({ locale, t }: { locale: Locale; t: Dictiona
               onChange={(e) => {
                 setMake(e.target.value);
                 setModel("");
+                setYear("");
                 setSubmitted(false);
               }}
             >
               <option value="">{t.home.lookup.makePlaceholder}</option>
-              {BRANDS.map((b) => (
-                <option key={b.slug} value={b.name}>
-                  {b.name}
+              {makes.map((m) => (
+                <option key={m} value={m}>
+                  {m}
                 </option>
               ))}
             </Select>
@@ -98,13 +107,14 @@ export function VehicleLookupWidget({ locale, t }: { locale: Locale; t: Dictiona
               disabled={!make}
               onChange={(e) => {
                 setModel(e.target.value);
+                setYear("");
                 setSubmitted(false);
               }}
             >
               <option value="">{t.home.lookup.modelPlaceholder}</option>
-              {modelsForMake.map((p) => (
-                <option key={p.slug} value={p.model}>
-                  {p.model}
+              {modelsForMake.map((c) => (
+                <option key={c.model} value={c.model}>
+                  {c.model}
                 </option>
               ))}
             </Select>
@@ -116,11 +126,12 @@ export function VehicleLookupWidget({ locale, t }: { locale: Locale; t: Dictiona
               uiSize="sm"
               id="lookup-year"
               value={year}
+              disabled={!matched}
               onChange={(e) => setYear(e.target.value)}
               className="font-mono"
             >
               <option value="">{t.home.lookup.yearPlaceholder}</option>
-              {LOOKUP_YEARS.map((y) => (
+              {(matched?.years ?? []).map((y) => (
                 <option key={y} value={y}>
                   {y}
                 </option>
@@ -167,7 +178,7 @@ export function VehicleLookupWidget({ locale, t }: { locale: Locale; t: Dictiona
                   <Gauge className="h-5 w-5 shrink-0 text-muted" aria-hidden="true" />
                   <div className="flex flex-col">
                     <dt className="font-mono text-[11px] text-muted ltr:uppercase">
-                      {t.home.collection.specs.oilInterval}
+                      {t.home.lookup.nextOil}
                     </dt>
                     <dd className="font-mono text-lg font-bold text-on-dark">
                       {nf.format(estimate.nextOil)} {t.common.km}
@@ -190,7 +201,7 @@ export function VehicleLookupWidget({ locale, t }: { locale: Locale; t: Dictiona
                       {t.home.collection.specs.timeInterval}
                     </dt>
                     <dd className="font-mono text-lg font-bold text-on-dark">
-                      {nf.format(estimate.months)} {t.common.months}
+                      {estimate.months !== null ? `${nf.format(estimate.months)} ${t.common.months}` : "—"}
                     </dd>
                   </div>
                 </div>

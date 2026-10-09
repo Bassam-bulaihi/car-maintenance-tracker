@@ -40,14 +40,14 @@ const BRAND_LOGOS: Record<string, ComponentType<{ className?: string }>> = {
 export function BrowseByBrand({
   locale,
   t,
-  availableMakes,
+  modelCountByMake,
   activeMake,
   onSelect,
   onClear,
 }: {
   locale: Locale;
   t: Dictionary;
-  availableMakes: Set<string>;
+  modelCountByMake: Map<string, number>;
   activeMake: string | null;
   onSelect: (make: string) => void;
   onClear: () => void;
@@ -72,7 +72,8 @@ export function BrowseByBrand({
         {BRANDS.map((brand, i) => {
           const Logo = BRAND_LOGOS[brand.slug];
           const isActive = activeMake === brand.name;
-          const ready = availableMakes.has(brand.name);
+          const modelCount = modelCountByMake.get(brand.name) ?? 0;
+          const ready = modelCount > 0;
           return (
             <Reveal as="li" key={brand.slug} delay={Math.min(i, 5) * 45}>
               <button
@@ -93,7 +94,7 @@ export function BrowseByBrand({
                 <span className="text-sm font-bold text-on-dark">{brand.name}</span>
                 {ready ? (
                   <span className="font-mono text-[11px] text-muted">
-                    {nf.format(brand.modelCount)}
+                    {nf.format(modelCount)}
                   </span>
                 ) : (
                   <span className="font-mono text-[11px] text-muted ltr:uppercase ltr:tracking-[0.06em]">

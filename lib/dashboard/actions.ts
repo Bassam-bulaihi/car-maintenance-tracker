@@ -250,3 +250,19 @@ export async function confirmServiceDone(
 
   revalidatePath(`/dashboard/vehicles/${vehicleId}`);
 }
+
+/**
+ * Removes one of the user's vehicles with everything hanging off it (service
+ * items, readings, history, notifications cascade in the schema). Ownership
+ * is enforced twice: the explicit user_id filter and the RLS delete policy.
+ */
+export async function deleteVehicle(vehicleId: string) {
+  const { supabase, user } = await requireUserAction();
+  const { error } = await supabase.from("vehicles").delete().eq("id", vehicleId).eq("user_id", user.id);
+  if (error) {
+    console.error("deleteVehicle failed", error);
+    throw new Error("delete failed");
+  }
+  revalidatePath("/dashboard");
+  redirect("/dashboard");
+}

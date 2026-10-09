@@ -1,4 +1,5 @@
 import { getDictionary } from "@/lib/i18n/locale";
+import { getPublicCatalog } from "@/lib/home/catalog";
 import { SiteHeader } from "@/components/home/site-header";
 import { Hero } from "@/components/home/hero";
 import { VehicleLookupWidget } from "@/components/home/vehicle-lookup-widget";
@@ -10,7 +11,7 @@ import { CtaBand } from "@/components/home/cta-band";
 import { SiteFooter } from "@/components/home/site-footer";
 
 export default async function Home() {
-  const { locale, t } = await getDictionary();
+  const [{ locale, t }, catalog] = await Promise.all([getDictionary(), getPublicCatalog()]);
 
   return (
     <div id="top" className="flex flex-1 flex-col">
@@ -25,8 +26,8 @@ export default async function Home() {
 
       <main id="main" className="flex flex-1 flex-col">
         <Hero locale={locale} t={t} />
-        <VehicleLookupWidget locale={locale} t={t} />
-        <ModelsExplorer locale={locale} t={t} />
+        <VehicleLookupWidget catalog={catalog} locale={locale} t={t} />
+        <ModelsExplorer catalog={catalog} locale={locale} t={t} />
         <HowItWorks locale={locale} t={t} />
         <ServicesBenefits locale={locale} t={t} />
         <Testimonials locale={locale} t={t} />

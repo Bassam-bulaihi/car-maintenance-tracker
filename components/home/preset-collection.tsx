@@ -6,6 +6,7 @@ import { ArrowRight, X, SearchX } from "lucide-react";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import { SHOWCASE_PRESETS, BODY_TYPES, type PresetCategory } from "@/lib/home/content";
 import type { ModelFilter } from "@/components/home/models-explorer";
+import type { CatalogModel } from "@/lib/home/catalog";
 import { PresetCard } from "@/components/home/preset-card";
 import { BracketLabel } from "@/components/ui/bracket-label";
 import { Reveal } from "@/components/motion/reveal";
@@ -21,9 +22,10 @@ export const PresetCollection = forwardRef<
     locale: Locale;
     t: Dictionary;
     filter: ModelFilter;
+    catalog: CatalogModel[];
     onClearFilter: () => void;
   }
->(function PresetCollection({ locale, t, filter, onClearFilter }, ref) {
+>(function PresetCollection({ locale, t, filter, catalog, onClearFilter }, ref) {
   const [active, setActive] = useState<TabKey>("popular");
 
   const tabs: { key: TabKey; label: string }[] = [
@@ -52,6 +54,11 @@ export const PresetCollection = forwardRef<
       : filter.kind === "body"
         ? (BODY_TYPES.find((b) => b.slug === filter.value)?.label[locale] ?? filter.value)
         : "";
+
+  // Everything the catalog has for the selected make — most makes have no
+  // photographed showcase card, but all of them can be registered.
+  const catalogForMake = filter.kind === "make" ? catalog.filter((c) => c.make === filter.value) : [];
+  const nf = new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US");
 
   const upper = locale === "en" ? "uppercase tracking-[-0.02em]" : "";
   const tabCase = locale === "en" ? "uppercase tracking-[1.5px]" : "";
@@ -117,7 +124,37 @@ export const PresetCollection = forwardRef<
           </div>
         )}
 
-        {filtered.length === 0 ? (
+        {catalogForMake.length > 0 && (
+          <div className="flex flex-col items-center gap-4 border border-hairline bg-surface-card/70 px-6 py-8 text-center backdrop-blur-sm">
+            <p className="text-pretty text-body">
+              {t.home.collection.catalogTitle
+                .replace("{count}", nf.format(catalogForMake.length))
+                .replace("{name}", filterName)}
+            </p>
+            <ul className="flex max-w-3xl flex-wrap justify-center gap-2">
+              {catalogForMake.map((entry) => (
+                <li
+                  key={entry.model}
+                  className="border border-hairline px-3 py-1.5 text-sm text-on-dark"
+                  title={`${Math.min(...entry.years)}–${Math.max(...entry.years)}`}
+                >
+                  {entry.model}{" "}
+                  <span className="font-mono text-xs text-muted">
+                    {Math.min(...entry.years)}–{Math.max(...entry.years)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <Link
+              href="/signup"
+              className={`inline-flex h-11 items-center gap-2 border border-on-dark px-6 text-sm font-bold text-on-dark transition-colors hover:bg-on-dark hover:text-canvas focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-on-dark active:translate-y-px ${tabCase}`}
+            >
+              {t.home.collection.catalogCta}
+            </Link>
+          </div>
+        )}
+
+        {filtered.length === 0 && catalogForMake.length > 0 ? null : filtered.length === 0 ? (
           <div className="flex flex-col items-center gap-4 border border-hairline bg-surface-card/70 px-6 py-16 text-center backdrop-blur-sm">
             <SearchX className="h-9 w-9 text-muted" aria-hidden="true" />
             <p className="max-w-md text-pretty text-body">

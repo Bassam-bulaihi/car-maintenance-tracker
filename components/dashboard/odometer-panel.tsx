@@ -7,6 +7,7 @@ import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import { TextInput } from "@/components/ui/text-input";
 import { Button } from "@/components/ui/button";
 import { DataLabel } from "@/components/ui/data-label";
+import { formatDate, formatNumber } from "@/lib/i18n/format";
 
 export function OdometerPanel({
   vehicleId,
@@ -38,7 +39,6 @@ export function OdometerPanel({
   }
 
   const confirm = state && "confirm" in state && !editing ? state.confirm : null;
-  const nf = new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US");
 
   return (
     <div className="border border-hairline bg-surface-card/70 p-6 backdrop-blur-sm">
@@ -46,15 +46,13 @@ export function OdometerPanel({
         <div className="flex flex-col gap-1">
           <DataLabel>{t.dashboard.currentOdometer}</DataLabel>
           <span className="font-mono text-[40px] font-bold leading-none text-on-dark">
-            {nf.format(currentOdometer)}{" "}
+            {formatNumber(locale, currentOdometer)}{" "}
             <span className="text-base font-normal text-muted">{t.common.km}</span>
           </span>
           {odometerUpdatedAt && (
             <span className="font-mono text-xs text-muted">
               {t.dashboard.lastUpdated}:{" "}
-              {new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-GB", { dateStyle: "medium" }).format(
-                new Date(odometerUpdatedAt),
-              )}
+              {formatDate(locale, odometerUpdatedAt)}
             </span>
           )}
         </div>

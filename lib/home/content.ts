@@ -1,26 +1,27 @@
 import type { Locale } from "@/lib/i18n/dictionaries";
 
-// Static marketing content for the public home page. Intentionally not
-// database-backed: these are illustrative catalogue entries, while the real
-// preset data lives in vehicle_presets and is only reachable once signed in.
+// Static marketing content for the public home page: which brand marks the
+// grid shows, the body-type tiles, and the six photographed showcase cards.
+// Availability and model counts come from the real catalog
+// (lib/home/catalog.ts), never from here.
 
-export type Brand = { slug: string; name: string; modelCount: number };
+export type Brand = { slug: string; name: string };
 
 // Every make here has a real brand mark available in react-icons/si, so the
 // grid renders actual logos rather than letter placeholders.
 export const BRANDS: Brand[] = [
-  { slug: "toyota", name: "Toyota", modelCount: 18 },
-  { slug: "hyundai", name: "Hyundai", modelCount: 14 },
-  { slug: "nissan", name: "Nissan", modelCount: 12 },
-  { slug: "kia", name: "Kia", modelCount: 11 },
-  { slug: "honda", name: "Honda", modelCount: 9 },
-  { slug: "ford", name: "Ford", modelCount: 9 },
-  { slug: "chevrolet", name: "Chevrolet", modelCount: 8 },
-  { slug: "mazda", name: "Mazda", modelCount: 7 },
-  { slug: "mitsubishi", name: "Mitsubishi", modelCount: 6 },
-  { slug: "suzuki", name: "Suzuki", modelCount: 6 },
-  { slug: "jeep", name: "Jeep", modelCount: 5 },
-  { slug: "volkswagen", name: "Volkswagen", modelCount: 4 },
+  { slug: "toyota", name: "Toyota" },
+  { slug: "hyundai", name: "Hyundai" },
+  { slug: "nissan", name: "Nissan" },
+  { slug: "kia", name: "Kia" },
+  { slug: "honda", name: "Honda" },
+  { slug: "ford", name: "Ford" },
+  { slug: "chevrolet", name: "Chevrolet" },
+  { slug: "mazda", name: "Mazda" },
+  { slug: "mitsubishi", name: "Mitsubishi" },
+  { slug: "suzuki", name: "Suzuki" },
+  { slug: "jeep", name: "Jeep" },
+  { slug: "volkswagen", name: "Volkswagen" },
 ];
 
 export type BodyType = {
@@ -135,4 +136,3 @@ export const SHOWCASE_PRESETS: ShowcasePreset[] = [
 ];
 
 // Years offered by the quick-check lookup widget.
-export const LOOKUP_YEARS = [2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018];

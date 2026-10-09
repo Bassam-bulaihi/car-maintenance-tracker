@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Car, ChevronRight } from "lucide-react";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import { computeServiceStatus } from "@/lib/dashboard/service-status";
+import { formatNumber } from "@/lib/i18n/format";
 
 type VehicleCardData = {
   id: string;
@@ -66,7 +67,7 @@ export function VehicleCard({
               {t.dashboard.currentOdometer}
             </span>
             <span className="font-mono text-xl font-bold text-on-dark">
-              {vehicle.current_odometer.toLocaleString(locale === "ar" ? "ar" : "en")}
+              {formatNumber(locale, vehicle.current_odometer)}
             </span>
           </div>
           <div className="flex flex-col gap-0.5">
@@ -76,7 +77,7 @@ export function VehicleCard({
             <span
               className={`font-mono text-xl font-bold ${dueCount > 0 ? "text-m-red" : "text-success"}`}
             >
-              {dueCount > 0 ? dueCount : t.dashboard.allOk}
+              {dueCount > 0 ? formatNumber(locale, dueCount) : t.dashboard.allOk}
             </span>
           </div>
         </div>

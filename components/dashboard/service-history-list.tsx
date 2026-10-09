@@ -1,5 +1,6 @@
 import { serviceTypeLabel } from "@/lib/admin/service-types";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
+import { formatDate, formatNumber } from "@/lib/i18n/format";
 
 export function ServiceHistoryList({
   history,
@@ -25,10 +26,10 @@ export function ServiceHistoryList({
             {serviceTypeLabel(entry.service_type, locale)}
           </span>
           <span className="font-mono text-sm text-body">
-            {entry.odometer_at_service.toLocaleString(locale === "ar" ? "ar" : "en")}
+            {formatNumber(locale, entry.odometer_at_service)} {t.common.km}
           </span>
           <span className="font-mono text-xs text-muted">
-            {new Date(entry.confirmed_at).toLocaleDateString(locale)}
+            {formatDate(locale, entry.confirmed_at)}
           </span>
         </div>
       ))}
