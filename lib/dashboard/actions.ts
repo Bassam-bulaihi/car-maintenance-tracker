@@ -266,3 +266,71 @@ export async function deleteVehicle(vehicleId: string) {
   revalidatePath("/dashboard");
   redirect("/dashboard");
 }
+
+export type ServiceItemFormState = { error: string } | { saved: true } | undefined;
+
+/**
+ * Lets the owner correct one service item: when it was really last done
+ * (PRD §5.2 step 4 — seeding baselines; registration assumes "today at the
+ * current reading" until told otherwise) and this car's own intervals.
+ */
+export async function updateServiceItem(
+  vehicleId: string,
+  itemId: string,
+  _prevState: ServiceItemFormState,
+  formData: FormData,
+): Promise<ServiceItemFormState> {
+  const { supabase, user } = await requireUserAction();
+  const locale = await getLocale();
+  const t = dictionaries[locale].dashboard;
+
+  const { data: vehicle } = await supabase
+    .from("vehicles")
+    .select("id, current_odometer")
+    .eq("id", vehicleId)
+    .eq("user_id", user.id)
+    .single();
+  if (!vehicle) return { error: t.errors.generic };
+
+  const km = parseInterval(formData.get("interval_km"));
+  const months = parseInterval(formData.get("interval_months"));
+  const lastKmRaw = String(formData.get("last_service_odometer") ?? "").trim();
+  const lastKm = /^\d+$/.test(lastKmRaw) ? Number(lastKmRaw) : NaN;
+  const lastDate = String(formData.get("last_service_date") ?? "");
+  const today = new Date().toISOString().slice(0, 10);
+
+  if (!km.ok || !months.ok || (km.value === null && months.value === null)) {
+    return { error: t.errors.customSchedule };
+  }
+  if (!Number.isSafeInteger(lastKm) || lastKm < 0 || lastKm > vehicle.current_odometer) {
+    return { error: t.errors.lastServiceKm };
+  }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(lastDate) || lastDate > today || lastDate < "1960-01-01") {
+    return { error: t.errors.lastServiceDate };
+  }
+
+  const { error } = await supabase
+    .from("vehicle_service_items")
+    .update({
+      interval_km: km.value,
+      interval_months: months.value,
+      last_service_odometer: lastKm,
+      last_service_date: lastDate,
+    })
+    .eq("id", itemId)
+    .eq("vehicle_id", vehicleId);
+  if (error) {
+    console.error("updateServiceItem failed", error);
+    return { error: t.errors.generic };
+  }
+
+  // The corrected baseline may make the item due right now.
+  after(() =>
+    notifyDueServices(createServiceClient(), { vehicleId }).catch((err) =>
+      console.error("updateServiceItem: due-service evaluation failed", err),
+    ),
+  );
+  revalidatePath(`/dashboard/vehicles/${vehicleId}`);
+  revalidatePath("/dashboard");
+  return { saved: true };
+}

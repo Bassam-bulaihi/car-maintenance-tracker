@@ -1,13 +1,25 @@
 import Link from "next/link";
-import { Plus, ChevronRight } from "lucide-react";
+import { Plus, ChevronRight, Search } from "lucide-react";
 import { listPresets } from "@/lib/admin/data";
 import { getDictionary } from "@/lib/i18n/locale";
 import { Button } from "@/components/ui/button";
 import { BracketLabel } from "@/components/ui/bracket-label";
+import { Select, TextInput } from "@/components/ui/text-input";
+import { formatNumber } from "@/lib/i18n/format";
 
-export default async function AdminPresetsPage() {
-  const presets = await listPresets();
-  const { locale, t } = await getDictionary();
+export default async function AdminPresetsPage({ searchParams }: PageProps<"/admin/presets">) {
+  const [allPresets, { locale, t }, params] = await Promise.all([listPresets(), getDictionary(), searchParams]);
+  const q = typeof params.q === "string" ? params.q.trim().toLowerCase() : "";
+  const make = typeof params.make === "string" ? params.make : "";
+  const makes = [...new Set(allPresets.map((p) => p.make))].sort();
+
+  // The catalog is a few hundred rows — filtering in memory keeps the URL
+  // shareable (?q=&make=) without a query per keystroke.
+  const presets = allPresets.filter(
+    (p) =>
+      (!make || p.make === make) &&
+      (!q || `${p.make} ${p.model} ${p.year}`.toLowerCase().includes(q)),
+  );
 
   return (
     <div className="flex flex-col gap-8">
@@ -27,8 +39,36 @@ export default async function AdminPresetsPage() {
         </Link>
       </div>
 
-      {presets.length === 0 ? (
+      <form method="get" className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_14rem_auto]">
+        <TextInput
+          name="q"
+          defaultValue={q}
+          placeholder={t.admin.presets.searchPlaceholder}
+          aria-label={t.admin.presets.search}
+          dir="auto"
+        />
+        <Select name="make" defaultValue={make} aria-label={t.admin.presets.allMakes}>
+          <option value="">{t.admin.presets.allMakes}</option>
+          {makes.map((m) => (
+            <option key={m} value={m}>
+              {m}
+            </option>
+          ))}
+        </Select>
+        <Button type="submit" variant="outline" locale={locale} icon={<Search className="h-4 w-4" />}>
+          {t.admin.presets.search}
+        </Button>
+      </form>
+      <p className="-mt-4 font-mono text-xs text-muted">
+        {t.admin.presets.showing
+          .replace("{count}", formatNumber(locale, presets.length))
+          .replace("{total}", formatNumber(locale, allPresets.length))}
+      </p>
+
+      {allPresets.length === 0 ? (
         <p className="text-body">{t.admin.presets.empty}</p>
+      ) : presets.length === 0 ? (
+        <p className="text-body">{t.admin.presets.noMatches}</p>
       ) : (
         <div className="grid grid-cols-1 gap-px border border-hairline bg-hairline/60">
           {presets.map((preset, index) => (
@@ -44,7 +84,7 @@ export default async function AdminPresetsPage() {
                 {preset.make} {preset.model}{" "}
                 <span className="font-mono text-body">/ {preset.year}</span>
               </span>
-              <span className="font-mono text-xs uppercase tracking-[0.05em] text-m-red">
+              <span className="font-mono text-xs text-m-red ltr:uppercase ltr:tracking-[0.05em]">
                 {!preset.is_active && t.admin.presets.retired}
               </span>
               <ChevronRight className="h-4 w-4 text-muted rtl:scale-x-[-1]" aria-hidden="true" />

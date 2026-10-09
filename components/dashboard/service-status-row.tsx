@@ -5,6 +5,7 @@ import { serviceTypeLabel, type ServiceType } from "@/lib/admin/service-types";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import { Button } from "@/components/ui/button";
 import { formatDate, formatNumber } from "@/lib/i18n/format";
+import { ServiceItemAdjust } from "@/components/dashboard/service-item-adjust";
 
 // One tracked service: what it is and its interval, how far through that
 // interval the car is (distance and/or date, whichever applies), and a
@@ -98,6 +99,7 @@ export function ServiceStatusRow({
           {isDue ? d.confirmDone : d.logService}
         </Button>
       </form>
+      <ServiceItemAdjust vehicleId={vehicleId} item={item} currentOdometer={currentOdometer} locale={locale} t={t} />
     </div>
   );
 }
