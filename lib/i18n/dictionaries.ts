@@ -524,6 +524,7 @@ const ar = {
       email: "hello@car-auto.app",
       responseLabel: "وقت الرد المتوقع",
       response: "خلال يومي عمل",
+      telegramLabel: "بوت تيليجرام",
     },
     credits: {
       title: "حقوق الصور",
@@ -1095,6 +1096,7 @@ const en: typeof ar = {
       email: "hello@car-auto.app",
       responseLabel: "Typical reply time",
       response: "Within two working days",
+      telegramLabel: "Telegram bot",
     },
     credits: {
       title: "Image credits",

@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
-import { Mail, Clock } from "lucide-react";
+import { Mail, Clock, Send } from "lucide-react";
 import { getDictionary } from "@/lib/i18n/locale";
 import { ContentPage } from "@/components/home/content-page";
 import { DataLabel } from "@/components/ui/data-label";
+import { telegramBotUsername } from "@/lib/messaging/linking";
 
 export const metadata: Metadata = { title: "Contact" };
 
 export default async function ContactPage() {
   const { locale, t } = await getDictionary();
+  const bot = telegramBotUsername();
 
   return (
     <ContentPage title={t.pages.contact.title} locale={locale} t={t}>
@@ -41,6 +43,28 @@ export default async function ContactPage() {
             <dd className="text-on-dark">{t.pages.contact.response}</dd>
           </div>
         </div>
+
+        {bot && (
+          <div className="flex items-start gap-4 bg-surface-card/70 p-6 backdrop-blur-sm sm:col-span-2">
+            <Send className="mt-1 h-5 w-5 shrink-0 text-muted rtl:scale-x-[-1]" aria-hidden="true" />
+            <div className="flex min-w-0 flex-col gap-1">
+              <dt>
+                <DataLabel>{t.pages.contact.telegramLabel}</DataLabel>
+              </dt>
+              <dd>
+                <a
+                  href={`https://t.me/${bot}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  dir="ltr"
+                  className="break-all font-mono text-on-dark underline underline-offset-4 transition-colors hover:text-body focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-on-dark"
+                >
+                  @{bot}
+                </a>
+              </dd>
+            </div>
+          </div>
+        )}
       </dl>
     </ContentPage>
   );
