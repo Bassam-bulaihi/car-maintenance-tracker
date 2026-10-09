@@ -171,7 +171,8 @@ const monthsAgo = (n) => {
   d.setMonth(d.getMonth() - n);
   return d.toISOString().slice(0, 10);
 };
-const today = new Date().toISOString().slice(0, 10);
+// Service dates are Saudi calendar days (lib/config.ts todayInAppTimeZone).
+const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Riyadh" }).format(new Date());
 
 async function seed() {
   const phone = (n) => `+9665${suffix.replace(/\D/g, "").padEnd(4, "0").slice(0, 4)}${n}0000`.slice(0, 13);

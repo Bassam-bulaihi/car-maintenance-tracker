@@ -7,6 +7,7 @@ import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import { TextInput } from "@/components/ui/text-input";
 import { Button } from "@/components/ui/button";
 import { DataLabel } from "@/components/ui/data-label";
+import { todayInAppTimeZone } from "@/lib/config";
 
 // Collapsed by default under each service row: correct when the service was
 // really last done and this car's own intervals.
@@ -34,7 +35,7 @@ export function ServiceItemAdjust({
     undefined,
   );
   const d = t.dashboard;
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayInAppTimeZone();
 
   return (
     <details className="group sm:col-span-2">

@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database.types";
 import type { ServiceType } from "@/lib/admin/service-types";
+import { todayInAppTimeZone } from "@/lib/config";
 
 type Client = SupabaseClient<Database>;
 
@@ -20,7 +21,7 @@ export async function markServiceDone(
   serviceType: ServiceType,
   odometerAtService: number,
 ) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayInAppTimeZone();
 
   const { error: updateError } = await supabase
     .from("vehicle_service_items")

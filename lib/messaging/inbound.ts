@@ -31,6 +31,7 @@ import {
 } from "@/lib/config";
 import type { Database } from "@/lib/supabase/database.types";
 import type { Locale } from "@/lib/i18n/dictionaries";
+import { formatDate, formatNumber } from "@/lib/i18n/format";
 
 type ServiceClient = ReturnType<typeof createServiceClient>;
 type Notification = Database["public"]["Tables"]["notifications"]["Row"];
@@ -234,7 +235,7 @@ async function askToConfirmReading(
     reading: nf.format(reading),
     jump: nf.format(jumpKm),
     current: nf.format(vehicle.current_odometer),
-    date: formatDate(vehicle.odometer_updated_at, user.language),
+    date: formatDateOrDash(vehicle.odometer_updated_at, user.language),
   });
   await sendMessage(user.telegram_chat_id, message.text, message.replyMarkup);
 }
@@ -519,12 +520,11 @@ async function reply(chatId: number, text: string) {
 }
 
 function numberFormat(locale: Locale) {
-  return new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US");
+  return { format: (value: number) => formatNumber(locale, value) };
 }
 
-function formatDate(iso: string | null, locale: Locale) {
-  if (!iso) return "—";
-  return new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-GB", { day: "numeric", month: "short", year: "numeric" }).format(new Date(iso));
+function formatDateOrDash(iso: string | null, locale: Locale) {
+  return iso ? formatDate(locale, iso) : "—";
 }
 
 function dashboardUrl() {

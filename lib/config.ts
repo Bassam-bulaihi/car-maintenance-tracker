@@ -59,3 +59,16 @@ export function vehiclePageUrl(vehicleId: string) {
 export function schedulerUserIdPrefix() {
   return process.env.SCHEDULER_TEST_USER_PREFIX || null;
 }
+
+/**
+ * The app's calendar day. Service dates are calendar dates, and the servers
+ * run in UTC — so between midnight and 03:00 in Saudi Arabia a plain
+ * `toISOString().slice(0, 10)` stamped *yesterday*. Every "today" for a
+ * service baseline goes through this.
+ */
+export const APP_TIME_ZONE = "Asia/Riyadh";
+
+export function todayInAppTimeZone(now: Date = new Date()) {
+  // en-CA formats as YYYY-MM-DD.
+  return new Intl.DateTimeFormat("en-CA", { timeZone: APP_TIME_ZONE }).format(now);
+}

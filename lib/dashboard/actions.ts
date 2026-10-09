@@ -5,9 +5,10 @@ import { after } from "next/server";
 import { redirect } from "next/navigation";
 import { requireProfile } from "@/lib/auth/profile";
 import { getLocale } from "@/lib/i18n/locale";
+import { formatDate, formatNumber } from "@/lib/i18n/format";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 import { SERVICE_TYPES, type ServiceType } from "@/lib/admin/service-types";
-import { ODOMETER_ABSOLUTE_MAX_KM } from "@/lib/config";
+import { ODOMETER_ABSOLUTE_MAX_KM, todayInAppTimeZone } from "@/lib/config";
 import { closeServiceReminders, markServiceDone } from "@/lib/dashboard/service-confirmation";
 import { checkOdometerReading, recordOdometerReading } from "@/lib/dashboard/odometer";
 import { notifyDueServices } from "@/lib/messaging/due-services";
@@ -106,7 +107,7 @@ export async function registerVehicle(
     schedule = preset.preset_service_items as ScheduleItem[];
   }
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayInAppTimeZone();
 
   const { data: vehicle, error: vehicleError } = await supabase
     .from("vehicles")
@@ -185,12 +186,8 @@ export async function submitOdometerReading(
   if (check.status === "invalid") return { error: t.errors.invalidOdometer };
   if (check.status === "tooLow") return { error: t.errors.odometerTooLow };
   if (check.status === "needsConfirmation") {
-    const nf = new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US");
-    const date = vehicle.odometer_updated_at
-      ? new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-GB", { dateStyle: "medium" }).format(
-          new Date(vehicle.odometer_updated_at),
-        )
-      : "—";
+    const nf = { format: (value: number) => formatNumber(locale, value) };
+    const date = vehicle.odometer_updated_at ? formatDate(locale, vehicle.odometer_updated_at) : "—";
     return {
       confirm: {
         reading: reading!,
@@ -297,7 +294,7 @@ export async function updateServiceItem(
   const lastKmRaw = String(formData.get("last_service_odometer") ?? "").trim();
   const lastKm = /^\d+$/.test(lastKmRaw) ? Number(lastKmRaw) : NaN;
   const lastDate = String(formData.get("last_service_date") ?? "");
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayInAppTimeZone();
 
   if (!km.ok || !months.ok || (km.value === null && months.value === null)) {
     return { error: t.errors.customSchedule };
