@@ -34,13 +34,14 @@ await bot("setWebhook", {
   allowed_updates: ["message", "callback_query"],
 });
 
-for (const [language_code, start, help] of [
-  [undefined, "Start / link your account", "How to use the bot"],
-  ["ar", "ابدأ / اربط حسابك", "طريقة استخدام البوت"],
+for (const [language_code, start, status, help] of [
+  [undefined, "Start / link your account", "Your cars and what's due", "How to use the bot"],
+  ["ar", "ابدأ / اربط حسابك", "حالة سياراتك وما هو مستحق", "طريقة استخدام البوت"],
 ]) {
   await bot("setMyCommands", {
     commands: [
       { command: "start", description: start },
+      { command: "status", description: status },
       { command: "help", description: help },
     ],
     ...(language_code ? { language_code } : {}),

@@ -590,6 +590,28 @@ try {
     assert.equal(made[0].method, "answerCallbackQuery");
   });
 
+  // --- Status -----------------------------------------------------------------
+  await scenario("/status lists each car with its odometer and what's due (Arabic)", async () => {
+    const [call] = await send(text(CHAT_A, "/status"), 1);
+    assert.match(call.params.text, /حالة سياراتك/);
+    assert.match(call.params.text, /Hyundai Accent — ٤٠٬٠٠٠ كم/);
+    assert.match(call.params.text, /Toyota Camry — ٦٠٬٠٠٠ كم/);
+    assert.match(call.params.text, /مستحق: زيت المحرك/, "Accent oil is due again at 40,000");
+    assert.match(call.params.text, /لا توجد صيانة مستحقة/, "Camry has nothing due");
+  });
+  await scenario("typed 'status' works like /status (English)", async () => {
+    const [call] = await send(text(CHAT_B, "status", { languageCode: "en" }), 1);
+    assert.match(call.params.text, /Your cars:/);
+    assert.match(call.params.text, /Kia Rio — 10,000 km/);
+  });
+  await scenario("/status with no cars points to the dashboard", async () => {
+    await db.from("vehicles").delete().eq("id", f.focus); // D's only car
+    await db.from("users").update({ telegram_chat_id: CHAT_STRANGER }).eq("id", ids.d);
+    const [call] = await send(text(CHAT_STRANGER, "/status"), 1);
+    assert.match(call.params.text, /لا توجد سيارات مسجّلة بعد/);
+    await db.from("users").update({ telegram_chat_id: null }).eq("id", ids.d);
+  });
+
   // --- Help -------------------------------------------------------------------
   await scenario("free text while an odometer request is open → treated as a bad reading (English)", async () => {
     const [call] = await send(text(CHAT_B, "what is this?", { languageCode: "en" }), 1);
@@ -626,7 +648,8 @@ try {
   // callback toast — so no message ships untested.
   const templateRegex = (template) =>
     new RegExp(
-      "^" + template.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\\\{\w+\\\}/g, "[\\s\\S]+?") + "$",
+      // Unanchored: some replies (e.g. /status) are assembled from several templates.
+      template.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\\\{\w+\\\}/g, "[\\s\\S]+?"),
     );
   const produced = [];
   for (const { params } of calls) {

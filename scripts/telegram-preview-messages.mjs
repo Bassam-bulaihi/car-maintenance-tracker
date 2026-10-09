@@ -39,6 +39,7 @@ const sample = {
   days: nf.format(3),
   odometer: nf.format(25000),
   name: user.name,
+  services: locale === "ar" ? "زيت المحرك، فلتر الزيت" : "Engine oil, Oil filter",
 };
 const fill = (template) => template.replace(/\{(\w+)\}/g, (m, key) => sample[key] ?? m);
 const inert = (label) => ({ text: label, callback_data: "preview" });
@@ -61,6 +62,11 @@ const messages = [
   ["Reply: which reminder?", fill(t.confirmationAmbiguous)],
   ["Reply: which car?", fill(t.odometerAmbiguous)],
   ["Reply: unprompted reading refused", fill(t.noOpenRequest)],
+  [
+    "/status",
+    [fill(t.statusHeader), `${fill(t.statusVehicle)}\n${fill(t.statusDue)}`, `${fill(t.statusVehicle)}\n${fill(t.statusOk)}`].join("\n\n"),
+  ],
+  ["/status — no cars", fill(t.statusEmpty)],
   ["/help", fill(t.help)],
   ["Unlinked chat", fill(t.notLinked)],
   ["Account linked", fill(t.linked)],

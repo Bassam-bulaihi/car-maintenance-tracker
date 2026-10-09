@@ -198,11 +198,16 @@ const ar = {
     noOpenRequest:
       "نستقبل قراءات العداد هنا فقط كرد على طلب منا. يمكنك تحديثها في أي وقت من لوحة التحكم:\n{link}",
     help:
-      "أنا بوت Car Auto. أسألك عن قراءة العداد وأنبّهك عند استحقاق الصيانة.\n\n• رُدّ على طلب العداد بالرقم بالكيلومتر\n• اضغط «تم التغيير» أو «لم يتم التغيير» على تذكير الصيانة\n\nلوحة التحكم:\n{link}",
+      "أنا بوت Car Auto. أسألك عن قراءة العداد وأنبّهك عند استحقاق الصيانة.\n\n• رُدّ على طلب العداد بالرقم بالكيلومتر\n• اضغط «تم التغيير» أو «لم يتم التغيير» على تذكير الصيانة\n• /status لعرض حالة سياراتك\n\nلوحة التحكم:\n{link}",
     notLinked:
       "هذه المحادثة غير مرتبطة بحساب في Car Auto بعد. افتح إعدادات الحساب على الموقع واضغط «ربط تيليجرام»:\n{link}",
     linked: "✅ تم ربط تيليجرام بحسابك يا {name}! ستصلك طلبات قراءة العداد وتذكيرات الصيانة هنا.",
     linkInvalid: "انتهت صلاحية هذا الرابط أو استُخدم من قبل. أنشئ رابطاً جديداً من إعدادات الحساب:\n{link}",
+    statusHeader: "📋 حالة سياراتك:",
+    statusVehicle: "🚗 {vehicle} — {odometer} كم",
+    statusDue: "⚠️ مستحق: {services}",
+    statusOk: "✅ لا توجد صيانة مستحقة",
+    statusEmpty: "لا توجد سيارات مسجّلة بعد. أضف سيارتك من لوحة التحكم:\n{link}",
   },
 
   admin: {
@@ -733,11 +738,16 @@ const en: typeof ar = {
     noOpenRequest:
       "Odometer readings are only accepted here as a reply to one of our requests. You can update it any time from your dashboard:\n{link}",
     help:
-      "I'm the Car Auto bot. I ask for your odometer reading and tell you when a service is due.\n\n• Reply to an odometer request with the number in km\n• Tap Done or Not done on a service reminder\n\nDashboard:\n{link}",
+      "I'm the Car Auto bot. I ask for your odometer reading and tell you when a service is due.\n\n• Reply to an odometer request with the number in km\n• Tap Done or Not done on a service reminder\n• /status to see your cars\n\nDashboard:\n{link}",
     notLinked:
       "This chat isn't linked to a Car Auto account yet. Open Account settings on the website and tap \"Connect Telegram\":\n{link}",
     linked: "✅ Telegram connected, {name}! Odometer requests and service reminders will arrive here.",
     linkInvalid: "This link has expired or was already used. Create a new one from Account settings:\n{link}",
+    statusHeader: "📋 Your cars:",
+    statusVehicle: "🚗 {vehicle} — {odometer} km",
+    statusDue: "⚠️ Due: {services}",
+    statusOk: "✅ Nothing due",
+    statusEmpty: "You haven't registered a car yet. Add one from your dashboard:\n{link}",
   },
 
   admin: {

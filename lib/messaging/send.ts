@@ -12,7 +12,7 @@ type ServiceClient = SupabaseClient<Database>;
 export type NotifiableUser = { id: string; telegram_chat_id: number; language: Locale };
 type NotifiableVehicle = { id: string; make: string; model: string };
 
-export function vehicleLabel(vehicle: NotifiableVehicle) {
+export function vehicleLabel(vehicle: { make: string; model: string }) {
   return `${vehicle.make} ${vehicle.model}`;
 }
 

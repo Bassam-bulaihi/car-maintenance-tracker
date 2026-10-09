@@ -95,6 +95,10 @@ async function handleMessage(supabase: ServiceClient, message: TelegramMessage) 
     return;
   }
 
+  if (command?.[1] === "status" || /^(حالة|الحالة|status)$/i.test(text)) {
+    await sendStatus(supabase, user);
+    return;
+  }
   if (command) {
     await reply(chatId, botText(user.language, "help", { link: dashboardUrl() }));
     return;
@@ -429,6 +433,42 @@ async function handleCallback(supabase: ServiceClient, query: TelegramCallbackQu
       // Telegram refuses edits that change nothing (buttons already gone).
     });
   }
+}
+
+/** /status — each car's odometer and what's due right now. */
+async function sendStatus(supabase: ServiceClient, user: LinkedUser) {
+  const { data: vehicles } = await supabase
+    .from("vehicles")
+    .select(
+      "make, model, current_odometer, vehicle_service_items(service_type, interval_km, interval_months, last_service_odometer, last_service_date)",
+    )
+    .eq("user_id", user.id)
+    .order("created_at");
+
+  if (!vehicles?.length) {
+    await reply(user.telegram_chat_id, botText(user.language, "statusEmpty", { link: dashboardUrl() }));
+    return;
+  }
+
+  const blocks = vehicles.map((vehicle) => {
+    const due = vehicle.vehicle_service_items
+      .filter((item) => computeServiceStatus(item, vehicle.current_odometer) === "due")
+      .map((item) => serviceTypeLabel(item.service_type, user.language));
+    return [
+      botText(user.language, "statusVehicle", {
+        vehicle: vehicleLabel(vehicle),
+        odometer: numberFormat(user.language).format(vehicle.current_odometer),
+      }),
+      due.length
+        ? botText(user.language, "statusDue", { services: due.join(user.language === "ar" ? "، " : ", ") })
+        : botText(user.language, "statusOk"),
+    ].join("\n");
+  });
+
+  await reply(
+    user.telegram_chat_id,
+    [botText(user.language, "statusHeader"), ...blocks, dashboardUrl()].join("\n\n"),
+  );
 }
 
 // ---------------------------------------------------------------------------
