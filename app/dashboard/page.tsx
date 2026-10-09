@@ -3,6 +3,7 @@ import { Plus, Car, Send } from "lucide-react";
 import { requireProfile } from "@/lib/auth/profile";
 import { getDictionary } from "@/lib/i18n/locale";
 import { listVehicles } from "@/lib/dashboard/data";
+import { computeServiceStatus } from "@/lib/dashboard/service-status";
 import { ButtonLink } from "@/components/ui/button";
 import { BracketLabel } from "@/components/ui/bracket-label";
 import { VehicleCard } from "@/components/dashboard/vehicle-card";
@@ -13,6 +14,11 @@ export default async function DashboardPage() {
     listVehicles(),
     getDictionary(),
   ]);
+
+  // Cars that need attention first, then by registration order.
+  const dueCount = (v: (typeof vehicles)[number]) =>
+    v.vehicle_service_items.filter((item) => computeServiceStatus(item, v.current_odometer) === "due").length;
+  const sortedVehicles = [...vehicles].sort((a, b) => dueCount(b) - dueCount(a));
 
   return (
     <>
@@ -56,7 +62,7 @@ export default async function DashboardPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {vehicles.map((vehicle) => (
+            {sortedVehicles.map((vehicle) => (
               <VehicleCard key={vehicle.id} vehicle={vehicle} locale={locale} t={t} />
             ))}
           </div>
