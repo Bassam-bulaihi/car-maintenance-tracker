@@ -1,20 +1,14 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { requireProfile } from "@/lib/auth/profile";
 import { getDictionary } from "@/lib/i18n/locale";
 import { BackLink } from "@/components/ui/back-link";
 import { BracketLabel } from "@/components/ui/bracket-label";
 import { AccountForm } from "@/components/dashboard/account-form";
+import { TelegramConnect } from "@/components/dashboard/telegram-connect";
+import { telegramBotUsername } from "@/lib/messaging/linking";
 
 export default async function AccountPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) redirect("/login");
-
-  const [{ data: profile }, { locale, t }] = await Promise.all([
-    supabase.from("users").select("name, phone_number").eq("id", user.id).single(),
+  const [{ user, profile }, { locale, t }] = await Promise.all([
+    requireProfile(),
     getDictionary(),
   ]);
 
@@ -31,9 +25,16 @@ export default async function AccountPage() {
       </div>
 
       <AccountForm
-        name={profile?.name ?? ""}
-        email={user.email ?? ""}
-        phoneNumber={profile?.phone_number ?? ""}
+        name={profile.name}
+        email={user.email}
+        phoneNumber={profile.phone_number}
+        locale={locale}
+        t={t}
+      />
+
+      <TelegramConnect
+        linked={profile.telegram_chat_id !== null}
+        available={telegramBotUsername() !== null}
         locale={locale}
         t={t}
       />

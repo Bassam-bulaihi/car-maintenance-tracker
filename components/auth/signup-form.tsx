@@ -1,29 +1,102 @@
 "use client";
 
-import { useActionState } from "react";
+import { useState, type FormEvent } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useSignUp } from "@clerk/nextjs";
 import { UserPlus } from "lucide-react";
-import { signup, type AuthFormState } from "@/lib/auth/actions";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
+import { clerkErrorMessage } from "@/lib/auth/clerk-errors";
+import { finalizeNavigate } from "@/lib/auth/navigate";
+import { MIN_PASSWORD_LENGTH, validateProfileFields } from "@/lib/auth/validation";
 import { TextInput, FieldLabel } from "@/components/ui/text-input";
 import { Button } from "@/components/ui/button";
+import { VerifyCodeStep } from "@/components/auth/verify-code-step";
 
 export function SignupForm({ locale, t }: { locale: Locale; t: Dictionary }) {
-  const [state, action, pending] = useActionState<AuthFormState, FormData>(
-    signup,
-    undefined,
-  );
+  const { signUp, fetchStatus } = useSignUp();
+  const router = useRouter();
+  const [step, setStep] = useState<"details" | "code">("details");
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const pending = fetchStatus === "fetching";
+
+  async function finish() {
+    const { error } = await signUp.finalize({ navigate: finalizeNavigate(router, "/dashboard") });
+    if (error) setError(clerkErrorMessage(error, t));
+  }
+
+  async function handleDetails(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+
+    const form = new FormData(event.currentTarget);
+    const name = String(form.get("name") ?? "").trim();
+    const emailValue = String(form.get("email") ?? "").trim();
+    const phoneNumber = String(form.get("phone_number") ?? "").trim();
+    const password = String(form.get("password") ?? "");
+
+    const fieldError = validateProfileFields(name, phoneNumber);
+    if (fieldError) return setError(t.auth.errors[fieldError]);
+    if (password.length < MIN_PASSWORD_LENGTH) return setError(t.auth.errors.password);
+
+    setEmail(emailValue);
+
+    // name/phone/language ride along in unsafeMetadata and become the
+    // public.users row on first sign-in (lib/auth/profile.ts), where they are
+    // validated again server-side.
+    const { error } = await signUp.password({
+      emailAddress: emailValue,
+      password,
+      unsafeMetadata: { name, phone_number: phoneNumber, language: locale },
+    });
+    if (error) return setError(clerkErrorMessage(error, t));
+
+    if (signUp.status === "complete") return finish();
+
+    const { error: sendError } = await signUp.verifications.sendEmailCode();
+    if (sendError) return setError(clerkErrorMessage(sendError, t));
+    setStep("code");
+  }
+
+  async function handleCode(code: string) {
+    setError(null);
+    const { error } = await signUp.verifications.verifyEmailCode({ code });
+    if (error) return setError(clerkErrorMessage(error, t, "invalidCode"));
+    if (signUp.status === "complete") return finish();
+    setError(t.auth.errors.generic);
+  }
+
+  async function handleResend() {
+    setError(null);
+    const { error } = await signUp.verifications.sendEmailCode();
+    if (error) setError(clerkErrorMessage(error, t));
+  }
+
+  if (step === "code") {
+    return (
+      <VerifyCodeStep
+        email={email}
+        pending={pending}
+        error={error}
+        onVerify={handleCode}
+        onResend={handleResend}
+        locale={locale}
+        t={t}
+      />
+    );
+  }
 
   return (
-    <form action={action} className="flex w-full max-w-sm flex-col gap-4">
+    <form onSubmit={handleDetails} className="flex w-full max-w-sm flex-col gap-4">
       <div className="flex flex-col gap-1.5">
         <FieldLabel htmlFor="name">{t.auth.signup.name}</FieldLabel>
-        <TextInput id="name" name="name" required />
+        <TextInput id="name" name="name" autoComplete="name" required />
       </div>
 
       <div className="flex flex-col gap-1.5">
         <FieldLabel htmlFor="email">{t.auth.signup.email}</FieldLabel>
-        <TextInput id="email" name="email" type="email" required dir="ltr" />
+        <TextInput id="email" name="email" type="email" autoComplete="email" required dir="ltr" />
       </div>
 
       <div className="flex flex-col gap-1.5">
@@ -32,6 +105,7 @@ export function SignupForm({ locale, t }: { locale: Locale; t: Dictionary }) {
           id="phone_number"
           name="phone_number"
           type="tel"
+          autoComplete="tel"
           placeholder="+966501234567"
           required
           dir="ltr"
@@ -40,12 +114,23 @@ export function SignupForm({ locale, t }: { locale: Locale; t: Dictionary }) {
 
       <div className="flex flex-col gap-1.5">
         <FieldLabel htmlFor="password">{t.auth.signup.password}</FieldLabel>
-        <TextInput id="password" name="password" type="password" minLength={8} required dir="ltr" />
+        <TextInput
+          id="password"
+          name="password"
+          type="password"
+          autoComplete="new-password"
+          minLength={MIN_PASSWORD_LENGTH}
+          required
+          dir="ltr"
+        />
       </div>
 
-      {state?.error && (
+      {/* Clerk bot protection mounts its CAPTCHA widget here in custom flows. */}
+      <div id="clerk-captcha" />
+
+      {error && (
         <p className="text-sm text-m-red" role="alert">
-          {state.error}
+          {error}
         </p>
       )}
 

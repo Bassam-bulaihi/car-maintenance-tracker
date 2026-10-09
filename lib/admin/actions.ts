@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { requireAdminUser } from "@/lib/auth/session";
 import { SERVICE_TYPES, type ServiceType } from "@/lib/admin/service-types";
 import { getLocale } from "@/lib/i18n/locale";
 import { dictionaries } from "@/lib/i18n/dictionaries";
@@ -13,16 +14,8 @@ export type AdminFormState = { error: string } | undefined;
 // the JWT alone) — Proxy's check is optimistic UX only, not the
 // authorization boundary. RLS backs this up at the DB layer regardless.
 async function requireAdminAction() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user || user.app_metadata?.role !== "admin") {
-    redirect(user ? "/dashboard" : "/login");
-  }
-
-  return supabase;
+  await requireAdminUser();
+  return createClient();
 }
 
 async function adminMessages() {

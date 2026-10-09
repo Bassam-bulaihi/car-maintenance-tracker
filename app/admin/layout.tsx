@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LayoutDashboard, LogOut } from "lucide-react";
 import { requireAdmin } from "@/lib/admin/data";
-import { logout } from "@/lib/auth/actions";
+import { LogoutButton } from "@/components/auth/logout-button";
 import { getDictionary } from "@/lib/i18n/locale";
 import { LanguageToggle } from "@/components/layout/language-toggle";
 import { MStripeDivider } from "@/components/layout/m-stripe-divider";
@@ -34,15 +34,15 @@ export default async function AdminLayout({
             <LayoutDashboard className="h-4 w-4" aria-hidden="true" />
             {t.admin.nav.backToDashboard}
           </Link>
-          <form action={logout}>
+          <LogoutButton>
             <button
-              type="submit"
+              type="button"
               className="flex h-10 items-center gap-2 rounded-none border border-hairline px-3 text-sm text-body hover:border-on-dark hover:text-on-dark"
             >
               <LogOut className="h-4 w-4" aria-hidden="true" />
               {t.common.logout}
             </button>
-          </form>
+          </LogoutButton>
         </div>
       </header>
       <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-16 px-6 py-12">

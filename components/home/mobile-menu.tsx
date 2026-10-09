@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
+import { LogoutButton } from "@/components/auth/logout-button";
 
 type NavLink = { href: string; label: string };
 
@@ -18,7 +19,6 @@ export function MobileMenu({
   isAuthenticated = false,
   dashboardLabel,
   logoutLabel,
-  logoutAction,
 }: {
   links: NavLink[];
   loginLabel: string;
@@ -28,7 +28,6 @@ export function MobileMenu({
   isAuthenticated?: boolean;
   dashboardLabel?: string;
   logoutLabel?: string;
-  logoutAction?: () => void | Promise<void>;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -99,16 +98,14 @@ export function MobileMenu({
                 >
                   {dashboardLabel}
                 </Link>
-                {logoutAction && (
-                  <form action={logoutAction}>
-                    <button
-                      type="submit"
-                      className="flex h-12 w-full items-center justify-center border border-hairline text-sm font-bold text-body transition-colors hover:border-on-dark hover:bg-on-dark hover:text-canvas"
-                    >
-                      {logoutLabel}
-                    </button>
-                  </form>
-                )}
+                <LogoutButton>
+                  <button
+                    type="button"
+                    className="flex h-12 w-full items-center justify-center border border-hairline text-sm font-bold text-body transition-colors hover:border-on-dark hover:bg-on-dark hover:text-canvas"
+                  >
+                    {logoutLabel}
+                  </button>
+                </LogoutButton>
               </>
             ) : (
               <>

@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.15"
+    PostgrestVersion: "14.5"
   }
   graphql_public: {
     Tables: {
@@ -41,26 +41,29 @@ export type Database = {
     Tables: {
       inbound_message_events: {
         Row: {
-          message_sid: string
+          event_id: string
           received_at: string
         }
         Insert: {
-          message_sid: string
+          event_id: string
           received_at?: string
         }
         Update: {
-          message_sid?: string
+          event_id?: string
           received_at?: string
         }
         Relationships: []
       }
       notifications: {
         Row: {
+          chat_id: number | null
           created_at: string
           delivery_status: Database["public"]["Enums"]["notification_delivery_status"]
           id: string
           message_type: Database["public"]["Enums"]["notification_message_type"]
-          provider_message_sid: string | null
+          needs_follow_up: boolean
+          provider_message_id: string | null
+          reply_attempts: number
           responded_at: string | null
           response: Database["public"]["Enums"]["notification_response"] | null
           response_text: string | null
@@ -69,11 +72,14 @@ export type Database = {
           vehicle_id: string
         }
         Insert: {
+          chat_id?: number | null
           created_at?: string
           delivery_status?: Database["public"]["Enums"]["notification_delivery_status"]
           id?: string
           message_type: Database["public"]["Enums"]["notification_message_type"]
-          provider_message_sid?: string | null
+          needs_follow_up?: boolean
+          provider_message_id?: string | null
+          reply_attempts?: number
           responded_at?: string | null
           response?: Database["public"]["Enums"]["notification_response"] | null
           response_text?: string | null
@@ -82,11 +88,14 @@ export type Database = {
           vehicle_id: string
         }
         Update: {
+          chat_id?: number | null
           created_at?: string
           delivery_status?: Database["public"]["Enums"]["notification_delivery_status"]
           id?: string
           message_type?: Database["public"]["Enums"]["notification_message_type"]
-          provider_message_sid?: string | null
+          needs_follow_up?: boolean
+          provider_message_id?: string | null
+          reply_attempts?: number
           responded_at?: string | null
           response?: Database["public"]["Enums"]["notification_response"] | null
           response_text?: string | null
@@ -239,6 +248,38 @@ export type Database = {
           },
         ]
       }
+      telegram_link_tokens: {
+        Row: {
+          created_at: string
+          expires_at: string
+          token: string
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          token: string
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          token?: string
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "telegram_link_tokens_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users: {
         Row: {
           created_at: string
@@ -248,6 +289,8 @@ export type Database = {
           name: string
           phone_number: string
           role: Database["public"]["Enums"]["user_role"]
+          telegram_chat_id: number | null
+          telegram_linked_at: string | null
         }
         Insert: {
           created_at?: string
@@ -257,6 +300,8 @@ export type Database = {
           name: string
           phone_number: string
           role?: Database["public"]["Enums"]["user_role"]
+          telegram_chat_id?: number | null
+          telegram_linked_at?: string | null
         }
         Update: {
           created_at?: string
@@ -266,6 +311,8 @@ export type Database = {
           name?: string
           phone_number?: string
           role?: Database["public"]["Enums"]["user_role"]
+          telegram_chat_id?: number | null
+          telegram_linked_at?: string | null
         }
         Relationships: []
       }
@@ -410,7 +457,7 @@ export type Database = {
         | "service_due"
         | "re_reminder"
       notification_response: "done" | "not_done" | "invalid"
-      odometer_source: "whatsapp" | "web"
+      odometer_source: "telegram" | "web"
       service_status: "ok" | "due" | "overdue"
       service_type:
         | "engine_oil"
@@ -436,12 +483,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -465,11 +512,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -490,11 +537,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -515,11 +562,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -532,11 +579,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -565,7 +612,7 @@ export const Constants = {
         "re_reminder",
       ],
       notification_response: ["done", "not_done", "invalid"],
-      odometer_source: ["whatsapp", "web"],
+      odometer_source: ["telegram", "web"],
       service_status: ["ok", "due", "overdue"],
       service_type: [
         "engine_oil",

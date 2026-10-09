@@ -1,64 +1,96 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database.types";
 import type { Locale } from "@/lib/i18n/dictionaries";
-import { getTwilioClient, toWhatsAppAddress } from "@/lib/messaging/twilio-client";
-import { getContentSid, odometerRequestVariables, serviceDueVariables } from "@/lib/messaging/templates";
+import { sendMessage, TelegramApiError } from "@/lib/messaging/telegram-client";
+import { buildOutboundMessage, type OutboundMessageType } from "@/lib/messaging/templates";
+import { vehiclePageUrl } from "@/lib/config";
 import { serviceTypeLabel, type ServiceType } from "@/lib/admin/service-types";
 
 type ServiceClient = SupabaseClient<Database>;
 
-type NotifiableUser = { phone_number: string; language: Locale };
+/** A user the bot can reach: their profile has a linked Telegram chat. */
+export type NotifiableUser = { id: string; telegram_chat_id: number; language: Locale };
 type NotifiableVehicle = { id: string; make: string; model: string };
 
-function vehicleLabel(vehicle: NotifiableVehicle) {
+export function vehicleLabel(vehicle: NotifiableVehicle) {
   return `${vehicle.make} ${vehicle.model}`;
 }
 
 /**
- * Sends the "what's your odometer now?" template and logs it. A
- * `notifications` row is inserted up front (delivery_status "pending") so
- * there's always a record even if the Twilio call throws, then updated with
- * the provider SID once the send succeeds — this is also what the
- * odometer-request cron reads to avoid re-asking within the same window.
+ * One send + its log row. The `notifications` row is inserted first
+ * (delivery_status "pending") because its id goes into the message's button
+ * payload, and so a record exists even if the send fails. On success it
+ * stores the chat + Telegram message id — what an inbound reply is matched
+ * against — and sent_at, which the schedulers read to respect cadence.
+ *
+ * A chat that can no longer be reached (user blocked the bot or deleted the
+ * chat) is unlinked from the profile so the schedulers stop trying it.
  */
-export async function sendOdometerRequest(
+async function sendNotification(
   supabase: ServiceClient,
   vehicle: NotifiableVehicle,
   user: NotifiableUser,
+  messageType: OutboundMessageType,
+  serviceItem?: { id: string; service_type: ServiceType },
 ) {
   const { data: notification, error: insertError } = await supabase
     .from("notifications")
-    .insert({ vehicle_id: vehicle.id, message_type: "odometer_request", delivery_status: "pending" })
+    .insert({
+      vehicle_id: vehicle.id,
+      service_item_id: serviceItem?.id ?? null,
+      message_type: messageType,
+      delivery_status: "pending",
+      chat_id: user.telegram_chat_id,
+    })
     .select("id")
     .single();
   if (insertError || !notification) throw insertError ?? new Error("failed to log notification");
 
   try {
-    const message = await getTwilioClient().messages.create({
-      from: process.env.TWILIO_WHATSAPP_FROM!,
-      to: toWhatsAppAddress(user.phone_number),
-      contentSid: getContentSid("odometer_request", user.language),
-      contentVariables: odometerRequestVariables(vehicleLabel(vehicle)),
+    const outbound = buildOutboundMessage(messageType, user.language, {
+      notificationId: notification.id,
+      vehicle: vehicleLabel(vehicle),
+      link: vehiclePageUrl(vehicle.id),
+      service: serviceItem ? serviceTypeLabel(serviceItem.service_type, user.language) : undefined,
     });
+
+    const message = await sendMessage(user.telegram_chat_id, outbound.text, outbound.replyMarkup);
 
     await supabase
       .from("notifications")
-      .update({ provider_message_sid: message.sid, delivery_status: "sent", sent_at: new Date().toISOString() })
+      .update({
+        provider_message_id: String(message.message_id),
+        delivery_status: "sent",
+        sent_at: new Date().toISOString(),
+      })
       .eq("id", notification.id);
   } catch (error) {
     await supabase.from("notifications").update({ delivery_status: "failed" }).eq("id", notification.id);
+    if (error instanceof TelegramApiError && error.isUnreachableChat) {
+      await supabase
+        .from("users")
+        .update({ telegram_chat_id: null, telegram_linked_at: null })
+        .eq("id", user.id);
+    }
     throw error;
   }
 
   return notification.id;
 }
 
+/** "What's your odometer now?" — answered by replying with a number. */
+export async function sendOdometerRequest(
+  supabase: ServiceClient,
+  vehicle: NotifiableVehicle,
+  user: NotifiableUser,
+) {
+  return sendNotification(supabase, vehicle, user, "odometer_request");
+}
+
 /**
- * Sends a "is <service> due?" template with the تم/لم يتم quick-reply
- * buttons and logs it. `messageType` distinguishes the first ask
- * ("service_due") from a later chase on the same item ("re_reminder") —
- * both use the same template/copy, PRD §5.5 only requires the *cadence* to
- * differ, which the caller (cron) controls.
+ * "<service> is due — done?" with Done / Not done buttons. `messageType`
+ * distinguishes the first ask ("service_due") from a later chase on the same
+ * item ("re_reminder"); the caller controls the cadence (PRD §5.5).
  */
 export async function sendServiceDueNotification(
   supabase: ServiceClient,
@@ -67,37 +99,5 @@ export async function sendServiceDueNotification(
   serviceItem: { id: string; service_type: ServiceType },
   messageType: "service_due" | "re_reminder" = "service_due",
 ) {
-  const { data: notification, error: insertError } = await supabase
-    .from("notifications")
-    .insert({
-      vehicle_id: vehicle.id,
-      service_item_id: serviceItem.id,
-      message_type: messageType,
-      delivery_status: "pending",
-    })
-    .select("id")
-    .single();
-  if (insertError || !notification) throw insertError ?? new Error("failed to log notification");
-
-  try {
-    const message = await getTwilioClient().messages.create({
-      from: process.env.TWILIO_WHATSAPP_FROM!,
-      to: toWhatsAppAddress(user.phone_number),
-      contentSid: getContentSid("service_due", user.language),
-      contentVariables: serviceDueVariables(
-        vehicleLabel(vehicle),
-        serviceTypeLabel(serviceItem.service_type, user.language),
-      ),
-    });
-
-    await supabase
-      .from("notifications")
-      .update({ provider_message_sid: message.sid, delivery_status: "sent", sent_at: new Date().toISOString() })
-      .eq("id", notification.id);
-  } catch (error) {
-    await supabase.from("notifications").update({ delivery_status: "failed" }).eq("id", notification.id);
-    throw error;
-  }
-
-  return notification.id;
+  return sendNotification(supabase, vehicle, user, messageType, serviceItem);
 }

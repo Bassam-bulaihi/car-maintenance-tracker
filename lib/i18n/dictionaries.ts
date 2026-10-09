@@ -22,13 +22,25 @@ const ar = {
       submitting: "جارِ الدخول...",
       noAccount: "ليس لديك حساب؟",
       signupLink: "إنشاء حساب جديد",
-      confirmed: "تم إنشاء الحساب. تحقق من بريدك الإلكتروني لتأكيد الحساب ثم سجّل الدخول.",
+    },
+    verify: {
+      codeLabel: "رمز التحقق",
+      sentTo: "أرسلنا رمز تحقق إلى",
+      submit: "تأكيد",
+      submitting: "جارِ التحقق...",
+      resend: "إعادة إرسال الرمز",
+    },
+    onboarding: {
+      title: "أكمل حسابك",
+      intro: "نحتاج اسمك ورقم جوالك لإكمال حسابك.",
+      submit: "حفظ ومتابعة",
+      submitting: "جارِ الحفظ...",
     },
     signup: {
       title: "إنشاء حساب",
       name: "الاسم الكامل",
       email: "البريد الإلكتروني",
-      phone: "رقم الجوال (واتساب)",
+      phone: "رقم الجوال",
       password: "كلمة المرور",
       submit: "إنشاء حساب",
       submitting: "جارِ الإنشاء...",
@@ -40,6 +52,11 @@ const ar = {
       phone: "رقم الجوال غير صالح. استخدم الصيغة الدولية، مثال: 966501234567+",
       password: "كلمة المرور يجب أن تكون 8 أحرف على الأقل.",
       invalidCredentials: "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+      emailTaken: "هذا البريد الإلكتروني مسجّل بالفعل. سجّل الدخول بدلاً من ذلك.",
+      phoneTaken: "رقم الجوال هذا مستخدم في حساب آخر.",
+      weakPassword: "كلمة المرور هذه ضعيفة أو مكشوفة في تسريب سابق. اختر كلمة مرور أخرى.",
+      invalidCode: "رمز التحقق غير صحيح أو منتهي الصلاحية.",
+      generic: "حدث خطأ ما. حاول مرة أخرى.",
     },
   },
   dashboard: {
@@ -88,16 +105,58 @@ const ar = {
     nameLabel: "الاسم الكامل",
     emailLabel: "البريد الإلكتروني",
     emailNote: "لا يمكن تغيير البريد الإلكتروني من هنا.",
-    phoneLabel: "رقم الجوال (واتساب)",
+    phoneLabel: "رقم الجوال",
     save: "حفظ التغييرات",
     saving: "جارِ الحفظ...",
     success: "تم تحديث بياناتك بنجاح.",
+    telegram: {
+      title: "تيليجرام",
+      connected: "مرتبط — تصلك التذكيرات على تيليجرام.",
+      notConnected: "غير مرتبط — لن تصلك التذكيرات حتى تربط حسابك.",
+      connect: "ربط تيليجرام",
+      reconnect: "إعادة الربط",
+      disconnect: "إلغاء الربط",
+      hint: "يفتح تيليجرام — اضغط «ابدأ» لإكمال الربط. الرابط صالح لمدة 30 دقيقة.",
+      unavailable: "بوت تيليجرام غير مهيأ بعد.",
+    },
   },
-  whatsappBot: {
-    clarification:
-      'لم أفهم ردك. يرجى الرد بـ "تم التغيير" أو "لم يتم"، أو إرسال رقم العداد الحالي إذا طُلب منك ذلك.',
-    help: 'لم نتعرف على هذه الرسالة. إذا كنت تحاول الرد على تذكير سابق، أرسل "تم التغيير" أو "لم يتم".',
+  telegramBot: {
+    // رسائل بوت تيليجرام (ثنائية الاتجاه). {vehicle} / {service} / {link} /
+    // {reading} / {current} / {max} / {days} / {odometer} / {name} تُستبدل عند الإرسال.
+    odometerRequest:
+      "🚗 {vehicle}\n\nكم قراءة عداد سيارتك الآن؟\nرُدّ على هذه الرسالة بالرقم بالكيلومتر (مثال: 25000).\n\nأو حدّثها من صفحة سيارتك:\n{link}",
+    odometerPlaceholder: "مثال: 25000",
+    serviceDue: "🔧 {vehicle}\n\nموعد صيانة مستحق: {service}\nهل تم التغيير؟\n\nصفحة السيارة:\n{link}",
+    serviceDueReminder:
+      "⏰ تذكير — {vehicle}\n\nما زالت الصيانة مستحقة: {service}\nهل تم التغيير؟\n\nصفحة السيارة:\n{link}",
+    doneButton: "✅ تم التغيير",
+    notDoneButton: "❌ لم يتم التغيير",
+    doneAck: "تم التسجيل ✅",
+    notDoneAck: "حسناً — ما زالت مستحقة",
+    odometerSaved: "✅ تم حفظ القراءة: {reading} كم لسيارة {vehicle}. شكراً!",
+    odometerInvalid: "لم أفهم القراءة. أرسل الرقم فقط بالكيلومتر، مثال: 25000",
+    odometerTooLow: "هذه القراءة أقل من آخر قراءة مسجّلة ({current} كم). تحقق من العداد وأرسل الرقم الحالي.",
+    odometerImplausible:
+      "هذه القراءة تزيد بأكثر من {max} كم عن آخر قراءة ({current} كم). تحقق من الرقم وأرسله مرة أخرى.",
+    tooManyAttempts:
+      "لم نتمكن من قراءة الرد، لذا سنترك هذا الطلب الآن. يمكنك التحديث من صفحة سيارتك في أي وقت:\n{link}",
+    serviceDoneRecorded:
+      "✅ تم التسجيل: {service} لسيارة {vehicle} عند {odometer} كم. يبدأ العدّ للموعد القادم من اليوم.",
+    serviceNotDoneRecorded: "حسناً — {service} ما زالت مستحقة. سنذكّرك مرة أخرى بعد {days} أيام.",
+    alreadyAnswered: "تم الرد على هذا التذكير مسبقاً.",
+    confirmationUnclear: "اضغط «تم التغيير» أو «لم يتم التغيير»، أو اكتب «تم» أو «لم يتم».",
+    confirmationAmbiguous: "لديك أكثر من تذكير مفتوح — اضغط الزر على الرسالة المقصودة.",
+    odometerAmbiguous: "لديك أكثر من سيارة بانتظار قراءة العداد — رُدّ مباشرة على رسالة السيارة المقصودة.",
+    noOpenRequest:
+      "نستقبل قراءات العداد هنا فقط كرد على طلب منا. يمكنك تحديثها في أي وقت من لوحة التحكم:\n{link}",
+    help:
+      "أنا بوت Car Auto. أسألك عن قراءة العداد وأنبّهك عند استحقاق الصيانة.\n\n• رُدّ على طلب العداد بالرقم بالكيلومتر\n• اضغط «تم التغيير» أو «لم يتم التغيير» على تذكير الصيانة\n\nلوحة التحكم:\n{link}",
+    notLinked:
+      "هذه المحادثة غير مرتبطة بحساب في Car Auto بعد. افتح إعدادات الحساب على الموقع واضغط «ربط تيليجرام»:\n{link}",
+    linked: "✅ تم ربط تيليجرام بحسابك يا {name}! ستصلك طلبات قراءة العداد وتذكيرات الصيانة هنا.",
+    linkInvalid: "انتهت صلاحية هذا الرابط أو استُخدم من قبل. أنشئ رابطاً جديداً من إعدادات الحساب:\n{link}",
   },
+
   admin: {
     nav: {
       eyebrow: "وحدة التحكم",
@@ -153,7 +212,7 @@ const ar = {
       titleLine1: "لا تفوّت موعد صيانة",
       titleLine2: "سيارتك مرة أخرى",
       subtitle:
-        "سجّل سيارتك، ودعنا نتابع العداد ونذكّرك بمواعيد الصيانة عبر واتساب — في الوقت المناسب دائماً.",
+        "سجّل سيارتك، ودعنا نتابع العداد ونذكّرك بمواعيد الصيانة عبر تيليجرام — في الوقت المناسب دائماً.",
       imageAlt: "حجرة محرك سيارة مفتوحة أثناء الصيانة",
     },
     lookup: {
@@ -167,7 +226,7 @@ const ar = {
       odometer: "العداد الحالي (كم)",
       odometerPlaceholder: "مثال: 42500",
       submit: "افحص سيارتي",
-      note: "النتيجة تقديرية — أنشئ حساباً لتتبّع دقيق عبر واتساب.",
+      note: "النتيجة تقديرية — أنشئ حساباً لتتبّع دقيق عبر تيليجرام.",
       resultTitle: "الخدمات القادمة تقديرياً",
       resultCta: "سجّل لتتبّع هذه السيارة",
       resultEmpty: "اختر الصانع والموديل والسنة لعرض جدول الصيانة.",
@@ -212,31 +271,31 @@ const ar = {
       eyebrow: "كيف يعمل",
       title: "ثلاث خطوات فقط",
       subtitle:
-        "تتبّع الصيانة لا يحتاج جدولاً على الورق. سجّل سيارتك مرة واحدة، ونتكفّل بالباقي عبر واتساب.",
+        "تتبّع الصيانة لا يحتاج جدولاً على الورق. سجّل سيارتك مرة واحدة، ونتكفّل بالباقي عبر تيليجرام.",
       steps: [
         {
           title: "سجّل سيارتك",
           desc: "اختر الصانع والموديل والسنة، ونحمّل جدول الصيانة الموصى به تلقائياً.",
         },
         {
-          title: "نتابع عبر واتساب",
+          title: "نتابع عبر تيليجرام",
           desc: "نسألك عن قراءة العداد بشكل دوري، وتُحدَّث حالة سيارتك تلقائياً.",
         },
         {
           title: "أكّد عند الإنجاز",
-          desc: "عند استحقاق خدمة، نرسل تنبيهاً — ورد بـ«تم» أو «لم يتم» مباشرة من واتساب.",
+          desc: "عند استحقاق خدمة، نرسل تنبيهاً — ورد بـ«تم» أو «لم يتم» مباشرة من تيليجرام.",
         },
       ],
       imageAlt: "سيارة دفع رباعي بيضاء في المعرض",
     },
     features: {
       eyebrow: "لماذا Car Auto",
-      title: "مصمم حول واتساب",
+      title: "مصمم حول تيليجرام",
       subtitle:
         "لا تطبيق إضافي، ولا تسجيل دخول متكرر. كل ما تحتاجه يصلك في المحادثة التي تستخدمها كل يوم.",
       items: [
         {
-          title: "تنبيهات واتساب",
+          title: "تنبيهات تيليجرام",
           desc: "التنبيهات تصلك حيث أنت بالفعل، وترد بضغطة زر واحدة.",
           cta: "اعرف المزيد",
         },
@@ -259,7 +318,7 @@ const ar = {
       items: [
         {
           quote:
-            "كنت أنسى تغيير الزيت باستمرار وأكتشف ذلك بعد فوات الأوان بآلاف الكيلومترات. الآن تصلني رسالة واتساب تسألني عن العداد، أرد برقم، وينتهي الأمر. أول مرة أشعر أن صيانة سيارتي تحت السيطرة فعلاً.",
+            "كنت أنسى تغيير الزيت باستمرار وأكتشف ذلك بعد فوات الأوان بآلاف الكيلومترات. الآن تصلني رسالة تيليجرام تسألني عن العداد، أرد برقم، وينتهي الأمر. أول مرة أشعر أن صيانة سيارتي تحت السيطرة فعلاً.",
           name: "بسام البليهي",
           location: "الرياض",
         },
@@ -271,7 +330,7 @@ const ar = {
         },
         {
           quote:
-            "أكثر ما أعجبني أنني لم أحتج لتحميل تطبيق جديد. الرسالة تصل على واتساب، أضغط «تم التغيير»، ويتحدّث السجل مباشرة. بسيط لدرجة أنني أقنعت والدي باستخدامه.",
+            "أكثر ما أعجبني أن كل شيء يتم من المحادثة. الرسالة تصل على تيليجرام، أضغط «تم التغيير»، ويتحدّث السجل مباشرة. بسيط لدرجة أنني أقنعت والدي باستخدامه.",
           name: "عبدالعزيز الدوسري",
           location: "الدمام",
         },
@@ -303,7 +362,7 @@ const ar = {
         twitter: "منصة إكس",
         instagram: "إنستغرام",
         linkedin: "لينكدإن",
-        whatsapp: "واتساب",
+        telegram: "تيليجرام",
       },
       copyright: "جميع الحقوق محفوظة.",
     },
@@ -329,11 +388,11 @@ const ar = {
         },
         {
           heading: "كيف نعمل",
-          body: "نبني كل شيء حول واتساب لأنه المكان الذي يقضي فيه مستخدمونا وقتهم أصلاً. نسأل عن قراءة العداد بشكل دوري، ونحسب استحقاق كل خدمة بناءً على المسافة أو الزمن — أيهما أقرب — ثم نرسل تنبيهاً واحداً واضحاً يمكن الرد عليه بضغطة زر.",
+          body: "نبني كل شيء حول تيليجرام لأنه سريع وخفيف ويعمل على كل جهاز. نسأل عن قراءة العداد بشكل دوري، ونحسب استحقاق كل خدمة بناءً على المسافة أو الزمن — أيهما أقرب — ثم نرسل تنبيهاً واحداً واضحاً يمكن الرد عليه بضغطة زر.",
         },
         {
           heading: "الحالة الحالية",
-          body: "المنتج قيد التطوير النشط. لوحة التحكم وتسجيل المركبات وجداول الصيانة تعمل اليوم، والتكامل الكامل مع واتساب هو المرحلة التالية.",
+          body: "المنتج قيد التطوير النشط. لوحة التحكم وتسجيل المركبات وجداول الصيانة تعمل اليوم، وطلبات العداد وتذكيرات الصيانة تعمل عبر بوت تيليجرام.",
         },
       ],
     },
@@ -359,11 +418,11 @@ const ar = {
         },
         {
           heading: "لماذا نحتاج رقم الجوال",
-          body: "رقم الجوال هو قناة التواصل الأساسية. نستخدمه لإرسال طلبات قراءة العداد وتنبيهات الصيانة عبر واتساب فقط، ولا نستخدمه لأي غرض تسويقي ولا نشاركه مع معلنين.",
+          body: "نرسل طلبات قراءة العداد وتنبيهات الصيانة عبر تيليجرام فقط بعد أن تربط حسابك بنفسك، ونحفظ معرّف المحادثة لهذا الغرض وحده. لا نستخدم رقم جوالك أو حساب تيليجرام لأي غرض تسويقي ولا نشاركهما مع معلنين.",
         },
         {
           heading: "أين تُحفظ بياناتك",
-          body: "تُحفظ البيانات في قاعدة بيانات Supabase مستضافة في الاتحاد الأوروبي، وتُرسل الرسائل عبر واجهة WhatsApp Cloud API من Meta. كل مستخدم يرى بياناته فقط، وهذا مفروض على مستوى قاعدة البيانات نفسها.",
+          body: "تُحفظ البيانات في قاعدة بيانات Supabase مستضافة في الاتحاد الأوروبي، وتُرسل الرسائل عبر واجهة Telegram Bot API. كل مستخدم يرى بياناته فقط، وهذا مفروض على مستوى قاعدة البيانات نفسها.",
         },
         {
           heading: "حذف البيانات",
@@ -415,13 +474,25 @@ const en: typeof ar = {
       submitting: "Logging in...",
       noAccount: "Don't have an account?",
       signupLink: "Create an account",
-      confirmed: "Account created. Check your email to confirm it, then log in.",
+    },
+    verify: {
+      codeLabel: "Verification code",
+      sentTo: "We sent a verification code to",
+      submit: "Verify",
+      submitting: "Verifying...",
+      resend: "Resend code",
+    },
+    onboarding: {
+      title: "Finish your account",
+      intro: "We need your name and phone number to finish your account.",
+      submit: "Save and continue",
+      submitting: "Saving...",
     },
     signup: {
       title: "Create an account",
       name: "Full name",
       email: "Email",
-      phone: "Phone number (WhatsApp)",
+      phone: "Phone number",
       password: "Password",
       submit: "Create account",
       submitting: "Creating...",
@@ -433,6 +504,11 @@ const en: typeof ar = {
       phone: "Invalid phone number. Use international format, e.g. +966501234567",
       password: "Password must be at least 8 characters.",
       invalidCredentials: "Incorrect email or password.",
+      emailTaken: "This email is already registered. Log in instead.",
+      phoneTaken: "This phone number is already used by another account.",
+      weakPassword: "This password is too weak or has appeared in a data breach. Choose another.",
+      invalidCode: "The verification code is incorrect or has expired.",
+      generic: "Something went wrong. Please try again.",
     },
   },
   dashboard: {
@@ -481,16 +557,57 @@ const en: typeof ar = {
     nameLabel: "Full name",
     emailLabel: "Email",
     emailNote: "Email can't be changed here.",
-    phoneLabel: "Phone number (WhatsApp)",
+    phoneLabel: "Phone number",
     save: "Save changes",
     saving: "Saving...",
     success: "Your details have been updated.",
+    telegram: {
+      title: "Telegram",
+      connected: "Connected — reminders arrive on Telegram.",
+      notConnected: "Not connected — you won't get reminders until you connect.",
+      connect: "Connect Telegram",
+      reconnect: "Reconnect",
+      disconnect: "Disconnect",
+      hint: "Opens Telegram — tap Start to finish linking. The link is valid for 30 minutes.",
+      unavailable: "The Telegram bot isn't configured yet.",
+    },
   },
-  whatsappBot: {
-    clarification:
-      'Sorry, I didn\'t understand that. Reply "Done" or "Not done", or send your current odometer number if that\'s what we asked for.',
-    help: 'We didn\'t recognize that message. If you\'re replying to an earlier reminder, send "Done" or "Not done".',
+  telegramBot: {
+    // Telegram bot copy (two-way). {vehicle} / {service} / {link} /
+    // {reading} / {current} / {max} / {days} / {odometer} / {name} are
+    // substituted at send time.
+    odometerRequest:
+      "🚗 {vehicle}\n\nWhat's your odometer reading now?\nReply to this message with the number in km (e.g. 25000).\n\nOr update it on your car's page:\n{link}",
+    odometerPlaceholder: "e.g. 25000",
+    serviceDue: "🔧 {vehicle}\n\nService due: {service}\nHas it been done?\n\nCar page:\n{link}",
+    serviceDueReminder: "⏰ Reminder — {vehicle}\n\nStill due: {service}\nHas it been done?\n\nCar page:\n{link}",
+    doneButton: "✅ Done",
+    notDoneButton: "❌ Not done",
+    doneAck: "Recorded ✅",
+    notDoneAck: "OK — still due",
+    odometerSaved: "✅ Saved: {reading} km for {vehicle}. Thanks!",
+    odometerInvalid: "That doesn't look like an odometer reading. Please send just the number in km, e.g. 25000",
+    odometerTooLow: "That's lower than the last recorded reading ({current} km). Please check the odometer and send the current number.",
+    odometerImplausible:
+      "That's more than {max} km above the last reading ({current} km). Please double-check the number and send it again.",
+    tooManyAttempts:
+      "We couldn't read that reply, so we'll leave this request for now. You can update it from your car's page any time:\n{link}",
+    serviceDoneRecorded: "✅ Recorded: {service} on {vehicle} at {odometer} km. The next interval starts from today.",
+    serviceNotDoneRecorded: "Got it — {service} is still due. We'll remind you again in {days} days.",
+    alreadyAnswered: "This reminder has already been answered.",
+    confirmationUnclear: "Please tap Done or Not done, or reply \"done\" / \"not done\".",
+    confirmationAmbiguous: "You have more than one open reminder — please tap the button on the message you mean.",
+    odometerAmbiguous: "More than one of your cars is waiting for a reading — please reply directly to the request for the car you mean.",
+    noOpenRequest:
+      "Odometer readings are only accepted here as a reply to one of our requests. You can update it any time from your dashboard:\n{link}",
+    help:
+      "I'm the Car Auto bot. I ask for your odometer reading and tell you when a service is due.\n\n• Reply to an odometer request with the number in km\n• Tap Done or Not done on a service reminder\n\nDashboard:\n{link}",
+    notLinked:
+      "This chat isn't linked to a Car Auto account yet. Open Account settings on the website and tap \"Connect Telegram\":\n{link}",
+    linked: "✅ Telegram connected, {name}! Odometer requests and service reminders will arrive here.",
+    linkInvalid: "This link has expired or was already used. Create a new one from Account settings:\n{link}",
   },
+
   admin: {
     nav: {
       eyebrow: "Admin Console",
@@ -546,7 +663,7 @@ const en: typeof ar = {
       titleLine1: "Never miss a service",
       titleLine2: "on your car again",
       subtitle:
-        "Register your car and we'll track the odometer and remind you when service is due — right on WhatsApp, right on time.",
+        "Register your car and we'll track the odometer and remind you when service is due — right on Telegram, right on time.",
       imageAlt: "An open engine bay during servicing",
     },
     lookup: {
@@ -560,7 +677,7 @@ const en: typeof ar = {
       odometer: "Current odometer (km)",
       odometerPlaceholder: "e.g. 42500",
       submit: "Check my car",
-      note: "Estimate only — create an account for exact tracking over WhatsApp.",
+      note: "Estimate only — create an account for exact tracking over Telegram.",
       resultTitle: "Estimated upcoming services",
       resultCta: "Sign up to track this car",
       resultEmpty: "Pick a make, model, and year to preview the schedule.",
@@ -605,31 +722,31 @@ const en: typeof ar = {
       eyebrow: "How it works",
       title: "Just three steps",
       subtitle:
-        "Tracking maintenance shouldn't need a paper log. Register your car once, and we handle the rest over WhatsApp.",
+        "Tracking maintenance shouldn't need a paper log. Register your car once, and we handle the rest over Telegram.",
       steps: [
         {
           title: "Register your car",
           desc: "Pick your make, model, and year — we load the recommended service schedule automatically.",
         },
         {
-          title: "We check in on WhatsApp",
+          title: "We check in on Telegram",
           desc: "We ask for your odometer reading periodically, and your car's status updates automatically.",
         },
         {
           title: "Confirm when it's done",
-          desc: "When a service is due, we send a reminder — reply Done or Not done, right from WhatsApp.",
+          desc: "When a service is due, we send a reminder — reply Done or Not done, right from Telegram.",
         },
       ],
       imageAlt: "A white SUV in a showroom",
     },
     features: {
       eyebrow: "Why Car Auto",
-      title: "Built around WhatsApp",
+      title: "Built around Telegram",
       subtitle:
         "No extra app, no repeated logins. Everything you need arrives in the conversation you already use daily.",
       items: [
         {
-          title: "WhatsApp reminders",
+          title: "Telegram reminders",
           desc: "Reminders reach you where you already are, and you reply with a single tap.",
           cta: "Learn more",
         },
@@ -652,7 +769,7 @@ const en: typeof ar = {
       items: [
         {
           quote:
-            "I kept forgetting oil changes and would only notice thousands of kilometres too late. Now a WhatsApp message asks for my odometer, I reply with a number, and that's it. First time my car's maintenance has actually felt under control.",
+            "I kept forgetting oil changes and would only notice thousands of kilometres too late. Now a Telegram message asks for my odometer, I reply with a number, and that's it. First time my car's maintenance has actually felt under control.",
           name: "Bassam Al-Bulaihi",
           location: "Riyadh",
         },
@@ -664,7 +781,7 @@ const en: typeof ar = {
         },
         {
           quote:
-            "What sold me is that I never had to install another app. The message lands in WhatsApp, I tap Done, and the log updates itself. Simple enough that I talked my father into using it.",
+            "What sold me is that everything happens right in the chat. The message lands in Telegram, I tap Done, and the log updates itself. Simple enough that I talked my father into using it.",
           name: "Abdulaziz Al-Dosari",
           location: "Dammam",
         },
@@ -696,7 +813,7 @@ const en: typeof ar = {
         twitter: "X",
         instagram: "Instagram",
         linkedin: "LinkedIn",
-        whatsapp: "WhatsApp",
+        telegram: "Telegram",
       },
       copyright: "All rights reserved.",
     },
@@ -721,11 +838,11 @@ const en: typeof ar = {
         },
         {
           heading: "How we work",
-          body: "Everything is built around WhatsApp because that is where our users already are. We ask for an odometer reading on a schedule, work out whether each service is due by distance or by time — whichever comes first — and send one clear message you can answer with a single tap.",
+          body: "Everything is built around Telegram because it's fast, lightweight, and works on every device. We ask for an odometer reading on a schedule, work out whether each service is due by distance or by time — whichever comes first — and send one clear message you can answer with a single tap.",
         },
         {
           heading: "Where we are now",
-          body: "The product is in active development. The dashboard, vehicle registration, and service schedules work today; full WhatsApp delivery is the next milestone.",
+          body: "The product is in active development. The dashboard, vehicle registration, and service schedules work today; odometer requests and service reminders run through our Telegram bot.",
         },
       ],
     },
@@ -751,11 +868,11 @@ const en: typeof ar = {
         },
         {
           heading: "Why we need your phone number",
-          body: "Your phone number is the primary channel. We use it to send odometer requests and service reminders over WhatsApp only. It is never used for marketing and never shared with advertisers.",
+          body: "We send odometer requests and service reminders over Telegram only after you link your account yourself, and we store the chat id for that purpose alone. Your phone number and Telegram account are never used for marketing and never shared with advertisers.",
         },
         {
           heading: "Where your data lives",
-          body: "Data is stored in a Supabase database hosted in the EU, and messages are delivered through Meta's WhatsApp Cloud API. Each user can only read their own records, and that restriction is enforced by the database itself rather than by the application alone.",
+          body: "Data is stored in a Supabase database hosted in the EU, and messages are delivered through the Telegram Bot API. Each user can only read their own records, and that restriction is enforced by the database itself rather than by the application alone.",
         },
         {
           heading: "Deleting your data",

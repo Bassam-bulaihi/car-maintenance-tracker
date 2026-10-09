@@ -1,82 +1,36 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { requireSessionUser } from "@/lib/auth/session";
+import { createProfile } from "@/lib/auth/profile";
+import { validateProfileFields } from "@/lib/auth/validation";
 import { getLocale } from "@/lib/i18n/locale";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 
 export type AuthFormState = { error: string } | undefined;
 
-// Phone number is the WhatsApp channel identity (PRD 5.1) — required at
-// signup, not an optional profile field.
-const E164_PHONE = /^\+[1-9]\d{7,14}$/;
-
-export async function signup(
+// Sign-in, sign-up and sign-out run client-side through Clerk
+// (components/auth/*). This only covers the server half: creating the
+// public.users profile when it couldn't be created automatically.
+export async function completeOnboarding(
   _prevState: AuthFormState,
   formData: FormData,
 ): Promise<AuthFormState> {
+  const user = await requireSessionUser();
   const locale = await getLocale();
   const t = dictionaries[locale].auth.errors;
 
   const name = String(formData.get("name") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim();
   const phoneNumber = String(formData.get("phone_number") ?? "").trim();
-  const password = String(formData.get("password") ?? "");
 
-  if (name.length < 2) {
-    return { error: t.name };
-  }
-  if (!E164_PHONE.test(phoneNumber)) {
-    return { error: t.phone };
-  }
-  if (password.length < 8) {
-    return { error: t.password };
-  }
+  const fieldError = validateProfileFields(name, phoneNumber);
+  if (fieldError) return { error: t[fieldError] };
 
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        name,
-        phone_number: phoneNumber,
-        language: locale,
-      },
-    },
-  });
-
+  const { error } = await createProfile(user, { name, phoneNumber, language: locale });
   if (error) {
-    return { error: error.message };
-  }
-
-  if (!data.session) {
-    redirect("/login?confirm=1");
+    // 23505 = unique_violation; phone_number is unique per account.
+    return { error: error.code === "23505" ? t.phoneTaken : t.generic };
   }
 
   redirect("/dashboard");
-}
-
-export async function login(
-  _prevState: AuthFormState,
-  formData: FormData,
-): Promise<AuthFormState> {
-  const email = String(formData.get("email") ?? "").trim();
-  const password = String(formData.get("password") ?? "");
-
-  const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-  if (error) {
-    const locale = await getLocale();
-    return { error: dictionaries[locale].auth.errors.invalidCredentials };
-  }
-
-  redirect("/dashboard");
-}
-
-export async function logout() {
-  const supabase = await createClient();
-  await supabase.auth.signOut();
-  redirect("/login");
 }

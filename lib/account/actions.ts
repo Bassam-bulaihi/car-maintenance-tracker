@@ -2,26 +2,20 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
+import { createLinkToken, telegramBotUsername } from "@/lib/messaging/linking";
+import { requireProfile } from "@/lib/auth/profile";
+import { E164_PHONE } from "@/lib/auth/validation";
 import { getLocale } from "@/lib/i18n/locale";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 
 export type AccountFormState = { error: string } | { success: true } | undefined;
 
-// Same E.164 shape enforced at signup (lib/auth/actions.ts) — phone number
-// is the WhatsApp channel identity, so it can't be relaxed here.
-const E164_PHONE = /^\+[1-9]\d{7,14}$/;
-
 export async function updateAccount(
   _prevState: AccountFormState,
   formData: FormData,
 ): Promise<AccountFormState> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) redirect("/login");
+  const { supabase, user } = await requireProfile();
 
   const locale = await getLocale();
   const t = dictionaries[locale].auth.errors;
@@ -48,4 +42,25 @@ export async function updateAccount(
   revalidatePath("/dashboard/account");
   revalidatePath("/dashboard");
   return { success: true };
+}
+
+// Telegram can't open a chat from a phone number, so the user links it:
+// this issues a one-time token and sends them to t.me/<bot>?start=<token>;
+// the bot's /start handler (lib/messaging/inbound.ts) finishes the link.
+export async function connectTelegram() {
+  const { user } = await requireProfile();
+  const username = telegramBotUsername();
+  if (!username) redirect("/dashboard/account");
+
+  const token = await createLinkToken(createServiceClient(), user.id);
+  redirect(`https://t.me/${username}?start=${token}`);
+}
+
+export async function disconnectTelegram() {
+  const { user } = await requireProfile();
+  await createServiceClient()
+    .from("users")
+    .update({ telegram_chat_id: null, telegram_linked_at: null })
+    .eq("id", user.id);
+  revalidatePath("/dashboard/account");
 }

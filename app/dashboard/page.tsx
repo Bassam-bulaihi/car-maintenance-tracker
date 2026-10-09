@@ -1,7 +1,6 @@
 import Link from "next/link";
-import { LogOut, Shield, Plus, Car, UserCog } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
-import { logout } from "@/lib/auth/actions";
+import { LogOut, Shield, Plus, Car, UserCog, Send } from "lucide-react";
+import { requireProfile } from "@/lib/auth/profile";
 import { getDictionary } from "@/lib/i18n/locale";
 import { listVehicles } from "@/lib/dashboard/data";
 import { LanguageToggle } from "@/components/layout/language-toggle";
@@ -10,20 +9,16 @@ import { Button } from "@/components/ui/button";
 import { BracketLabel } from "@/components/ui/bracket-label";
 import { VehicleCard } from "@/components/dashboard/vehicle-card";
 import { Logo } from "@/components/brand/logo";
+import { LogoutButton } from "@/components/auth/logout-button";
 
 export default async function DashboardPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const [{ data: profile }, vehicles, { locale, t }] = await Promise.all([
-    supabase.from("users").select("name").eq("id", user!.id).single(),
+  const [{ user, profile }, vehicles, { locale, t }] = await Promise.all([
+    requireProfile(),
     listVehicles(),
     getDictionary(),
   ]);
 
-  const isAdmin = user?.app_metadata?.role === "admin";
+  const isAdmin = user.isAdmin;
 
   return (
     <div className="flex flex-1 flex-col">
@@ -57,11 +52,11 @@ export default async function DashboardPage() {
               </Button>
             </Link>
           )}
-          <form action={logout}>
-            <Button type="submit" variant="outline" size="sm" locale={locale} icon={<LogOut className="h-4 w-4" />}>
+          <LogoutButton>
+            <Button type="button" variant="outline" size="sm" locale={locale} icon={<LogOut className="h-4 w-4" />}>
               {t.common.logout}
             </Button>
-          </form>
+          </LogoutButton>
         </div>
       </header>
 
@@ -81,6 +76,21 @@ export default async function DashboardPage() {
             </Button>
           </Link>
         </div>
+
+        {profile.telegram_chat_id === null && (
+          <Link
+            href="/dashboard/account"
+            className="flex flex-wrap items-center justify-between gap-3 border border-hairline bg-surface-card/70 px-5 py-4 text-sm text-body backdrop-blur-sm transition-colors hover:border-on-dark hover:text-on-dark"
+          >
+            <span className="flex items-center gap-3">
+              <Send className="h-4 w-4 shrink-0 text-muted rtl:scale-x-[-1]" aria-hidden="true" />
+              {t.account.telegram.notConnected}
+            </span>
+            <span className={`font-bold text-on-dark ${locale === "en" ? "uppercase tracking-[1.5px]" : ""}`}>
+              {t.account.telegram.connect}
+            </span>
+          </Link>
+        )}
 
         {vehicles.length === 0 ? (
           <div className="flex flex-col items-center gap-4 border border-hairline bg-surface-card/70 backdrop-blur-sm px-6 py-16 text-center">

@@ -1,3 +1,4 @@
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter, Noto_Sans_Arabic } from "next/font/google";
 import { getLocale } from "@/lib/i18n/locale";
@@ -21,12 +22,12 @@ const inter = Inter({
 
 const SITE_NAME = "Car Auto";
 const SITE_DESCRIPTION =
-  "Register your car and get WhatsApp reminders when a service is due — oil, filters, brakes, tracked by odometer and by date.";
+  "Register your car and get Telegram reminders when a service is due — oil, filters, brakes, tracked by odometer and by date.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://car-auto-app.vercel.app"),
   title: {
-    default: `${SITE_NAME} — WhatsApp car maintenance reminders`,
+    default: `${SITE_NAME} — Telegram car maintenance reminders`,
     template: `%s · ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
@@ -34,12 +35,12 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: SITE_NAME,
-    title: `${SITE_NAME} — WhatsApp car maintenance reminders`,
+    title: `${SITE_NAME} — Telegram car maintenance reminders`,
     description: SITE_DESCRIPTION,
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE_NAME} — WhatsApp car maintenance reminders`,
+    title: `${SITE_NAME} — Telegram car maintenance reminders`,
     description: SITE_DESCRIPTION,
   },
 };
@@ -64,8 +65,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       <body
         className={`min-h-full flex flex-col ${locale === "ar" ? "font-arabic" : "font-latin"}`}
       >
-        <NeatBackground />
-        {children}
+        <ClerkProvider>
+          <NeatBackground />
+          {children}
+        </ClerkProvider>
       </body>
     </html>
   );

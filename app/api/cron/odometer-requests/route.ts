@@ -8,6 +8,10 @@ import type { Locale } from "@/lib/i18n/dictionaries";
 // daily; whether any given vehicle actually gets asked today is decided
 // here against ODOMETER_REQUEST_INTERVAL_DAYS (PRD §5.3 — cadence must be
 // configuration, not hardcoded into the trigger).
+//
+// The user answers by replying to the Telegram message with a number (or by
+// entering it on the web); either moves odometer_updated_at and takes the
+// vehicle out of this query. Users without a linked chat are skipped.
 // Vercel Cron invokes scheduled routes with GET.
 export async function GET(request: NextRequest) {
   const auth = request.headers.get("authorization");
@@ -22,7 +26,7 @@ export async function GET(request: NextRequest) {
 
   const { data: vehicles, error } = await supabase
     .from("vehicles")
-    .select("id, make, model, odometer_updated_at, users(phone_number, language)")
+    .select("id, make, model, odometer_updated_at, users(id, telegram_chat_id, language)")
     .or(`odometer_updated_at.is.null,odometer_updated_at.lt.${cutoff}`);
 
   if (error) {
@@ -32,12 +36,12 @@ export async function GET(request: NextRequest) {
 
   const candidates = vehicles ?? [];
   if (candidates.length === 0) {
-    return NextResponse.json({ candidates: 0, sent: 0 });
+    return NextResponse.json({ candidates: 0, sent: 0, unlinked: 0 });
   }
 
   // A vehicle already asked within the window doesn't get asked again just
   // because odometer_updated_at hasn't moved yet (the user simply hasn't
-  // replied) — otherwise a daily cron would re-ask every single day.
+  // answered yet) — otherwise a daily cron would re-ask every day.
   const { data: recentRequests } = await supabase
     .from("notifications")
     .select("vehicle_id")
@@ -51,16 +55,21 @@ export async function GET(request: NextRequest) {
   const recentlyAsked = new Set((recentRequests ?? []).map((n) => n.vehicle_id));
 
   let sent = 0;
+  let unlinked = 0;
   for (const vehicle of candidates) {
     if (recentlyAsked.has(vehicle.id)) continue;
     const user = vehicle.users;
     if (!user) continue;
+    if (user.telegram_chat_id === null) {
+      unlinked++;
+      continue;
+    }
 
     try {
       await sendOdometerRequest(
         supabase,
         { id: vehicle.id, make: vehicle.make, model: vehicle.model },
-        { phone_number: user.phone_number, language: user.language as Locale },
+        { id: user.id, telegram_chat_id: user.telegram_chat_id, language: user.language as Locale },
       );
       sent++;
     } catch (err) {
@@ -68,5 +77,5 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  return NextResponse.json({ candidates: candidates.length, sent });
+  return NextResponse.json({ candidates: candidates.length, sent, unlinked });
 }

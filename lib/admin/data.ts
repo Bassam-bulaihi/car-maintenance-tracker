@@ -1,21 +1,14 @@
 import "server-only";
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { requireAdminUser } from "@/lib/auth/session";
 
-// Secure (DB-backed) admin check for reads in Server Components. Proxy only
-// does an optimistic JWT-claims check; this re-verifies against the Auth
-// server, per docs/PRD.md rule 0.5 — see also lib/admin/actions.ts for the
-// matching check on writes.
+// Secure admin check for reads in Server Components. Proxy only does an
+// optimistic session-claims check; this re-verifies against a user freshly
+// fetched from Clerk — see also lib/admin/actions.ts for the matching check
+// on writes.
 export async function requireAdmin() {
+  const user = await requireAdminUser();
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user || user.app_metadata?.role !== "admin") {
-    redirect(user ? "/dashboard" : "/login");
-  }
-
   return { supabase, user };
 }
 

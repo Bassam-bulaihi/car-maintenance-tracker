@@ -144,9 +144,17 @@ export const PresetCollection = forwardRef<
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          // Flex-wrap rather than a grid so a short last row (or a filter
+          // that leaves one or two cards) sits centred under the heading
+          // instead of hugging the start edge; widths reproduce the
+          // 1/2/3-up columns with the same 24px gutter.
+          <div className="flex flex-wrap justify-center gap-6">
             {filtered.map((preset, i) => (
-              <Reveal key={preset.slug} delay={Math.min(i, 3) * 70} className="flex">
+              <Reveal
+                key={preset.slug}
+                delay={Math.min(i, 3) * 70}
+                className="flex w-full sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-3rem)/3)]"
+              >
                 <PresetCard
                   preset={preset}
                   categoryLabel={t.home.collection.tabs[preset.category]}

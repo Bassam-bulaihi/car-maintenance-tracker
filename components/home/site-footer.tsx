@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FaXTwitter, FaInstagram, FaLinkedinIn, FaWhatsapp } from "react-icons/fa6";
+import { FaXTwitter, FaInstagram, FaLinkedinIn, FaTelegram } from "react-icons/fa6";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { Logo } from "@/components/brand/logo";
 
@@ -13,7 +13,7 @@ export function SiteFooter({ t }: { t: Dictionary }) {
     { icon: FaXTwitter, label: t.home.footer.social.twitter, href: "https://x.com" },
     { icon: FaInstagram, label: t.home.footer.social.instagram, href: "https://instagram.com" },
     { icon: FaLinkedinIn, label: t.home.footer.social.linkedin, href: "https://linkedin.com" },
-    { icon: FaWhatsapp, label: t.home.footer.social.whatsapp, href: "https://whatsapp.com" },
+    { icon: FaTelegram, label: t.home.footer.social.telegram, href: "https://telegram.org" },
   ];
 
   const columns = [

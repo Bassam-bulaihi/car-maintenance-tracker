@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { LogOut } from "lucide-react";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
-import { createClient } from "@/lib/supabase/server";
-import { logout } from "@/lib/auth/actions";
+import { auth } from "@clerk/nextjs/server";
+import { LogoutButton } from "@/components/auth/logout-button";
 import { LanguageToggle } from "@/components/layout/language-toggle";
 import { MobileMenu } from "@/components/home/mobile-menu";
 import { Button } from "@/components/ui/button";
@@ -14,11 +14,7 @@ import { Logo } from "@/components/brand/logo";
 // instead of "Log in / Sign up" here too — this header is reused on every
 // marketing/content page, not just the ones behind the auth wall.
 export async function SiteHeader({ locale, t }: { locale: Locale; t: Dictionary }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  const isAuthenticated = Boolean(user);
+  const { isAuthenticated } = await auth();
 
   const links = [
     { href: "#how-it-works", label: t.home.nav.links.howItWorks },
@@ -61,9 +57,9 @@ export async function SiteHeader({ locale, t }: { locale: Locale; t: Dictionary 
                   {t.home.nav.dashboard}
                 </Button>
               </Link>
-              <form action={logout} className="hidden sm:block">
+              <LogoutButton className="hidden sm:block">
                 <Button
-                  type="submit"
+                  type="button"
                   variant="outline"
                   size="sm"
                   locale={locale}
@@ -71,7 +67,7 @@ export async function SiteHeader({ locale, t }: { locale: Locale; t: Dictionary 
                 >
                   {t.common.logout}
                 </Button>
-              </form>
+              </LogoutButton>
             </>
           ) : (
             <>
@@ -96,7 +92,6 @@ export async function SiteHeader({ locale, t }: { locale: Locale; t: Dictionary 
             isAuthenticated={isAuthenticated}
             dashboardLabel={t.home.nav.dashboard}
             logoutLabel={t.common.logout}
-            logoutAction={logout}
           />
         </div>
       </div>

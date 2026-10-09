@@ -1,22 +1,13 @@
 // One-off operator script to grant the admin role to a user.
 //
 // There is deliberately no self-service "become admin" UI or API route —
-// role lives in auth.users.app_metadata (never user-editable), so granting
-// it requires the secret key. Run manually:
+// the role lives in the user's Clerk publicMetadata (never user-editable)
+// and reaches the app and Supabase RLS through the session token's
+// app_metadata.role claim. Run manually:
 //
 //   node scripts/set-admin.mjs someone@example.com
 //
-import { readFileSync } from "node:fs";
-import { createClient } from "@supabase/supabase-js";
-
-function loadEnvLocal() {
-  const env = {};
-  for (const line of readFileSync(new URL("../.env.local", import.meta.url), "utf8").split("\n")) {
-    const match = line.match(/^([A-Z0-9_]+)\s*=\s*(.*)$/);
-    if (match) env[match[1]] = match[2].trim();
-  }
-  return env;
-}
+import { loadEnvLocal, requireEnv } from "./env.mjs";
 
 const email = process.argv[2];
 if (!email) {
@@ -25,28 +16,25 @@ if (!email) {
 }
 
 const env = loadEnvLocal();
-const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SECRET_KEY, {
-  auth: { autoRefreshToken: false, persistSession: false },
-});
+requireEnv(env, "CLERK_SECRET_KEY");
 
-const { data: profile, error: lookupError } = await supabase
-  .from("users")
-  .select("id")
-  .eq("email", email)
-  .single();
+async function clerk(path, init = {}) {
+  const response = await fetch(`https://api.clerk.com/v1${path}`, {
+    ...init,
+    headers: { Authorization: `Bearer ${env.CLERK_SECRET_KEY}`, "Content-Type": "application/json" },
+  });
+  if (!response.ok) throw new Error(`Clerk ${path}: ${response.status} ${await response.text()}`);
+  return response.json();
+}
 
-if (lookupError || !profile) {
-  console.error(`No user found with email ${email}. They must sign up first.`);
+const [user] = await clerk(`/users?email_address=${encodeURIComponent(email)}`);
+if (!user) {
+  console.error(`No Clerk user with email ${email} — they need to sign up first.`);
   process.exit(1);
 }
 
-const { error: updateError } = await supabase.auth.admin.updateUserById(profile.id, {
-  app_metadata: { role: "admin" },
+await clerk(`/users/${user.id}/metadata`, {
+  method: "PATCH",
+  body: JSON.stringify({ public_metadata: { role: "admin" } }),
 });
-
-if (updateError) {
-  console.error(updateError.message);
-  process.exit(1);
-}
-
-console.log(`${email} is now an admin. They must sign out and back in for it to take effect.`);
+console.log(`Granted admin to ${email} (${user.id}). Takes effect on their next session token refresh.`);

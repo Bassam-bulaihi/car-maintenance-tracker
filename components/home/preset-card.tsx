@@ -38,7 +38,7 @@ export function PresetCard({
   ];
 
   return (
-    <article className="flex flex-col border border-hairline bg-surface-card/70 backdrop-blur-sm transition-colors hover:border-hairline-strong">
+    <article className="flex w-full flex-col border border-hairline bg-surface-card/70 backdrop-blur-sm transition-colors hover:border-hairline-strong">
       <div className="relative h-44 border-b border-hairline bg-surface-soft/50 backdrop-blur-sm">
         <Image
           src={`/cars/${preset.slug}.jpg`}

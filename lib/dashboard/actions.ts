@@ -1,24 +1,21 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { requireProfile } from "@/lib/auth/profile";
 import { getLocale } from "@/lib/i18n/locale";
 import { dictionaries } from "@/lib/i18n/dictionaries";
-import { ODOMETER_MAX_JUMP_KM } from "@/lib/config";
 import type { ServiceType } from "@/lib/admin/service-types";
-import { markServiceDone } from "@/lib/dashboard/service-confirmation";
+import { closeServiceReminders, markServiceDone } from "@/lib/dashboard/service-confirmation";
+import { recordOdometerReading, validateOdometerReading } from "@/lib/dashboard/odometer";
+import { notifyDueServices } from "@/lib/messaging/due-services";
+import { createServiceClient } from "@/lib/supabase/service";
 
 export type DashboardFormState = { error: string } | undefined;
 
 async function requireUserAction() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) redirect("/login");
-
+  const { supabase, user } = await requireProfile();
   return { supabase, user };
 }
 
@@ -116,30 +113,30 @@ export async function submitOdometerReading(
   }
 
   const readingRaw = String(formData.get("reading_km") ?? "").trim();
-  const reading = Number(readingRaw);
+  const reading = /^\d+$/.test(readingRaw) ? Number(readingRaw) : null;
 
-  if (!Number.isInteger(reading)) {
-    return { error: t.errors.invalidOdometer };
-  }
-  if (reading < vehicle.current_odometer) {
-    return { error: t.errors.odometerTooLow };
-  }
-  if (reading - vehicle.current_odometer > ODOMETER_MAX_JUMP_KM) {
-    return { error: t.errors.odometerImplausible };
-  }
+  const validationError = validateOdometerReading(vehicle.current_odometer, reading);
+  if (validationError === "invalid") return { error: t.errors.invalidOdometer };
+  if (validationError === "tooLow") return { error: t.errors.odometerTooLow };
+  if (validationError === "implausible") return { error: t.errors.odometerImplausible };
 
-  const { error: insertError } = await supabase.from("odometer_readings").insert({
-    vehicle_id: vehicleId,
-    reading_km: reading,
-    source: "web",
-  });
-  if (insertError) return { error: insertError.message };
-
-  const { error: updateError } = await supabase
-    .from("vehicles")
-    .update({ current_odometer: reading, odometer_updated_at: new Date().toISOString() })
-    .eq("id", vehicleId);
-  if (updateError) return { error: updateError.message };
+  // Ownership is verified above with the user's own client; the write runs
+  // as the service role because it also closes the vehicle's open Telegram
+  // odometer request, and then evaluates due services right away — the same
+  // path a Telegram reply takes (PRD §5.3).
+  const service = createServiceClient();
+  try {
+    await recordOdometerReading(service, vehicleId, reading!, "web");
+  } catch (error) {
+    console.error("submitOdometerReading failed", error);
+    return { error: t.errors.generic };
+  }
+  // Sending reminders must not hold up (or fail) the form response.
+  after(() =>
+    notifyDueServices(service, { vehicleId }).catch((error) =>
+      console.error("submitOdometerReading: due-service evaluation failed", error),
+    ),
+  );
 
   revalidatePath(`/dashboard/vehicles/${vehicleId}`);
   revalidatePath("/dashboard");
@@ -164,6 +161,9 @@ export async function confirmServiceDone(
   if (vehicleError || !vehicle) throw vehicleError ?? new Error("vehicle not found");
 
   await markServiceDone(supabase, vehicleId, itemId, serviceType, vehicle.current_odometer);
+  // Resolve any Telegram reminder still waiting on this item, so its buttons
+  // answer "already answered" instead of logging the service twice.
+  await closeServiceReminders(createServiceClient(), itemId, "done");
 
   revalidatePath(`/dashboard/vehicles/${vehicleId}`);
 }

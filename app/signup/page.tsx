@@ -1,8 +1,13 @@
+import { redirect } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
 import { SignupForm } from "@/components/auth/signup-form";
 import { LanguageToggle } from "@/components/layout/language-toggle";
 import { getDictionary } from "@/lib/i18n/locale";
 
 export default async function SignupPage() {
+  const { isAuthenticated } = await auth();
+  if (isAuthenticated) redirect("/dashboard");
+
   const { locale, t } = await getDictionary();
 
   return (

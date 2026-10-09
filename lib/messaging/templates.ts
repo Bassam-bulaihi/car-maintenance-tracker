@@ -1,38 +1,64 @@
-import type { Locale } from "@/lib/i18n/dictionaries";
+import { dictionaries, type Locale } from "@/lib/i18n/dictionaries";
+import type { ForceReplyMarkup, InlineKeyboardMarkup } from "@/lib/messaging/telegram-client";
 
-export type OutboundMessageType = "odometer_request" | "service_due";
+export type OutboundMessageType = "odometer_request" | "service_due" | "re_reminder";
+export type BotCopyKey = keyof (typeof dictionaries)["en"]["telegramBot"];
 
-// Twilio's WhatsApp channel only accepts pre-approved Content API templates
-// for business-initiated sends outside the 24h session window (same
-// constraint docs/PRD.md §7.2 documents for Meta's template requirement) —
-// one Content SID per (message type, language), configured in the Twilio
-// Console and referenced here by env var rather than hardcoded.
-const CONTENT_SID_ENV: Record<OutboundMessageType, Record<Locale, string>> = {
-  odometer_request: {
-    ar: "TWILIO_CONTENT_SID_ODOMETER_REQUEST_AR",
-    en: "TWILIO_CONTENT_SID_ODOMETER_REQUEST_EN",
-  },
-  service_due: {
-    ar: "TWILIO_CONTENT_SID_SERVICE_DUE_AR",
-    en: "TWILIO_CONTENT_SID_SERVICE_DUE_EN",
-  },
+// Inline-button payloads (callback_data, max 64 bytes): "<action>:<notification id>".
+export const CALLBACK_DONE = "done";
+export const CALLBACK_NOT_DONE = "notdone";
+
+export function fill(template: string, values: Record<string, string | number>) {
+  return template.replace(/\{(\w+)\}/g, (match, key: string) =>
+    key in values ? String(values[key]) : match,
+  );
+}
+
+/** One line of bot copy in the user's language (lib/i18n/dictionaries.ts → telegramBot). */
+export function botText(locale: Locale, key: BotCopyKey, values: Record<string, string | number> = {}) {
+  return fill(dictionaries[locale].telegramBot[key], values);
+}
+
+export type OutboundMessage = {
+  text: string;
+  replyMarkup: InlineKeyboardMarkup | ForceReplyMarkup;
 };
 
-export function getContentSid(messageType: OutboundMessageType, locale: Locale): string {
-  const envVar = CONTENT_SID_ENV[messageType][locale];
-  const sid = process.env[envVar];
-  if (!sid) {
-    throw new Error(`Missing ${envVar} — register the Content API template in Twilio first.`);
+/**
+ * A business-initiated message. Telegram has no template approval step, so
+ * the copy lives with the rest of the translations:
+ *
+ * - odometer_request uses force_reply, so the user's answer arrives as a
+ *   reply to this exact message — which is how a number is tied to the right
+ *   vehicle when one user owns several.
+ * - service_due / re_reminder carry inline Done / Not done buttons (PRD §7.2:
+ *   tappable buttons, not a free-text prompt) whose payload names the
+ *   notification being answered.
+ */
+export function buildOutboundMessage(
+  messageType: OutboundMessageType,
+  locale: Locale,
+  values: { notificationId: string; vehicle: string; link: string; service?: string },
+): OutboundMessage {
+  const t = dictionaries[locale].telegramBot;
+
+  if (messageType === "odometer_request") {
+    return {
+      text: fill(t.odometerRequest, { vehicle: values.vehicle, link: values.link }),
+      replyMarkup: { force_reply: true, input_field_placeholder: t.odometerPlaceholder },
+    };
   }
-  return sid;
-}
 
-// Twilio Content API variables are a flat {"1": "...", "2": "..."} object,
-// positionally substituted into the approved template body.
-export function odometerRequestVariables(vehicleLabel: string) {
-  return JSON.stringify({ "1": vehicleLabel });
-}
-
-export function serviceDueVariables(vehicleLabel: string, serviceLabel: string) {
-  return JSON.stringify({ "1": vehicleLabel, "2": serviceLabel });
+  const copy = messageType === "re_reminder" ? t.serviceDueReminder : t.serviceDue;
+  return {
+    text: fill(copy, { vehicle: values.vehicle, service: values.service ?? "", link: values.link }),
+    replyMarkup: {
+      inline_keyboard: [
+        [
+          { text: t.doneButton, callback_data: `${CALLBACK_DONE}:${values.notificationId}` },
+          { text: t.notDoneButton, callback_data: `${CALLBACK_NOT_DONE}:${values.notificationId}` },
+        ],
+      ],
+    },
+  };
 }
