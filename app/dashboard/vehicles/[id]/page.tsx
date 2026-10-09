@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
-import { PenLine, Save } from "lucide-react";
+import { Droplet, PenLine, Save } from "lucide-react";
 import { updateVehiclePlate } from "@/lib/dashboard/actions";
 import { TextInput } from "@/components/ui/text-input";
 import { Button } from "@/components/ui/button";
-import { getVehicle, listOdometerReadings, listServiceHistory } from "@/lib/dashboard/data";
+import { getRecommendedOil, getVehicle, listOdometerReadings, listServiceHistory } from "@/lib/dashboard/data";
 import { getDictionary } from "@/lib/i18n/locale";
 import { BackLink } from "@/components/ui/back-link";
 import { BracketLabel } from "@/components/ui/bracket-label";
@@ -24,9 +24,10 @@ export default async function VehicleDetailPage({
     notFound();
   }
 
-  const [history, readings] = await Promise.all([
+  const [history, readings, recommendedOil] = await Promise.all([
     listServiceHistory(vehicle.id),
     listOdometerReadings(vehicle.id, 8),
+    getRecommendedOil(vehicle),
   ]);
 
   return (
@@ -43,6 +44,12 @@ export default async function VehicleDetailPage({
             {vehicle.make} {vehicle.model}{" "}
             <span className="font-mono text-body">/ {vehicle.year}</span>
           </h1>
+          {recommendedOil && (
+            <p className="flex items-center gap-2 text-sm text-body">
+              <Droplet className="h-4 w-4 shrink-0 text-muted" aria-hidden="true" />
+              {t.dashboard.recommendedOil}: <span className="font-mono text-on-dark">{recommendedOil}</span>
+            </p>
+          )}
           <details className="group">
             <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 text-xs text-muted hover:text-on-dark [&::-webkit-details-marker]:hidden">
               <PenLine className="h-3.5 w-3.5" aria-hidden="true" />

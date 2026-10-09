@@ -70,3 +70,16 @@ export async function listActivePresets() {
   if (error) throw error;
   return data;
 }
+
+/** The catalog's recommended oil for a car, or null for custom cars. */
+export async function getRecommendedOil(vehicle: { make: string; model: string; year: number }) {
+  const { supabase } = await requireUser();
+  const { data } = await supabase
+    .from("vehicle_presets")
+    .select("recommended_oil")
+    .eq("make", vehicle.make)
+    .eq("model", vehicle.model)
+    .eq("year", vehicle.year)
+    .maybeSingle();
+  return data?.recommended_oil ?? null;
+}
