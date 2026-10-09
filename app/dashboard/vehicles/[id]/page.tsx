@@ -74,7 +74,7 @@ export default async function VehicleDetailPage({
         </section>
         <section className="flex flex-col gap-3">
           <SectionHeader>{t.dashboard.readingsSectionTitle}</SectionHeader>
-          <OdometerHistoryList readings={readings} locale={locale} t={t} />
+          <OdometerHistoryList vehicleId={vehicle.id} readings={readings} locale={locale} t={t} />
         </section>
       </div>
 

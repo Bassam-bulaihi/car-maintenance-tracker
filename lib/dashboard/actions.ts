@@ -331,3 +331,41 @@ export async function updateServiceItem(
   revalidatePath("/dashboard");
   return { saved: true };
 }
+
+/**
+ * Undoes the most recent odometer reading — the escape hatch for a typo that
+ * was confirmed past the plausibility check (readings can otherwise only go
+ * up). The vehicle falls back to the previous reading; the very first
+ * (registration) reading can't be undone.
+ */
+export async function undoLatestReading(vehicleId: string) {
+  const { supabase, user } = await requireUserAction();
+  const { data: vehicle } = await supabase
+    .from("vehicles")
+    .select("id")
+    .eq("id", vehicleId)
+    .eq("user_id", user.id)
+    .single();
+  if (!vehicle) throw new Error("vehicle not found");
+
+  const service = createServiceClient();
+  const { data: readings } = await service
+    .from("odometer_readings")
+    .select("id, reading_km, recorded_at")
+    .eq("vehicle_id", vehicleId)
+    .order("recorded_at", { ascending: false })
+    .limit(2);
+  if (!readings || readings.length < 2) return;
+
+  const [latest, previous] = readings;
+  const { error: deleteError } = await service.from("odometer_readings").delete().eq("id", latest.id);
+  if (deleteError) throw deleteError;
+  const { error: updateError } = await service
+    .from("vehicles")
+    .update({ current_odometer: previous.reading_km, odometer_updated_at: previous.recorded_at })
+    .eq("id", vehicleId);
+  if (updateError) throw updateError;
+
+  revalidatePath(`/dashboard/vehicles/${vehicleId}`);
+  revalidatePath("/dashboard");
+}
