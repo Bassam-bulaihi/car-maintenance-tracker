@@ -544,7 +544,7 @@ const ar = {
         },
         {
           heading: "أين تُحفظ بياناتك",
-          body: "تُحفظ البيانات في قاعدة بيانات Supabase مستضافة في الاتحاد الأوروبي، وتُرسل الرسائل عبر واجهة Telegram Bot API. كل مستخدم يرى بياناته فقط، وهذا مفروض على مستوى قاعدة البيانات نفسها.",
+          body: "تُحفظ البيانات في قاعدة بيانات Supabase مستضافة في الاتحاد الأوروبي، ويتولّى Clerk تسجيل الدخول وكلمات المرور (لا نحفظ كلمة مرورك لدينا)، وتُرسل الرسائل عبر واجهة Telegram Bot API. كل مستخدم يرى بياناته فقط، وهذا مفروض على مستوى قاعدة البيانات نفسها.",
         },
         {
           heading: "حذف البيانات",
@@ -1116,7 +1116,7 @@ const en: typeof ar = {
         },
         {
           heading: "Where your data lives",
-          body: "Data is stored in a Supabase database hosted in the EU, and messages are delivered through the Telegram Bot API. Each user can only read their own records, and that restriction is enforced by the database itself rather than by the application alone.",
+          body: "Data is stored in a Supabase database hosted in the EU, sign-in and passwords are handled by Clerk (we never store your password ourselves), and messages are delivered through the Telegram Bot API. Each user can only read their own records, and that restriction is enforced by the database itself rather than by the application alone.",
         },
         {
           heading: "Deleting your data",
