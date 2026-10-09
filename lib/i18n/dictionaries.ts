@@ -177,6 +177,7 @@ const ar = {
     serviceDue: "🔧 {vehicle}\n\nموعد صيانة مستحق: {service}\nهل تم التغيير؟\n\nصفحة السيارة:\n{link}",
     serviceDueReminder:
       "⏰ تذكير — {vehicle}\n\nما زالت الصيانة مستحقة: {service}\nهل تم التغيير؟\n\nصفحة السيارة:\n{link}",
+    recommendedOil: "🛢 الزيت الموصى به: {oil}",
     doneButton: "✅ تم التغيير",
     notDoneButton: "❌ لم يتم التغيير",
     doneAck: "تم التسجيل ✅",
@@ -751,6 +752,7 @@ const en: typeof ar = {
     odometerPlaceholder: "e.g. 25000",
     serviceDue: "🔧 {vehicle}\n\nService due: {service}\nHas it been done?\n\nCar page:\n{link}",
     serviceDueReminder: "⏰ Reminder — {vehicle}\n\nStill due: {service}\nHas it been done?\n\nCar page:\n{link}",
+    recommendedOil: "🛢 Recommended oil: {oil}",
     doneButton: "✅ Done",
     notDoneButton: "❌ Not done",
     doneAck: "Recorded ✅",

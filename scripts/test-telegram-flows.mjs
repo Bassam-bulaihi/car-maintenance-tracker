@@ -449,6 +449,7 @@ try {
     // Engine oil crossed 5,000 km → immediate service_due with buttons.
     const reminder = made[1].params;
     assert.match(reminder.text, /زيت المحرك|زيت/);
+    assert.match(reminder.text, /الزيت الموصى به: 5W-30/, "names the Accent 2025 preset's oil");
     const [done, notDone] = reminder.reply_markup.inline_keyboard[0];
     assert.match(done.callback_data, /^done:/);
     assert.match(notDone.callback_data, /^notdone:/);

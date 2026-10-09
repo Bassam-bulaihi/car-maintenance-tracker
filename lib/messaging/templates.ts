@@ -41,7 +41,7 @@ export type OutboundMessage = {
 export function buildOutboundMessage(
   messageType: OutboundMessageType,
   locale: Locale,
-  values: { notificationId: string; vehicle: string; link: string; service?: string },
+  values: { notificationId: string; vehicle: string; link: string; service?: string; oil?: string | null },
 ): OutboundMessage {
   const t = dictionaries[locale].telegramBot;
 
@@ -53,8 +53,10 @@ export function buildOutboundMessage(
   }
 
   const copy = messageType === "re_reminder" ? t.serviceDueReminder : t.serviceDue;
+  // Oil services name the oil to buy, from the car's catalog preset.
+  const oilLine = values.oil ? `\n\n${fill(t.recommendedOil, { oil: values.oil })}` : "";
   return {
-    text: fill(copy, { vehicle: values.vehicle, service: values.service ?? "", link: values.link }),
+    text: fill(copy, { vehicle: values.vehicle, service: values.service ?? "", link: values.link }) + oilLine,
     replyMarkup: {
       inline_keyboard: [
         [

@@ -36,7 +36,7 @@ export async function notifyDueServices(
   let query = supabase
     .from("vehicle_service_items")
     .select(
-      "id, service_type, interval_km, interval_months, last_service_odometer, last_service_date, status, vehicles!inner(id, make, model, current_odometer, users!inner(id, telegram_chat_id, language))",
+      "id, service_type, interval_km, interval_months, last_service_odometer, last_service_date, status, vehicles!inner(id, make, model, year, current_odometer, users!inner(id, telegram_chat_id, language))",
     );
   if (options.vehicleId) query = query.eq("vehicle_id", options.vehicleId);
   const testPrefix = schedulerUserIdPrefix();
@@ -73,6 +73,20 @@ export async function notifyDueServices(
     }
   }
 
+  // Recommended oil per car, from the matching catalog preset (custom cars
+  // have none and simply get no oil line).
+  const oilByCar = new Map<string, string | null>();
+  const makes = [...new Set(due.map((item) => item.vehicles.make))];
+  if (makes.length > 0) {
+    const { data: presets } = await supabase
+      .from("vehicle_presets")
+      .select("make, model, year, recommended_oil")
+      .in("make", makes);
+    for (const preset of presets ?? []) {
+      oilByCar.set(`${preset.make}|${preset.model}|${preset.year}`, preset.recommended_oil);
+    }
+  }
+
   for (const item of due) {
     // Keep the stored status honest for anything reading the column
     // directly (the UI recomputes it live from the same rule).
@@ -93,7 +107,12 @@ export async function notifyDueServices(
     try {
       await sendServiceDueNotification(
         supabase,
-        { id: vehicle.id, make: vehicle.make, model: vehicle.model },
+        {
+          id: vehicle.id,
+          make: vehicle.make,
+          model: vehicle.model,
+          recommendedOil: oilByCar.get(`${vehicle.make}|${vehicle.model}|${vehicle.year}`) ?? null,
+        },
         { id: user.id, telegram_chat_id: user.telegram_chat_id, language: user.language as Locale },
         { id: item.id, service_type: item.service_type as ServiceType },
         previousSend ? "re_reminder" : "service_due",

@@ -40,6 +40,7 @@ const sample = {
   odometer: nf.format(25000),
   name: user.name,
   services: locale === "ar" ? "زيت المحرك، فلتر الزيت" : "Engine oil, Oil filter",
+  oil: "0W-20",
 };
 const fill = (template) => template.replace(/\{(\w+)\}/g, (m, key) => sample[key] ?? m);
 const inert = (label) => ({ text: label, callback_data: "preview" });
@@ -47,7 +48,7 @@ const inert = (label) => ({ text: label, callback_data: "preview" });
 // [label, text, reply_markup?] — business-initiated messages first, then replies.
 const messages = [
   ["Odometer request (reply box opens automatically)", fill(t.odometerRequest), { force_reply: true, input_field_placeholder: t.odometerPlaceholder }],
-  ["Service due", fill(t.serviceDue), { inline_keyboard: [[inert(t.doneButton), inert(t.notDoneButton)]] }],
+  ["Service due", `${fill(t.serviceDue)}\n\n${fill(t.recommendedOil)}`, { inline_keyboard: [[inert(t.doneButton), inert(t.notDoneButton)]] }],
   ["Service re-reminder", fill(t.serviceDueReminder), { inline_keyboard: [[inert(t.doneButton), inert(t.notDoneButton)]] }],
   ["Reply: reading saved", fill(t.odometerSaved)],
   ["Reply: not a number", fill(t.odometerInvalid)],

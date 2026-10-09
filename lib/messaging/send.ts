@@ -10,7 +10,7 @@ type ServiceClient = SupabaseClient<Database>;
 
 /** A user the bot can reach: their profile has a linked Telegram chat. */
 export type NotifiableUser = { id: string; telegram_chat_id: number; language: Locale };
-type NotifiableVehicle = { id: string; make: string; model: string };
+type NotifiableVehicle = { id: string; make: string; model: string; recommendedOil?: string | null };
 
 export function vehicleLabel(vehicle: { make: string; model: string }) {
   return `${vehicle.make} ${vehicle.model}`;
@@ -52,6 +52,10 @@ async function sendNotification(
       vehicle: vehicleLabel(vehicle),
       link: vehiclePageUrl(vehicle.id),
       service: serviceItem ? serviceTypeLabel(serviceItem.service_type, user.language) : undefined,
+      oil:
+        serviceItem && (serviceItem.service_type === "engine_oil" || serviceItem.service_type === "oil_filter")
+          ? vehicle.recommendedOil
+          : null,
     });
 
     const message = await sendMessage(user.telegram_chat_id, outbound.text, outbound.replyMarkup);
