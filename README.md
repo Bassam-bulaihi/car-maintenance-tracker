@@ -20,15 +20,16 @@ Car Maintenance Tracker is a web application that helps car owners track vehicle
 
 ## Core Features
 
-* User registration and authentication
-* Multiple vehicle management
-* Vehicle maintenance tracking
-* Odometer tracking through the web and Telegram replies
-* Mileage- and time-based maintenance reminders
-* Telegram service reminders with Done / Not done buttons
-* Maintenance history
-* Arabic and English support
-* Admin dashboard for vehicle maintenance presets
+* User registration and authentication (Clerk, email code verification)
+* Multiple vehicle management — pick from a catalog of 400+ presets (make → model → year) or add a custom car with your own schedule
+* Per-service progress (km / time left), early logging, and adjustable baselines and intervals
+* Odometer tracking through the web and Telegram replies, with a time-scaled plausibility check that asks for confirmation instead of rejecting
+* Mileage- and time-based maintenance reminders, re-reminded per service item
+* Telegram bot: odometer requests, Done / Not done buttons, `/status`, tolerant Arabic/English replies
+* Maintenance and odometer history
+* Arabic (RTL) and English, with the bot following the site language
+* Public model catalog at `/models`
+* Admin console: preset search, editing, re-sync to registered cars, and a follow-up queue for stuck Telegram threads
 
 ## Technology
 

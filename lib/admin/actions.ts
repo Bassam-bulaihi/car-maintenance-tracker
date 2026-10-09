@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { todayInAppTimeZone } from "@/lib/config";
 import { requireAdminUser } from "@/lib/auth/session";
 import { SERVICE_TYPES, type ServiceType } from "@/lib/admin/service-types";
 import { getLocale } from "@/lib/i18n/locale";
@@ -289,4 +290,59 @@ export async function resolveFollowUp(notificationId: string, _formData: FormDat
     .eq("needs_follow_up", true);
   if (error) throw error;
   revalidatePath("/admin/follow-ups");
+}
+
+export type ResyncState = { synced: number } | { error: string } | undefined;
+
+/**
+ * PRD §5.7: editing a preset only affects newly registered vehicles unless
+ * an admin explicitly re-syncs. This is that explicit step: every vehicle of
+ * the same make/model/year gets the preset's current intervals, and any
+ * service the preset gained since is added (baseline = that car's current
+ * reading, today). Each car's own baselines and history are untouched, and
+ * services the preset no longer lists are left in place.
+ */
+export async function resyncPresetVehicles(presetId: string, _prev: ResyncState, _formData: FormData): Promise<ResyncState> {
+  await requireAdminAction();
+  const service = createServiceClient();
+
+  const { data: preset, error: presetError } = await service
+    .from("vehicle_presets")
+    .select("make, model, year, preset_service_items(service_type, interval_km, interval_months)")
+    .eq("id", presetId)
+    .single();
+  if (presetError || !preset) return { error: "preset not found" };
+
+  const { data: vehicles, error: vehiclesError } = await service
+    .from("vehicles")
+    .select("id, current_odometer, vehicle_service_items(id, service_type)")
+    .eq("make", preset.make)
+    .eq("model", preset.model)
+    .eq("year", preset.year);
+  if (vehiclesError) return { error: vehiclesError.message };
+
+  const today = todayInAppTimeZone();
+  for (const vehicle of vehicles ?? []) {
+    for (const item of preset.preset_service_items) {
+      const existing = vehicle.vehicle_service_items.find((v) => v.service_type === item.service_type);
+      const { error } = existing
+        ? await service
+            .from("vehicle_service_items")
+            .update({ interval_km: item.interval_km, interval_months: item.interval_months })
+            .eq("id", existing.id)
+        : await service.from("vehicle_service_items").insert({
+            vehicle_id: vehicle.id,
+            service_type: item.service_type,
+            interval_km: item.interval_km,
+            interval_months: item.interval_months,
+            last_service_odometer: vehicle.current_odometer,
+            last_service_date: today,
+            status: "ok",
+          });
+      if (error) return { error: error.message };
+    }
+  }
+
+  revalidatePath(`/admin/presets/${presetId}`);
+  return { synced: vehicles?.length ?? 0 };
 }

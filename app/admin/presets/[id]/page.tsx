@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getPresetWithItems } from "@/lib/admin/data";
+import { countVehiclesForPreset, getPresetWithItems } from "@/lib/admin/data";
 import { updatePreset } from "@/lib/admin/actions";
 import { getDictionary } from "@/lib/i18n/locale";
 import { PresetForm } from "@/components/admin/preset-form";
@@ -10,6 +10,7 @@ import { RecommendedPartsList } from "@/components/admin/recommended-parts-list"
 import { BackLink } from "@/components/ui/back-link";
 import { BracketLabel } from "@/components/ui/bracket-label";
 import { SectionHeader } from "@/components/ui/section-header";
+import { ResyncPresetForm } from "@/components/admin/resync-preset-form";
 
 export default async function EditPresetPage({
   params,
@@ -25,6 +26,7 @@ export default async function EditPresetPage({
   }
 
   const usedTypes = new Set(preset.preset_service_items.map((i) => i.service_type));
+  const vehicleCount = await countVehiclesForPreset(preset);
 
   return (
     <div className="flex flex-col gap-12">
@@ -69,6 +71,11 @@ export default async function EditPresetPage({
           )}
           <AddServiceItemForm presetId={preset.id} usedTypes={usedTypes} locale={locale} t={t} />
         </div>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <SectionHeader>{t.admin.presets.resyncTitle}</SectionHeader>
+        <ResyncPresetForm presetId={preset.id} vehicleCount={vehicleCount} locale={locale} t={t} />
       </section>
 
       <section className="flex flex-col gap-3">

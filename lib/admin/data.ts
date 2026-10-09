@@ -58,3 +58,15 @@ export async function listFollowUps() {
   if (error) throw error;
   return data;
 }
+
+/** How many registered vehicles a preset re-sync would touch. */
+export async function countVehiclesForPreset(preset: { make: string; model: string; year: number }) {
+  await requireAdmin();
+  const { count } = await createServiceClient()
+    .from("vehicles")
+    .select("id", { count: "exact", head: true })
+    .eq("make", preset.make)
+    .eq("model", preset.model)
+    .eq("year", preset.year);
+  return count ?? 0;
+}
