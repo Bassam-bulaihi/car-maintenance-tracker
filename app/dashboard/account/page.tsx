@@ -34,7 +34,8 @@ export default async function AccountPage() {
 
       <TelegramConnect
         linked={profile.telegram_chat_id !== null}
-        available={telegramBotUsername() !== null}
+        linkedAt={profile.telegram_linked_at}
+        botUsername={telegramBotUsername()}
         locale={locale}
         t={t}
       />

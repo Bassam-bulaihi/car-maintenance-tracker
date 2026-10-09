@@ -1,22 +1,26 @@
-import { Send, Unlink } from "lucide-react";
+import { ExternalLink, Send, Unlink } from "lucide-react";
 import { connectTelegram, disconnectTelegram } from "@/lib/account/actions";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
+import { formatDate } from "@/lib/i18n/format";
 
 // Account-page panel for the Telegram link: status line plus connect /
 // reconnect / disconnect. Same surface treatment as AccountForm beside it.
 export function TelegramConnect({
   linked,
-  available,
+  linkedAt,
+  botUsername,
   locale,
   t,
 }: {
   linked: boolean;
-  available: boolean;
+  linkedAt: string | null;
+  botUsername: string | null;
   locale: Locale;
   t: Dictionary;
 }) {
   const copy = t.account.telegram;
+  const available = botUsername !== null;
 
   return (
     <section className="flex flex-col gap-4 border border-hairline bg-surface-card/70 p-6 backdrop-blur-sm">
@@ -27,6 +31,9 @@ export function TelegramConnect({
         <p className={`text-sm ${linked ? "text-success" : "text-body"}`} role="status">
           {linked ? copy.connected : copy.notConnected}
         </p>
+        {linked && linkedAt && (
+          <p className="font-mono text-xs text-muted">{copy.linkedSince.replace("{date}", formatDate(locale, linkedAt))}</p>
+        )}
       </div>
 
       {available ? (
@@ -41,6 +48,18 @@ export function TelegramConnect({
               {linked ? copy.reconnect : copy.connect}
             </Button>
           </form>
+          {linked && botUsername && (
+            <ButtonLink
+              href={`https://t.me/${botUsername}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="outline"
+              locale={locale}
+              icon={<ExternalLink className="h-4 w-4" />}
+            >
+              {copy.openChat}
+            </ButtonLink>
+          )}
           {linked && (
             <form action={disconnectTelegram}>
               <Button type="submit" variant="danger" locale={locale} icon={<Unlink className="h-4 w-4" />}>

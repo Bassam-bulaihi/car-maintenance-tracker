@@ -158,6 +158,8 @@ const ar = {
     telegram: {
       title: "تيليجرام",
       connected: "مرتبط — تصلك التذكيرات على تيليجرام.",
+      linkedSince: "مرتبط منذ {date}",
+      openChat: "فتح المحادثة",
       notConnected: "غير مرتبط — لن تصلك التذكيرات حتى تربط حسابك.",
       connect: "ربط تيليجرام",
       reconnect: "إعادة الربط",
@@ -729,6 +731,8 @@ const en: typeof ar = {
     telegram: {
       title: "Telegram",
       connected: "Connected — reminders arrive on Telegram.",
+      linkedSince: "Linked since {date}",
+      openChat: "Open chat",
       notConnected: "Not connected — you won't get reminders until you connect.",
       connect: "Connect Telegram",
       reconnect: "Reconnect",
