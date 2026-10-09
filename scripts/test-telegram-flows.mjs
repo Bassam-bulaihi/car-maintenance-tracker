@@ -207,6 +207,8 @@ async function seed() {
       { vehicle_id: v.Camry, service_type: "air_filter", interval_km: 20000, interval_months: 12, last_service_odometer: 45000, last_service_date: monthsAgo(13) },
       // Rio: nothing due.
       { vehicle_id: v.Rio, service_type: "engine_oil", interval_km: 30000, interval_months: 12, last_service_odometer: 9000, last_service_date: today },
+      // Rio: brake fluid overdue by time — the English user's reminder path.
+      { vehicle_id: v.Rio, service_type: "brake_fluid", interval_km: null, interval_months: 24, last_service_odometer: 5000, last_service_date: monthsAgo(25) },
     ])
     .select("id, vehicle_id, service_type");
   if (itemsError) throw itemsError;
@@ -216,6 +218,7 @@ async function seed() {
     accent: v.Accent,
     camry: v.Camry,
     rio: v.Rio,
+    rioBrake: item[`${v.Rio}:brake_fluid`],
     sunny: v.Sunny,
     focus: v.Focus,
     oil: item[`${v.Accent}:engine_oil`],
@@ -634,13 +637,47 @@ try {
     assert.match(call.params.text, /Saved: 35,000 km for Kia Rio/);
     assert.equal((await row("vehicles", "id", f.rio)).current_odometer, 35000);
   });
-  await scenario("linked user with nothing open gets help for free text", async () => {
+  await scenario("free text while a service reminder is open → asks for Done / Not done (English)", async () => {
     const [call] = await send(text(CHAT_B, "hello?", { languageCode: "en" }), 1);
-    assert.match(call.params.text, /I'm the Car Auto bot/);
+    assert.match(call.params.text, /Please tap Done or Not done/);
   });
   await scenario("/help in English", async () => {
     const [call] = await send(text(CHAT_B, "/help", { languageCode: "en" }), 1);
     assert.match(call.params.text, /I'm the Car Auto bot/);
+  });
+
+  // --- English service reminder path -------------------------------------------
+  await scenario("English user got an English service reminder with English buttons", async () => {
+    const note = (await rows("notifications", "service_item_id", f.rioBrake)).find((n) => n.message_type === "service_due");
+    assert.ok(note, "brake fluid reminder was sent by the service cron");
+    const sent = calls.find((c) => c.params.chat_id === CHAT_B && c.params.reply_markup?.inline_keyboard?.[0]?.[0]?.callback_data === `done:${note.id}`);
+    assert.match(sent.params.text, /Service due: Brake fluid/);
+    assert.equal(sent.params.reply_markup.inline_keyboard[0][0].text, "✅ Done");
+    assert.equal(sent.params.reply_markup.inline_keyboard[0][1].text, "❌ Not done");
+  });
+  await scenario("English: Not done button → English confirmation and toast", async () => {
+    const note = (await rows("notifications", "service_item_id", f.rioBrake)).find((n) => n.message_type === "service_due");
+    const made = await send(tap(CHAT_B, `notdone:${note.id}`, Number(note.provider_message_id)), 2);
+    assert.match(made[0].params.text, /Brake fluid is still due/);
+    assert.equal(made[1].params.text, "OK — still due");
+  });
+  await scenario("English: Not done twice → already answered", async () => {
+    const note = (await rows("notifications", "service_item_id", f.rioBrake)).find((n) => n.message_type === "service_due");
+    const made = await send(tap(CHAT_B, `notdone:${note.id}`, Number(note.provider_message_id)), 3);
+    assert.match(made[0].params.text, /already been answered/);
+  });
+  await scenario("English: Done button → recorded in English, baseline reset", async () => {
+    const note = (await rows("notifications", "service_item_id", f.rioBrake)).find((n) => n.message_type === "service_due");
+    const made = await send(tap(CHAT_B, `done:${note.id}`, Number(note.provider_message_id)), 3);
+    assert.match(made[0].params.text, /Recorded: Brake fluid on Kia Rio at 35,000 km/);
+    assert.equal(made[1].params.text, "Recorded ✅");
+    assert.equal((await row("vehicle_service_items", "id", f.rioBrake)).last_service_date, today);
+  });
+  await scenario("English: nothing open → free text gets help, a bare number is refused", async () => {
+    const [help] = await send(text(CHAT_B, "hello?", { languageCode: "en" }), 1);
+    assert.match(help.params.text, /I'm the Car Auto bot/);
+    const [refused] = await send(text(CHAT_B, "36000", { languageCode: "en" }), 1);
+    assert.match(refused.params.text, /only accepted here as a reply/);
   });
 
   // --- Copy coverage ----------------------------------------------------------
