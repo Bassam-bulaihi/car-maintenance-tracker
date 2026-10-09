@@ -313,8 +313,9 @@ try {
   await scenario("/start with a valid token links the chat to the account", async () => {
     const token = `valid_${suffix}`;
     await db.from("telegram_link_tokens").insert({ token, user_id: ids.a, expires_at: new Date(Date.now() + 600000).toISOString() });
-    const [call] = await send(text(CHAT_A, `/start ${token}`), 1);
+    const [call, status] = await send(text(CHAT_A, `/start ${token}`), 2);
     assert.match(call.params.text, /تم ربط تيليجرام بحسابك يا مستخدم أ/);
+    assert.match(status.params.text, /حالة سياراتك/, "followed by the cars' status");
     const user = await row("users", "id", ids.a);
     assert.equal(user.telegram_chat_id, CHAT_A);
     assert.ok(user.telegram_linked_at);

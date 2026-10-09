@@ -83,6 +83,8 @@ async function handleMessage(supabase: ServiceClient, message: TelegramMessage) 
     const linked = await consumeLinkToken(supabase, command[2].trim(), chatId);
     if (linked) {
       await reply(chatId, botText(linked.language as Locale, "linked", { name: linked.name }));
+      // First contact: show where their cars stand right away.
+      await sendStatus(supabase, { ...linked, language: linked.language as Locale, telegram_chat_id: chatId });
     } else {
       await reply(chatId, botText(fallbackLocale, "linkInvalid", { link: accountUrl() }));
     }
