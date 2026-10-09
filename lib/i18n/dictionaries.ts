@@ -451,6 +451,13 @@ const ar = {
       desc: "الرابط الذي فتحته غير صحيح أو تم نقل الصفحة.",
       cta: "العودة للرئيسية",
     },
+    error: {
+      code: "خطأ",
+      title: "حدث خطأ غير متوقع",
+      desc: "لم نتمكن من تحميل هذه الصفحة. حاول مرة أخرى بعد لحظات.",
+      retry: "إعادة المحاولة",
+      home: "العودة للرئيسية",
+    },
   },
 
   pages: {
@@ -995,6 +1002,13 @@ const en: typeof ar = {
       title: "Page not found",
       desc: "That link is wrong, or the page has moved.",
       cta: "Back to home",
+    },
+    error: {
+      code: "Error",
+      title: "Something went wrong",
+      desc: "We couldn't load this page. Please try again in a moment.",
+      retry: "Try again",
+      home: "Back to home",
     },
   },
 
