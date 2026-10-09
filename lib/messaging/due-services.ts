@@ -51,11 +51,14 @@ export async function notifyDueServices(
   const run: DueServiceRun = { evaluated: items?.length ?? 0, due: due.length, sent: 0, unlinked: 0 };
   if (due.length === 0) return run;
 
-  // Most recent send per item: inside the window → skip; none → first ask.
+  // Most recent send per item in the *current* cycle: inside the window →
+  // skip; none → first ask. Reminders answered "done" belong to the cycle
+  // that confirmation closed, so an item due again starts fresh.
   const { data: previous } = await supabase
     .from("notifications")
     .select("service_item_id, sent_at")
     .in("message_type", ["service_due", "re_reminder"])
+    .or("response.is.null,response.neq.done")
     .in(
       "service_item_id",
       due.map((item) => item.id),

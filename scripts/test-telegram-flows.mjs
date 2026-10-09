@@ -14,6 +14,7 @@ import { spawn } from "node:child_process";
 import { createServer } from "node:http";
 import { createClient } from "@supabase/supabase-js";
 import { loadEnvLocal, requireEnv } from "./env.mjs";
+import { dictionaries } from "../lib/i18n/dictionaries.ts";
 
 const env = loadEnvLocal();
 requireEnv(env, "NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_SECRET_KEY", "TELEGRAM_WEBHOOK_SECRET", "CRON_SECRET");
@@ -403,6 +404,14 @@ try {
     assert.equal((await row("notifications", "id", camryRequest.id)).pending_reading_km, null);
     assert.equal((await row("vehicles", "id", f.camry)).current_odometer, 50000);
   });
+  await scenario("3rd bad attempt → flagged for follow-up, bot stops asking (Arabic)", async () => {
+    const [call] = await send(text(CHAT_A, "1", { replyTo: Number(camryRequest.provider_message_id) }), 1);
+    assert.match(call.params.text, /سنترك هذا الطلب/);
+    const note = await row("notifications", "id", camryRequest.id);
+    assert.equal(note.reply_attempts, 3);
+    assert.equal(note.needs_follow_up, true);
+    assert.equal(note.responded_at, null, "thread stays open — a valid reading is still accepted");
+  });
   await scenario("typed 'نعم' answers a pending big-jump confirmation → saved + due reminders", async () => {
     await send(text(CHAT_A, "60000", { replyTo: Number(camryRequest.provider_message_id) }), 1);
     const made = await send(text(CHAT_A, "نعم"), 3); // saved + brake fluid + air filter reminders
@@ -540,6 +549,27 @@ try {
     assert.equal((await row("vehicle_service_items", "id", f.brakeFluid)).last_service_date, today);
   });
 
+  await scenario("odometer cron asks again once the cadence window has passed", async () => {
+    const old = new Date(Date.now() - 15 * 86400000).toISOString();
+    await db.from("vehicles").update({ odometer_updated_at: old }).eq("id", f.accent);
+    await db.from("notifications").update({ sent_at: old }).eq("vehicle_id", f.accent).eq("message_type", "odometer_request");
+    const { calls: made } = await cron("odometer-requests");
+    const toA = made.filter((c) => c.params.chat_id === CHAT_A);
+    assert.equal(toA.length, 1, "only the Accent is due for a check-in");
+    assert.equal(toA[0].params.reply_markup.force_reply, true);
+  });
+  await scenario("15 days since the last reading allows +15,000 km; above that the 'Yes' button saves it", async () => {
+    const request = (await rows("notifications", "vehicle_id", f.accent))
+      .filter((n) => n.message_type === "odometer_request" && !n.responded_at)[0];
+    const [prompt] = await send(text(CHAT_A, "40000", { replyTo: Number(request.provider_message_id) }), 1);
+    assert.match(prompt.params.text, /١٩٬٠٠٠/, "19,000 km jump is above the 15-day allowance");
+    // saved + oil due again (40,000 − 21,000 ≥ 5,000) + toast + buttons removed
+    const made = await send(tap(CHAT_A, `okread:${request.id}`, 7003), 4);
+    assert.match(made[0].params.text, /تم حفظ القراءة: ٤٠٬٠٠٠ كم/);
+    assert.ok(made.some((c) => c.method === "answerCallbackQuery" && /تم الحفظ/.test(c.params.text)));
+    assert.equal((await row("vehicles", "id", f.accent)).current_odometer, 40000);
+  });
+
   // --- Spoofing / isolation ---------------------------------------------------
   await scenario("a button tap from another user's chat changes nothing", async () => {
     const camryNotes = await rows("notifications", "vehicle_id", f.camry);
@@ -587,6 +617,42 @@ try {
   await scenario("/help in English", async () => {
     const [call] = await send(text(CHAT_B, "/help", { languageCode: "en" }), 1);
     assert.match(call.params.text, /I'm the Car Auto bot/);
+  });
+
+  // --- Copy coverage ----------------------------------------------------------
+  // Every string the bot can send must have been produced by some scenario
+  // above — as a message, a button label, an input placeholder, or a
+  // callback toast — so no message ships untested.
+  const templateRegex = (template) =>
+    new RegExp(
+      "^" + template.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\\\{\w+\\\}/g, "[\\s\\S]+?") + "$",
+    );
+  const produced = [];
+  for (const { params } of calls) {
+    if (params.text) produced.push(params.text);
+    if (params.reply_markup?.input_field_placeholder) produced.push(params.reply_markup.input_field_placeholder);
+    for (const row of params.reply_markup?.inline_keyboard ?? []) for (const button of row) produced.push(button.text);
+  }
+  for (const locale of ["ar", "en"]) {
+    await scenario(`every bot message is exercised at least once (${locale})`, async () => {
+      const missing = Object.entries(dictionaries[locale].telegramBot)
+        .filter(([, template]) => !produced.some((textSent) => templateRegex(template).test(textSent)))
+        .map(([key]) => key);
+      if (locale === "en") {
+        // English runs a smaller path; report rather than fail on gaps the
+        // Arabic run already covers with identical logic.
+        if (missing.length) console.log(`      (English not exercised: ${missing.join(", ")})`);
+        return;
+      }
+      assert.deepEqual(missing, []);
+    });
+  }
+  await scenario("Arabic and English bot copy have the same keys and placeholders", async () => {
+    const placeholders = (t) => [...t.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort().join(",");
+    const ar = dictionaries.ar.telegramBot;
+    const en = dictionaries.en.telegramBot;
+    assert.deepEqual(Object.keys(ar).sort(), Object.keys(en).sort());
+    for (const key of Object.keys(ar)) assert.equal(placeholders(ar[key]), placeholders(en[key]), key);
   });
 } finally {
   await cleanup().catch((error) => console.error("cleanup failed", error));

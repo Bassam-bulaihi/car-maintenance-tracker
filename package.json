@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:telegram": "NODE_USE_ENV_PROXY=1 NO_PROXY=localhost,127.0.0.1 node scripts/test-telegram-flows.mjs"
+    "test:telegram": "NODE_USE_ENV_PROXY=1 NO_PROXY=localhost,127.0.0.1 node --no-warnings scripts/test-telegram-flows.mjs"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.9.13",
