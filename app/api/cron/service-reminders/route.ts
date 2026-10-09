@@ -13,7 +13,15 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const run = await notifyDueServices(createServiceClient());
+    const supabase = createServiceClient();
+    const run = await notifyDueServices(supabase);
+
+    // Housekeeping: Telegram only redelivers an update for about a day, so
+    // week-old dedupe keys and dead link tokens are safe to drop.
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    await supabase.from("inbound_message_events").delete().lt("received_at", weekAgo);
+    await supabase.from("telegram_link_tokens").delete().lt("expires_at", weekAgo);
+
     return NextResponse.json(run);
   } catch (error) {
     console.error("service-reminders cron: query failed", error);
