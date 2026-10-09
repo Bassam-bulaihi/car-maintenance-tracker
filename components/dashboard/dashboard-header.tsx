@@ -3,7 +3,7 @@ import { LogOut, Shield, UserCog } from "lucide-react";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import { LanguageToggle } from "@/components/layout/language-toggle";
 import { MStripeDivider } from "@/components/layout/m-stripe-divider";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { Logo } from "@/components/brand/logo";
 import { LogoutButton } from "@/components/auth/logout-button";
 
@@ -44,17 +44,13 @@ export function DashboardHeader({
         </div>
         <nav aria-label={t.account.navLabel} className="flex shrink-0 items-center gap-2 sm:gap-3">
           <LanguageToggle locale={locale} />
-          <Link href="/dashboard/account" aria-label={t.account.navLabel}>
-            <Button variant="outline" size="sm" locale={locale} icon={<UserCog className="h-4 w-4" />}>
+          <ButtonLink href="/dashboard/account" aria-label={t.account.navLabel} variant="outline" size="sm" locale={locale} icon={<UserCog className="h-4 w-4" />}>
               {label(t.account.navLabel)}
-            </Button>
-          </Link>
+            </ButtonLink>
           {isAdmin && (
-            <Link href="/admin/presets" aria-label={t.admin.nav.title}>
-              <Button variant="outline" size="sm" locale={locale} icon={<Shield className="h-4 w-4" />}>
+            <ButtonLink href="/admin/presets" aria-label={t.admin.nav.title} variant="outline" size="sm" locale={locale} icon={<Shield className="h-4 w-4" />}>
                 {label(t.admin.nav.title)}
-              </Button>
-            </Link>
+              </ButtonLink>
           )}
           <LogoutButton>
             <Button

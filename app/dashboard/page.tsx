@@ -3,7 +3,7 @@ import { Plus, Car, Send } from "lucide-react";
 import { requireProfile } from "@/lib/auth/profile";
 import { getDictionary } from "@/lib/i18n/locale";
 import { listVehicles } from "@/lib/dashboard/data";
-import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { BracketLabel } from "@/components/ui/bracket-label";
 import { VehicleCard } from "@/components/dashboard/vehicle-card";
 
@@ -26,11 +26,9 @@ export default async function DashboardPage() {
               {t.dashboard.vehiclesTitle}
             </h1>
           </div>
-          <Link href="/dashboard/vehicles/new">
-            <Button locale={locale} icon={<Plus className="h-4 w-4" />}>
+          <ButtonLink href="/dashboard/vehicles/new" locale={locale} icon={<Plus className="h-4 w-4" />}>
               {t.dashboard.addVehicle}
-            </Button>
-          </Link>
+            </ButtonLink>
         </div>
 
         {profile.telegram_chat_id === null && (
@@ -52,11 +50,9 @@ export default async function DashboardPage() {
           <div className="flex flex-col items-center gap-4 border border-hairline bg-surface-card/70 backdrop-blur-sm px-6 py-16 text-center">
             <Car className="h-10 w-10 text-muted" aria-hidden="true" />
             <p className="text-body">{t.dashboard.empty}</p>
-            <Link href="/dashboard/vehicles/new">
-              <Button locale={locale} icon={<Plus className="h-4 w-4" />}>
+            <ButtonLink href="/dashboard/vehicles/new" locale={locale} icon={<Plus className="h-4 w-4" />}>
                 {t.dashboard.emptyCta}
-              </Button>
-            </Link>
+              </ButtonLink>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Plus, ChevronRight, Search } from "lucide-react";
 import { listPresets } from "@/lib/admin/data";
 import { getDictionary } from "@/lib/i18n/locale";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { BracketLabel } from "@/components/ui/bracket-label";
 import { Select, TextInput } from "@/components/ui/text-input";
 import { formatNumber } from "@/lib/i18n/format";
@@ -32,11 +32,9 @@ export default async function AdminPresetsPage({ searchParams }: PageProps<"/adm
             {t.admin.presets.title}
           </h1>
         </div>
-        <Link href="/admin/presets/new">
-          <Button locale={locale} icon={<Plus className="h-4 w-4" />}>
+        <ButtonLink href="/admin/presets/new" locale={locale} icon={<Plus className="h-4 w-4" />}>
             {t.admin.presets.addPreset}
-          </Button>
-        </Link>
+          </ButtonLink>
       </div>
 
       <form method="get" className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_14rem_auto]">

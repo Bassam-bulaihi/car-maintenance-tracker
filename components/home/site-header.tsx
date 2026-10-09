@@ -5,7 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { LanguageToggle } from "@/components/layout/language-toggle";
 import { MobileMenu } from "@/components/home/mobile-menu";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { Logo } from "@/components/brand/logo";
 
 // Figma header row: logo (left) · hamburger · Login/Register (right).
@@ -52,11 +52,9 @@ export async function SiteHeader({ locale, t }: { locale: Locale; t: Dictionary 
           <LanguageToggle locale={locale} />
           {isAuthenticated ? (
             <>
-              <Link href="/dashboard" className="hidden sm:block">
-                <Button variant="outline" size="sm" locale={locale}>
+              <ButtonLink href="/dashboard" variant="outline" size="sm" locale={locale} className="max-sm:hidden">
                   {t.home.nav.dashboard}
-                </Button>
-              </Link>
+                </ButtonLink>
               <LogoutButton className="hidden sm:block">
                 <Button
                   type="button"
@@ -71,16 +69,12 @@ export async function SiteHeader({ locale, t }: { locale: Locale; t: Dictionary 
             </>
           ) : (
             <>
-              <Link href="/login" className="hidden sm:block">
-                <Button variant="outline" size="sm" locale={locale}>
+              <ButtonLink href="/login" variant="outline" size="sm" locale={locale} className="max-sm:hidden">
                   {t.home.nav.login}
-                </Button>
-              </Link>
-              <Link href="/signup" className="hidden sm:block">
-                <Button size="sm" locale={locale}>
+                </ButtonLink>
+              <ButtonLink href="/signup" size="sm" locale={locale} className="max-sm:hidden">
                   {t.home.nav.signup}
-                </Button>
-              </Link>
+                </ButtonLink>
             </>
           )}
           <MobileMenu

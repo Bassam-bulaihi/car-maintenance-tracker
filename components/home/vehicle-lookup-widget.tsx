@@ -1,12 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import { Search, ArrowRight, Gauge, Droplet, CalendarClock } from "lucide-react";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import type { CatalogModel } from "@/lib/home/catalog";
 import { TextInput, Select } from "@/components/ui/text-input";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { DataLabel } from "@/components/ui/data-label";
 import { BracketLabel } from "@/components/ui/bracket-label";
 
@@ -208,11 +207,9 @@ export function VehicleLookupWidget({
               </dl>
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <p className="text-sm text-muted">{t.home.lookup.note}</p>
-                <Link href="/signup">
-                  <Button size="sm" locale={locale}>
+                <ButtonLink href="/signup" size="sm" locale={locale}>
                     {t.home.lookup.resultCta}
-                  </Button>
-                </Link>
+                  </ButtonLink>
               </div>
             </div>
           ) : (

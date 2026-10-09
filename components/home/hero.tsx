@@ -1,7 +1,6 @@
-import Link from "next/link";
 import Image from "next/image";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
-import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { BracketLabel } from "@/components/ui/bracket-label";
 
 // Figma hero band (y 0–833): full-bleed photo band with the headline
@@ -40,14 +39,10 @@ export function Hero({ locale, t }: { locale: Locale; t: Dictionary }) {
         </p>
 
         <div className="flex flex-wrap items-center gap-4 pt-2">
-          <Link href="/signup">
-            <Button locale={locale}>{t.home.cta.primary}</Button>
-          </Link>
-          <Link href="#how-it-works">
-            <Button variant="outline" locale={locale}>
+          <ButtonLink href="/signup" locale={locale}>{t.home.cta.primary}</ButtonLink>
+          <ButtonLink href="#how-it-works" variant="outline" locale={locale}>
               {t.home.cta.secondary}
-            </Button>
-          </Link>
+            </ButtonLink>
         </div>
       </div>
     </section>

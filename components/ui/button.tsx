@@ -1,4 +1,5 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "react";
+import Link from "next/link";
 import type { Locale } from "@/lib/i18n/dictionaries";
 
 type Variant = "primary" | "outline" | "danger";
@@ -55,5 +56,36 @@ export function Button({
       {icon}
       {children}
     </button>
+  );
+}
+
+/**
+ * A navigation link styled exactly like Button. Use this instead of wrapping
+ * <Button> in <Link>: a <button> inside an <a> is invalid HTML and gives
+ * keyboard and screen-reader users two focus stops for one control.
+ */
+export function ButtonLink({
+  href,
+  variant = "primary",
+  size = "md",
+  locale,
+  icon,
+  className = "",
+  children,
+  ...props
+}: Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> & {
+  href: string;
+  variant?: Variant;
+  size?: Size;
+  locale?: Locale;
+  icon?: ReactNode;
+}) {
+  const caseClass = locale === "en" ? "uppercase tracking-[1.5px]" : "";
+
+  return (
+    <Link href={href} className={`${base} ${variants[variant]} ${sizes[size]} ${caseClass} ${className}`} {...props}>
+      {icon}
+      {children}
+    </Link>
   );
 }
