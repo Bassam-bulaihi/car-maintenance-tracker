@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { Car, ChevronRight } from "lucide-react";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
-import { computeServiceStatus } from "@/lib/dashboard/service-status";
-import { formatNumber } from "@/lib/i18n/format";
+import { computeNextDue, computeServiceStatus } from "@/lib/dashboard/service-status";
+import { serviceTypeLabel } from "@/lib/admin/service-types";
+import { formatDate, formatNumber } from "@/lib/i18n/format";
 
 type VehicleCardData = {
   id: string;
@@ -12,6 +13,7 @@ type VehicleCardData = {
   plate_no: string | null;
   current_odometer: number;
   vehicle_service_items: {
+    service_type: string;
     interval_km: number | null;
     interval_months: number | null;
     last_service_odometer: number | null;
@@ -35,6 +37,25 @@ export function VehicleCard({
   const dueCount = vehicle.vehicle_service_items.filter(
     (item) => computeServiceStatus(item, vehicle.current_odometer) === "due",
   ).length;
+
+  // The item furthest through its interval — what the owner should think
+  // about next.
+  const next = vehicle.vehicle_service_items
+    .map((item) => ({ item, due: computeNextDue(item, vehicle.current_odometer) }))
+    .sort((a, b) => b.due.progress - a.due.progress)[0];
+  const nextDetail = next
+    ? next.due.kmRemaining !== null
+      ? (next.due.kmRemaining >= 0 ? t.dashboard.kmLeft : t.dashboard.kmOverdue).replace(
+          "{km}",
+          formatNumber(locale, Math.abs(next.due.kmRemaining)),
+        )
+      : next.due.dueDate
+        ? (next.due.dueDate > new Date() ? t.dashboard.dueBy : t.dashboard.dueSince).replace(
+            "{date}",
+            formatDate(locale, next.due.dueDate),
+          )
+        : null
+    : null;
 
   return (
     <Link
@@ -60,6 +81,14 @@ export function VehicleCard({
           </div>
           <ChevronRight className="h-4 w-4 shrink-0 text-muted rtl:scale-x-[-1]" aria-hidden="true" />
         </div>
+
+        {next && (
+          <p className="text-xs text-body">
+            <span className="text-muted">{t.dashboard.nextUp}: </span>
+            {serviceTypeLabel(next.item.service_type, locale)}
+            {nextDetail ? ` — ${nextDetail}` : ""}
+          </p>
+        )}
 
         <div className="grid grid-cols-2 gap-4 border-t border-hairline pt-3">
           <div className="flex flex-col gap-0.5">
