@@ -15,14 +15,14 @@ import { BODY_TYPE_ICONS } from "@/components/icons/body-type-icons";
 export function BrowseByBodyType({
   locale,
   t,
-  availableBodies,
+  modelCountByBody,
   activeBody,
   onSelect,
   onClear,
 }: {
   locale: Locale;
   t: Dictionary;
-  availableBodies: Set<string>;
+  modelCountByBody: Map<string, number>;
   activeBody: string | null;
   onSelect: (body: string) => void;
   onClear: () => void;
@@ -47,7 +47,8 @@ export function BrowseByBodyType({
         {BODY_TYPES.map((type, i) => {
           const Icon = BODY_TYPE_ICONS[type.slug];
           const isActive = activeBody === type.slug;
-          const ready = availableBodies.has(type.slug);
+          const modelCount = modelCountByBody.get(type.slug) ?? 0;
+          const ready = modelCount > 0;
           return (
             <Reveal as="li" key={type.slug} delay={Math.min(i, 5) * 45}>
               <button
@@ -70,7 +71,7 @@ export function BrowseByBodyType({
                 <span className="text-sm font-bold text-on-dark">{type.label[locale]}</span>
                 {ready ? (
                   <span className="font-mono text-[11px] text-muted">
-                    {nf.format(type.modelCount)}
+                    {nf.format(modelCount)}
                   </span>
                 ) : (
                   <span className="font-mono text-[11px] text-muted ltr:uppercase ltr:tracking-[0.06em]">

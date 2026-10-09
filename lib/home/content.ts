@@ -27,22 +27,21 @@ export const BRANDS: Brand[] = [
 export type BodyType = {
   slug: string;
   label: Record<Locale, string>;
-  modelCount: number;
 };
 
 export const BODY_TYPES: BodyType[] = [
-  { slug: "sedan", label: { ar: "سيدان", en: "Sedan" }, modelCount: 32 },
-  { slug: "suv", label: { ar: "دفع رباعي", en: "SUV" }, modelCount: 27 },
-  { slug: "hatchback", label: { ar: "هاتشباك", en: "Hatchback" }, modelCount: 14 },
-  { slug: "pickup", label: { ar: "بيك أب", en: "Pickup" }, modelCount: 12 },
-  { slug: "crossover", label: { ar: "كروس أوفر", en: "Crossover" }, modelCount: 11 },
-  { slug: "coupe", label: { ar: "كوبيه", en: "Coupe" }, modelCount: 8 },
-  { slug: "minivan", label: { ar: "ميني فان", en: "Minivan" }, modelCount: 7 },
-  { slug: "wagon", label: { ar: "ستيشن", en: "Wagon" }, modelCount: 5 },
-  { slug: "convertible", label: { ar: "مكشوفة", en: "Convertible" }, modelCount: 4 },
-  { slug: "sports", label: { ar: "رياضية", en: "Sports" }, modelCount: 4 },
-  { slug: "van", label: { ar: "فان", en: "Van" }, modelCount: 3 },
-  { slug: "offroad", label: { ar: "طرق وعرة", en: "Off-road" }, modelCount: 3 },
+  { slug: "sedan", label: { ar: "سيدان", en: "Sedan" } },
+  { slug: "suv", label: { ar: "دفع رباعي", en: "SUV" } },
+  { slug: "hatchback", label: { ar: "هاتشباك", en: "Hatchback" } },
+  { slug: "pickup", label: { ar: "بيك أب", en: "Pickup" } },
+  { slug: "crossover", label: { ar: "كروس أوفر", en: "Crossover" } },
+  { slug: "coupe", label: { ar: "كوبيه", en: "Coupe" } },
+  { slug: "minivan", label: { ar: "ميني فان", en: "Minivan" } },
+  { slug: "wagon", label: { ar: "ستيشن", en: "Wagon" } },
+  { slug: "convertible", label: { ar: "مكشوفة", en: "Convertible" } },
+  { slug: "sports", label: { ar: "رياضية", en: "Sports" } },
+  { slug: "van", label: { ar: "فان", en: "Van" } },
+  { slug: "offroad", label: { ar: "طرق وعرة", en: "Off-road" } },
 ];
 
 export type PresetCategory = "sedan" | "suv" | "hatchback" | "pickup";

@@ -321,6 +321,7 @@ export type Database = {
       }
       vehicle_presets: {
         Row: {
+          body_type: string | null
           created_at: string
           id: string
           is_active: boolean
@@ -330,6 +331,7 @@ export type Database = {
           year: number
         }
         Insert: {
+          body_type?: string | null
           created_at?: string
           id?: string
           is_active?: boolean
@@ -339,6 +341,7 @@ export type Database = {
           year: number
         }
         Update: {
+          body_type?: string | null
           created_at?: string
           id?: string
           is_active?: boolean

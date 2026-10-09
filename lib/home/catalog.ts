@@ -5,6 +5,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 export type CatalogModel = {
   make: string;
   model: string;
+  bodyType: string | null;
   years: number[];
   oilType: string | null;
   oilIntervalKm: number | null;
@@ -21,7 +22,7 @@ export type CatalogModel = {
 export const getPublicCatalog = cache(async (): Promise<CatalogModel[]> => {
   const { data, error } = await createServiceClient()
     .from("vehicle_presets")
-    .select("make, model, year, recommended_oil, preset_service_items(service_type, interval_km, interval_months)")
+    .select("make, model, year, body_type, recommended_oil, preset_service_items(service_type, interval_km, interval_months)")
     .eq("is_active", true)
     .order("make")
     .order("model")
@@ -43,6 +44,7 @@ export const getPublicCatalog = cache(async (): Promise<CatalogModel[]> => {
     byModel.set(key, {
       make: preset.make,
       model: preset.model,
+      bodyType: preset.body_type,
       years: [preset.year],
       oilType: preset.recommended_oil,
       oilIntervalKm: oil?.interval_km ?? null,

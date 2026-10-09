@@ -3,8 +3,9 @@
 import { useActionState } from "react";
 import type { AdminFormState } from "@/lib/admin/actions";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
-import { TextInput } from "@/components/ui/text-input";
+import { Select, TextInput } from "@/components/ui/text-input";
 import { Button } from "@/components/ui/button";
+import { BODY_TYPES } from "@/lib/home/content";
 import { DataLabel } from "@/components/ui/data-label";
 
 type PresetFormAction = (
@@ -25,6 +26,7 @@ export function PresetForm({
     model: string;
     year: number;
     recommended_oil: string | null;
+    body_type: string | null;
   };
   submitLabel: string;
   locale: Locale;
@@ -67,6 +69,18 @@ export function PresetForm({
           name="recommended_oil"
           defaultValue={initial?.recommended_oil ?? ""}
         />
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <DataLabel htmlFor="body_type">{t.admin.presets.bodyType}</DataLabel>
+        <Select id="body_type" name="body_type" defaultValue={initial?.body_type ?? ""}>
+          <option value="">—</option>
+          {BODY_TYPES.map((b) => (
+            <option key={b.slug} value={b.slug}>
+              {b.label[locale]}
+            </option>
+          ))}
+        </Select>
       </div>
 
       {state?.error && (

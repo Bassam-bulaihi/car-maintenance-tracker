@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
-import { SHOWCASE_PRESETS, type PresetCategory } from "@/lib/home/content";
+import type { PresetCategory } from "@/lib/home/content";
 import type { CatalogModel } from "@/lib/home/catalog";
 import { BrowseByBrand } from "@/components/home/browse-by-brand";
 import { BrowseByBodyType } from "@/components/home/browse-by-body-type";
@@ -39,10 +39,13 @@ export function ModelsExplorer({
     for (const entry of catalog) counts.set(entry.make, (counts.get(entry.make) ?? 0) + 1);
     return counts;
   }, [catalog]);
-  const availableBodies = useMemo(
-    () => new Set(SHOWCASE_PRESETS.map((p) => p.category as string)),
-    [],
-  );
+  const modelCountByBody = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const entry of catalog) {
+      if (entry.bodyType) counts.set(entry.bodyType, (counts.get(entry.bodyType) ?? 0) + 1);
+    }
+    return counts;
+  }, [catalog]);
 
   const select = (next: ModelFilter) => {
     setFilter(next);
@@ -65,7 +68,7 @@ export function ModelsExplorer({
       <BrowseByBodyType
         locale={locale}
         t={t}
-        availableBodies={availableBodies}
+        modelCountByBody={modelCountByBody}
         activeBody={filter.kind === "body" ? filter.value : null}
         onSelect={(body) => select({ kind: "body", value: body })}
         onClear={() => setFilter({ kind: "none" })}

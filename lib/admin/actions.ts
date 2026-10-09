@@ -7,6 +7,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { todayInAppTimeZone } from "@/lib/config";
 import { requireAdminUser } from "@/lib/auth/session";
 import { SERVICE_TYPES, type ServiceType } from "@/lib/admin/service-types";
+import { BODY_TYPES } from "@/lib/home/content";
 import { getLocale } from "@/lib/i18n/locale";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 
@@ -40,18 +41,22 @@ async function presetFieldsFromForm(
       model: string;
       year: number;
       recommended_oil: string | null;
+      body_type: string | null;
     }
 > {
   const make = String(formData.get("make") ?? "").trim();
   const model = String(formData.get("model") ?? "").trim();
   const year = parseYear(formData.get("year"));
   const recommendedOil = String(formData.get("recommended_oil") ?? "").trim() || null;
+  const bodyTypeRaw = String(formData.get("body_type") ?? "");
+  // Only the slugs the landing page knows (lib/home/content.ts BODY_TYPES).
+  const bodyType = BODY_TYPES.some((b) => b.slug === bodyTypeRaw) ? bodyTypeRaw : null;
 
   if (!make || !model || year === null) {
     return { ok: false, error: (await adminMessages()).makeModelRequired };
   }
 
-  return { ok: true, make, model, year, recommended_oil: recommendedOil };
+  return { ok: true, make, model, year, recommended_oil: recommendedOil, body_type: bodyType };
 }
 
 export async function createPreset(
@@ -69,6 +74,7 @@ export async function createPreset(
       model: fields.model,
       year: fields.year,
       recommended_oil: fields.recommended_oil,
+      body_type: fields.body_type,
     })
     .select("id")
     .single();
@@ -99,6 +105,7 @@ export async function updatePreset(
       model: fields.model,
       year: fields.year,
       recommended_oil: fields.recommended_oil,
+      body_type: fields.body_type,
     })
     .eq("id", presetId);
 

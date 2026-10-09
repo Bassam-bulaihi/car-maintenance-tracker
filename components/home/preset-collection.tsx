@@ -57,7 +57,12 @@ export const PresetCollection = forwardRef<
 
   // Everything the catalog has for the selected make — most makes have no
   // photographed showcase card, but all of them can be registered.
-  const catalogForMake = filter.kind === "make" ? catalog.filter((c) => c.make === filter.value) : [];
+  const catalogForMake =
+    filter.kind === "make"
+      ? catalog.filter((c) => c.make === filter.value)
+      : filter.kind === "body"
+        ? catalog.filter((c) => c.bodyType === filter.value)
+        : [];
   const nf = new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US");
 
   const upper = locale === "en" ? "uppercase tracking-[-0.02em]" : "";
@@ -134,11 +139,11 @@ export const PresetCollection = forwardRef<
             <ul className="flex max-w-3xl flex-wrap justify-center gap-2">
               {catalogForMake.map((entry) => (
                 <li
-                  key={entry.model}
+                  key={`${entry.make}-${entry.model}`}
                   className="border border-hairline px-3 py-1.5 text-sm text-on-dark"
                   title={`${Math.min(...entry.years)}–${Math.max(...entry.years)}`}
                 >
-                  {entry.model}{" "}
+                  {filter.kind === "body" ? `${entry.make} ${entry.model}` : entry.model}{" "}
                   <span className="font-mono text-xs text-muted">
                     {Math.min(...entry.years)}–{Math.max(...entry.years)}
                   </span>
