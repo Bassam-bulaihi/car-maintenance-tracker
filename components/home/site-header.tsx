@@ -17,10 +17,10 @@ export async function SiteHeader({ locale, t }: { locale: Locale; t: Dictionary 
   const { isAuthenticated } = await auth();
 
   const links = [
-    { href: "#how-it-works", label: t.home.nav.links.howItWorks },
-    { href: "#models", label: t.home.nav.links.models },
-    { href: "#features", label: t.home.nav.links.features },
-    { href: "#testimonials", label: t.home.nav.links.testimonials },
+    { href: "/#how-it-works", label: t.home.nav.links.howItWorks },
+    { href: "/#models", label: t.home.nav.links.models },
+    { href: "/#features", label: t.home.nav.links.features },
+    { href: "/#testimonials", label: t.home.nav.links.testimonials },
   ];
 
   return (

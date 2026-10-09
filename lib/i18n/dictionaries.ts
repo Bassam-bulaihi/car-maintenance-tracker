@@ -444,6 +444,21 @@ const ar = {
   },
 
   pages: {
+    catalog: {
+      eyebrow: "الكتالوج",
+      title: "كل الموديلات",
+      intro: "{models} موديلاً من {makes} صانعاً، لكل منها جدول صيانة جاهز يُطبَّق تلقائياً عند تسجيل سيارتك.",
+      searchPlaceholder: "ابحث عن صانع أو موديل...",
+      allMakes: "الكل",
+      years: "السنوات",
+      oil: "الزيت",
+      oilEvery: "تغيير الزيت",
+      services: "خدمات تُتابَع",
+      cta: "سجّل سيارتك",
+      empty: "لا توجد نتائج — جرّب اسماً آخر.",
+      notListedTitle: "سيارتك غير موجودة؟",
+      notListedBody: "سجّلها يدوياً بعد إنشاء حسابك، واضبط جدول صيانتها بنفسك.",
+    },
     lastUpdated: "آخر تحديث",
     updatedDate: "19 أغسطس 2026",
     draftNotice:
@@ -964,6 +979,21 @@ const en: typeof ar = {
   },
 
   pages: {
+    catalog: {
+      eyebrow: "Catalog",
+      title: "All models",
+      intro: "{models} models from {makes} makes, each with a ready-made maintenance schedule applied the moment you register your car.",
+      searchPlaceholder: "Search a make or model...",
+      allMakes: "All",
+      years: "Years",
+      oil: "Oil",
+      oilEvery: "Oil change",
+      services: "services tracked",
+      cta: "Register your car",
+      empty: "No matches — try another name.",
+      notListedTitle: "Car not listed?",
+      notListedBody: "Add it manually after you sign up and set its maintenance schedule yourself.",
+    },
     lastUpdated: "Last updated",
     updatedDate: "19 August 2026",
     draftNotice: "This is working draft copy for development, not yet reviewed by a lawyer.",

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FaXTwitter, FaInstagram, FaLinkedinIn, FaTelegram } from "react-icons/fa6";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
+import { telegramBotUsername } from "@/lib/messaging/linking";
 import { Logo } from "@/components/brand/logo";
 
 // Figma "Footer / Mini / 5": brand heading, a row of social icon links,
@@ -8,21 +9,23 @@ import { Logo } from "@/components/brand/logo";
 // grouping and legal links the design omits.
 export function SiteFooter({ t }: { t: Dictionary }) {
   const year = new Date().getFullYear();
+  // The Telegram mark opens the bot itself — that's where reminders live.
+  const botUsername = telegramBotUsername();
 
   const social = [
     { icon: FaXTwitter, label: t.home.footer.social.twitter, href: "https://x.com" },
     { icon: FaInstagram, label: t.home.footer.social.instagram, href: "https://instagram.com" },
     { icon: FaLinkedinIn, label: t.home.footer.social.linkedin, href: "https://linkedin.com" },
-    { icon: FaTelegram, label: t.home.footer.social.telegram, href: "https://telegram.org" },
+    { icon: FaTelegram, label: t.home.footer.social.telegram, href: botUsername ? `https://t.me/${botUsername}` : "https://telegram.org" },
   ];
 
   const columns = [
     {
       title: t.home.footer.product,
       links: [
-        { label: t.home.footer.links.howItWorks, href: "#how-it-works" },
-        { label: t.home.footer.links.models, href: "#models" },
-        { label: t.home.footer.links.features, href: "#features" },
+        { label: t.home.footer.links.howItWorks, href: "/#how-it-works" },
+        { label: t.home.footer.links.models, href: "/models" },
+        { label: t.home.footer.links.features, href: "/#features" },
       ],
     },
     {

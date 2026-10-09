@@ -205,7 +205,7 @@ export const PresetCollection = forwardRef<
 
         <div className="flex justify-center">
           <Link
-            href="/signup"
+            href="/models"
             className={`group/see inline-flex items-center gap-2 border border-on-dark px-8 py-3 text-sm font-bold text-on-dark transition-colors hover:bg-on-dark hover:text-canvas focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-on-dark active:translate-y-px ${tabCase}`}
           >
             {t.home.collection.seeAll}
