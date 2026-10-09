@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Database, LayoutDashboard, LogOut, MessageSquareWarning } from "lucide-react";
+import { Database, Gauge, LayoutDashboard, LogOut, MessageSquareWarning } from "lucide-react";
 import { requireAdmin } from "@/lib/admin/data";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { getDictionary } from "@/lib/i18n/locale";
@@ -17,7 +17,7 @@ export default async function AdminLayout({
     <div className="flex flex-1 flex-col">
       <MStripeDivider />
       <header className="flex items-center justify-between border-b border-hairline px-6 py-4">
-        <Link href="/admin/presets" className="flex flex-col gap-0.5">
+        <Link href="/admin" className="flex flex-col gap-0.5">
           <BracketLabel>{t.admin.nav.eyebrow}</BracketLabel>
           <span
             className={`text-[15px] font-bold text-on-dark ${locale === "en" ? "uppercase tracking-[-0.01em]" : ""}`}
@@ -27,6 +27,13 @@ export default async function AdminLayout({
         </Link>
         <div className="flex flex-wrap items-center justify-end gap-3">
           <nav aria-label={t.admin.nav.title} className="flex items-center gap-3">
+            <Link
+              href="/admin"
+              className="flex h-10 items-center gap-2 rounded-none border border-hairline px-3 text-sm text-body hover:border-on-dark hover:text-on-dark"
+            >
+              <Gauge className="h-4 w-4" aria-hidden="true" />
+              {t.admin.nav.overview}
+            </Link>
             <Link
               href="/admin/presets"
               className="flex h-10 items-center gap-2 rounded-none border border-hairline px-3 text-sm text-body hover:border-on-dark hover:text-on-dark"

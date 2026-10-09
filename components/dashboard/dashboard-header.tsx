@@ -48,7 +48,7 @@ export function DashboardHeader({
               {label(t.account.navLabel)}
             </ButtonLink>
           {isAdmin && (
-            <ButtonLink href="/admin/presets" aria-label={t.admin.nav.title} variant="outline" size="sm" locale={locale} icon={<Shield className="h-4 w-4" />}>
+            <ButtonLink href="/admin" aria-label={t.admin.nav.title} variant="outline" size="sm" locale={locale} icon={<Shield className="h-4 w-4" />}>
                 {label(t.admin.nav.title)}
               </ButtonLink>
           )}
