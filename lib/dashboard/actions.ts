@@ -8,11 +8,18 @@ import { getLocale } from "@/lib/i18n/locale";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 import type { ServiceType } from "@/lib/admin/service-types";
 import { closeServiceReminders, markServiceDone } from "@/lib/dashboard/service-confirmation";
-import { recordOdometerReading, validateOdometerReading } from "@/lib/dashboard/odometer";
+import { checkOdometerReading, recordOdometerReading } from "@/lib/dashboard/odometer";
 import { notifyDueServices } from "@/lib/messaging/due-services";
 import { createServiceClient } from "@/lib/supabase/service";
 
 export type DashboardFormState = { error: string } | undefined;
+
+/** The odometer form can also come back asking the user to confirm a big jump. */
+export type OdometerFormState =
+  | { error: string }
+  | { confirm: { reading: number; message: string } }
+  | { saved: number }
+  | undefined;
 
 async function requireUserAction() {
   const { supabase, user } = await requireProfile();
@@ -94,16 +101,16 @@ export async function registerVehicle(
 
 export async function submitOdometerReading(
   vehicleId: string,
-  _prevState: DashboardFormState,
+  _prevState: OdometerFormState,
   formData: FormData,
-): Promise<DashboardFormState> {
+): Promise<OdometerFormState> {
   const { supabase, user } = await requireUserAction();
   const locale = await getLocale();
   const t = dictionaries[locale].dashboard;
 
   const { data: vehicle, error: vehicleError } = await supabase
     .from("vehicles")
-    .select("id, current_odometer")
+    .select("id, current_odometer, odometer_updated_at")
     .eq("id", vehicleId)
     .eq("user_id", user.id)
     .single();
@@ -114,11 +121,29 @@ export async function submitOdometerReading(
 
   const readingRaw = String(formData.get("reading_km") ?? "").trim();
   const reading = /^\d+$/.test(readingRaw) ? Number(readingRaw) : null;
+  const confirmed = formData.get("confirmed") === String(reading);
 
-  const validationError = validateOdometerReading(vehicle.current_odometer, reading);
-  if (validationError === "invalid") return { error: t.errors.invalidOdometer };
-  if (validationError === "tooLow") return { error: t.errors.odometerTooLow };
-  if (validationError === "implausible") return { error: t.errors.odometerImplausible };
+  const check = checkOdometerReading(vehicle, reading, { confirmed });
+  if (check.status === "invalid") return { error: t.errors.invalidOdometer };
+  if (check.status === "tooLow") return { error: t.errors.odometerTooLow };
+  if (check.status === "needsConfirmation") {
+    const nf = new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US");
+    const date = vehicle.odometer_updated_at
+      ? new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-GB", { dateStyle: "medium" }).format(
+          new Date(vehicle.odometer_updated_at),
+        )
+      : "—";
+    return {
+      confirm: {
+        reading: reading!,
+        message: t.confirmReadingPrompt
+          .replace("{reading}", nf.format(reading!))
+          .replace("{jump}", nf.format(check.jumpKm))
+          .replace("{current}", nf.format(vehicle.current_odometer))
+          .replace("{date}", date),
+      },
+    };
+  }
 
   // Ownership is verified above with the user's own client; the write runs
   // as the service role because it also closes the vehicle's open Telegram
@@ -140,7 +165,7 @@ export async function submitOdometerReading(
 
   revalidatePath(`/dashboard/vehicles/${vehicleId}`);
   revalidatePath("/dashboard");
-  return undefined;
+  return { saved: reading! };
 }
 
 export async function confirmServiceDone(

@@ -62,6 +62,7 @@ export type Database = {
           id: string
           message_type: Database["public"]["Enums"]["notification_message_type"]
           needs_follow_up: boolean
+          pending_reading_km: number | null
           provider_message_id: string | null
           reply_attempts: number
           responded_at: string | null
@@ -78,6 +79,7 @@ export type Database = {
           id?: string
           message_type: Database["public"]["Enums"]["notification_message_type"]
           needs_follow_up?: boolean
+          pending_reading_km?: number | null
           provider_message_id?: string | null
           reply_attempts?: number
           responded_at?: string | null
@@ -94,6 +96,7 @@ export type Database = {
           id?: string
           message_type?: Database["public"]["Enums"]["notification_message_type"]
           needs_follow_up?: boolean
+          pending_reading_km?: number | null
           provider_message_id?: string | null
           reply_attempts?: number
           responded_at?: string | null

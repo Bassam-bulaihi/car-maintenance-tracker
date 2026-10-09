@@ -83,6 +83,10 @@ const ar = {
     newReadingLabel: "قراءة جديدة (كم)",
     submitReading: "إرسال القراءة",
     submittingReading: "جارِ الإرسال...",
+    confirmReadingPrompt: "{reading} كم تزيد {jump} كم عن آخر قراءة ({current} كم بتاريخ {date}). هل الرقم صحيح؟",
+    confirmReading: "نعم، القراءة صحيحة",
+    editReading: "تعديل",
+    readingSaved: "تم حفظ القراءة.",
     servicesSectionTitle: "حالة الصيانة",
     statusOk: "جاهز",
     statusDue: "مستحق",
@@ -95,7 +99,6 @@ const ar = {
       presetRequired: "يرجى اختيار الصانع والموديل والسنة.",
       generic: "حدث خطأ ما. حاول مرة أخرى.",
       odometerTooLow: "القراءة الجديدة يجب أن تكون أكبر من أو تساوي القراءة الحالية.",
-      odometerImplausible: "الفرق كبير جداً عن القراءة السابقة. تحقق من الرقم.",
     },
   },
   account: {
@@ -136,8 +139,13 @@ const ar = {
     odometerSaved: "✅ تم حفظ القراءة: {reading} كم لسيارة {vehicle}. شكراً!",
     odometerInvalid: "لم أفهم القراءة. أرسل الرقم فقط بالكيلومتر، مثال: 25000",
     odometerTooLow: "هذه القراءة أقل من آخر قراءة مسجّلة ({current} كم). تحقق من العداد وأرسل الرقم الحالي.",
-    odometerImplausible:
-      "هذه القراءة تزيد بأكثر من {max} كم عن آخر قراءة ({current} كم). تحقق من الرقم وأرسله مرة أخرى.",
+    odometerConfirm:
+      "🤔 {reading} كم تزيد {jump} كم عن آخر قراءة ({current} كم بتاريخ {date}).\nهل الرقم صحيح؟",
+    confirmYesButton: "✅ نعم، صحيح",
+    confirmNoButton: "✏️ لا، سأعيد الإدخال",
+    odometerReenter: "حسناً — أرسل قراءة العداد الصحيحة بالكيلومتر.",
+    confirmAck: "تم الحفظ ✅",
+    reenterAck: "بانتظار القراءة الصحيحة",
     tooManyAttempts:
       "لم نتمكن من قراءة الرد، لذا سنترك هذا الطلب الآن. يمكنك التحديث من صفحة سيارتك في أي وقت:\n{link}",
     serviceDoneRecorded:
@@ -535,6 +543,10 @@ const en: typeof ar = {
     newReadingLabel: "New Reading (km)",
     submitReading: "Submit Reading",
     submittingReading: "Submitting...",
+    confirmReadingPrompt: "{reading} km is {jump} km more than the last reading ({current} km on {date}). Is that right?",
+    confirmReading: "Yes, it's correct",
+    editReading: "Edit",
+    readingSaved: "Reading saved.",
     servicesSectionTitle: "Maintenance Status",
     statusOk: "OK",
     statusDue: "DUE",
@@ -547,7 +559,6 @@ const en: typeof ar = {
       presetRequired: "Please choose a make, model, and year.",
       generic: "Something went wrong. Try again.",
       odometerTooLow: "The new reading must be greater than or equal to the current one.",
-      odometerImplausible: "That's a big jump from the last reading. Double-check the number.",
     },
   },
   account: {
@@ -588,8 +599,13 @@ const en: typeof ar = {
     odometerSaved: "✅ Saved: {reading} km for {vehicle}. Thanks!",
     odometerInvalid: "That doesn't look like an odometer reading. Please send just the number in km, e.g. 25000",
     odometerTooLow: "That's lower than the last recorded reading ({current} km). Please check the odometer and send the current number.",
-    odometerImplausible:
-      "That's more than {max} km above the last reading ({current} km). Please double-check the number and send it again.",
+    odometerConfirm:
+      "🤔 {reading} km is {jump} km more than the last reading ({current} km on {date}).\nIs that right?",
+    confirmYesButton: "✅ Yes, correct",
+    confirmNoButton: "✏️ No, re-enter",
+    odometerReenter: "OK — send the correct odometer reading in km.",
+    confirmAck: "Saved ✅",
+    reenterAck: "Waiting for the correct reading",
     tooManyAttempts:
       "We couldn't read that reply, so we'll leave this request for now. You can update it from your car's page any time:\n{link}",
     serviceDoneRecorded: "✅ Recorded: {service} on {vehicle} at {odometer} km. The next interval starts from today.",

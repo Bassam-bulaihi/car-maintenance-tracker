@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database.types";
 import { sendServiceDueNotification } from "@/lib/messaging/send";
 import { computeServiceStatus } from "@/lib/dashboard/service-status";
-import { SERVICE_DUE_REMINDER_INTERVAL_DAYS } from "@/lib/config";
+import { schedulerUserIdPrefix, SERVICE_DUE_REMINDER_INTERVAL_DAYS } from "@/lib/config";
 import type { Locale } from "@/lib/i18n/dictionaries";
 import type { ServiceType } from "@/lib/admin/service-types";
 
@@ -39,6 +39,8 @@ export async function notifyDueServices(
       "id, service_type, interval_km, interval_months, last_service_odometer, last_service_date, status, vehicles!inner(id, make, model, current_odometer, users!inner(id, telegram_chat_id, language))",
     );
   if (options.vehicleId) query = query.eq("vehicle_id", options.vehicleId);
+  const testPrefix = schedulerUserIdPrefix();
+  if (testPrefix) query = query.like("vehicles.user_id", `${testPrefix}%`);
 
   const { data: items, error } = await query;
   if (error) throw error;

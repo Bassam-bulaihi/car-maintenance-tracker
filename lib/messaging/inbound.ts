@@ -7,19 +7,25 @@ import {
   type TelegramMessage,
   type TelegramUpdate,
 } from "@/lib/messaging/telegram-client";
-import { botText, CALLBACK_DONE, CALLBACK_NOT_DONE } from "@/lib/messaging/templates";
+import {
+  botText,
+  buildReadingConfirmation,
+  CALLBACK_CONFIRM_READING,
+  CALLBACK_DONE,
+  CALLBACK_NOT_DONE,
+  CALLBACK_REENTER_READING,
+} from "@/lib/messaging/templates";
 import { parseConfirmation, parseOdometer, parseReply } from "@/lib/messaging/reply-parser";
 import { consumeLinkToken } from "@/lib/messaging/linking";
 import { notifyDueServices } from "@/lib/messaging/due-services";
 import { vehicleLabel } from "@/lib/messaging/send";
-import { recordOdometerReading, validateOdometerReading, type OdometerError } from "@/lib/dashboard/odometer";
+import { checkOdometerReading, recordOdometerReading } from "@/lib/dashboard/odometer";
 import { closeServiceReminders, markServiceDone } from "@/lib/dashboard/service-confirmation";
 import { computeServiceStatus } from "@/lib/dashboard/service-status";
 import { serviceTypeLabel, type ServiceType } from "@/lib/admin/service-types";
 import {
   appBaseUrl,
   MAX_REPLY_ATTEMPTS,
-  ODOMETER_MAX_JUMP_KM,
   SERVICE_DUE_REMINDER_INTERVAL_DAYS,
   vehiclePageUrl,
 } from "@/lib/config";
@@ -117,6 +123,14 @@ async function handleMessage(supabase: ServiceClient, message: TelegramMessage) 
   const openRequests = await openOdometerRequests(supabase, user.id);
   const openReminders = await openServiceReminders(supabase, user.id);
 
+  // A yes/no while exactly one big-jump confirmation is pending answers that.
+  const pending = openRequests.filter((n) => n.pending_reading_km !== null);
+  if (parsed.kind === "confirmation" && pending.length === 1) {
+    if (parsed.value === "done") await confirmPendingReading(supabase, user, pending[0]);
+    else await clearPendingReading(supabase, user, pending[0]);
+    return;
+  }
+
   if (parsed.kind === "confirmation") {
     if (openReminders.length === 1) {
       await answerServiceReminder(supabase, user, openReminders[0], parsed.value);
@@ -142,12 +156,6 @@ async function handleMessage(supabase: ServiceClient, message: TelegramMessage) 
   }
 }
 
-const ODOMETER_ERROR_COPY: Record<OdometerError, "odometerInvalid" | "odometerTooLow" | "odometerImplausible"> = {
-  invalid: "odometerInvalid",
-  tooLow: "odometerTooLow",
-  implausible: "odometerImplausible",
-};
-
 async function answerOdometerRequest(
   supabase: ServiceClient,
   user: LinkedUser,
@@ -155,31 +163,47 @@ async function answerOdometerRequest(
   text: string,
 ) {
   const chatId = user.telegram_chat_id;
-  const nf = numberFormat(user.language);
 
   if (notification.responded_at) {
     await reply(chatId, botText(user.language, "alreadyAnswered"));
     return;
   }
 
+  // A yes/no typed while a big-jump confirmation is pending answers it.
+  const confirmation = notification.pending_reading_km !== null ? parseConfirmation(text) : null;
+  if (confirmation === "done") return confirmPendingReading(supabase, user, notification);
+  if (confirmation === "not_done") return clearPendingReading(supabase, user, notification);
+
   const { data: vehicle } = await supabase
     .from("vehicles")
-    .select("id, make, model, current_odometer")
+    .select("id, make, model, current_odometer, odometer_updated_at")
     .eq("id", notification.vehicle_id)
     .single();
   if (!vehicle) return;
 
   const reading = parseOdometer(text);
-  const error = validateOdometerReading(vehicle.current_odometer, reading);
+  const check = checkOdometerReading(vehicle, reading);
 
-  if (error) {
+  if (check.status === "needsConfirmation") {
+    // Not an error: hold the reading and ask. Doesn't count as an attempt.
+    await supabase.from("notifications").update({ pending_reading_km: reading }).eq("id", notification.id);
+    await askToConfirmReading(user, notification.id, vehicle, reading!, check.jumpKm);
+    return;
+  }
+
+  if (check.status !== "ok") {
     // Nothing is written except the thread's attempt counter; past the limit
     // the thread stays open but is flagged and the bot stops re-asking.
     const attempts = notification.reply_attempts + 1;
     const flagged = attempts >= MAX_REPLY_ATTEMPTS;
     await supabase
       .from("notifications")
-      .update({ reply_attempts: attempts, needs_follow_up: flagged, response_text: text.slice(0, 200) })
+      .update({
+        reply_attempts: attempts,
+        needs_follow_up: flagged,
+        pending_reading_km: null,
+        response_text: text.slice(0, 200),
+      })
       .eq("id", notification.id);
 
     if (flagged) {
@@ -187,19 +211,85 @@ async function answerOdometerRequest(
     } else {
       await reply(
         chatId,
-        botText(user.language, ODOMETER_ERROR_COPY[error], {
-          current: nf.format(vehicle.current_odometer),
-          max: nf.format(ODOMETER_MAX_JUMP_KM),
+        botText(user.language, check.status === "tooLow" ? "odometerTooLow" : "odometerInvalid", {
+          current: numberFormat(user.language).format(vehicle.current_odometer),
         }),
       );
     }
     return;
   }
 
-  await recordOdometerReading(supabase, vehicle.id, reading!, "telegram");
+  await saveReading(supabase, user, vehicle, reading!);
+}
+
+async function askToConfirmReading(
+  user: LinkedUser,
+  notificationId: string,
+  vehicle: { current_odometer: number; odometer_updated_at: string | null },
+  reading: number,
+  jumpKm: number,
+) {
+  const nf = numberFormat(user.language);
+  const message = buildReadingConfirmation(user.language, notificationId, {
+    reading: nf.format(reading),
+    jump: nf.format(jumpKm),
+    current: nf.format(vehicle.current_odometer),
+    date: formatDate(vehicle.odometer_updated_at, user.language),
+  });
+  await sendMessage(user.telegram_chat_id, message.text, message.replyMarkup);
+}
+
+/** "Yes, that big jump is right" — re-checked against the current state, then saved. */
+async function confirmPendingReading(supabase: ServiceClient, user: LinkedUser, notification: Notification) {
+  const { data: vehicle } = await supabase
+    .from("vehicles")
+    .select("id, make, model, current_odometer, odometer_updated_at")
+    .eq("id", notification.vehicle_id)
+    .single();
+  const reading = notification.pending_reading_km;
+  if (!vehicle || reading === null || notification.responded_at) {
+    await reply(user.telegram_chat_id, botText(user.language, "alreadyAnswered"));
+    return "already_answered" as const;
+  }
+
+  // The vehicle may have moved on since (e.g. a web entry) — a now-lower
+  // reading can't be confirmed into place.
+  if (checkOdometerReading(vehicle, reading, { confirmed: true }).status !== "ok") {
+    await supabase.from("notifications").update({ pending_reading_km: null }).eq("id", notification.id);
+    await reply(
+      user.telegram_chat_id,
+      botText(user.language, "odometerTooLow", { current: numberFormat(user.language).format(vehicle.current_odometer) }),
+    );
+    return "rejected" as const;
+  }
+
+  await saveReading(supabase, user, vehicle, reading);
+  return "saved" as const;
+}
+
+async function clearPendingReading(supabase: ServiceClient, user: LinkedUser, notification: Notification) {
+  if (notification.responded_at || notification.pending_reading_km === null) {
+    await reply(user.telegram_chat_id, botText(user.language, "alreadyAnswered"));
+    return "already_answered" as const;
+  }
+  await supabase.from("notifications").update({ pending_reading_km: null }).eq("id", notification.id);
+  await reply(user.telegram_chat_id, botText(user.language, "odometerReenter"));
+  return "cleared" as const;
+}
+
+async function saveReading(
+  supabase: ServiceClient,
+  user: LinkedUser,
+  vehicle: { id: string; make: string; model: string },
+  reading: number,
+) {
+  await recordOdometerReading(supabase, vehicle.id, reading, "telegram");
   await reply(
-    chatId,
-    botText(user.language, "odometerSaved", { reading: nf.format(reading!), vehicle: vehicleLabel(vehicle) }),
+    user.telegram_chat_id,
+    botText(user.language, "odometerSaved", {
+      reading: numberFormat(user.language).format(reading),
+      vehicle: vehicleLabel(vehicle),
+    }),
   );
 
   // PRD §5.4: a new reading is evaluated immediately, not at the next sweep.
@@ -284,21 +374,22 @@ async function answerServiceReminder(
 async function handleCallback(supabase: ServiceClient, query: TelegramCallbackQuery) {
   const [action, notificationId] = (query.data ?? "").split(":");
   const chatId = query.message?.chat.id;
-  const value = action === CALLBACK_DONE ? "done" : action === CALLBACK_NOT_DONE ? "not_done" : null;
+  const isServiceAction = action === CALLBACK_DONE || action === CALLBACK_NOT_DONE;
+  const isReadingAction = action === CALLBACK_CONFIRM_READING || action === CALLBACK_REENTER_READING;
 
   const user = chatId ? await findLinkedUser(supabase, chatId) : null;
   const { data: notification } =
-    value && notificationId && chatId
+    (isServiceAction || isReadingAction) && notificationId && chatId
       ? await supabase
           .from("notifications")
           .select("*")
           .eq("id", notificationId)
           .eq("chat_id", chatId)
-          .in("message_type", SERVICE_TYPES_SENT)
+          .in("message_type", isServiceAction ? SERVICE_TYPES_SENT : ["odometer_request"])
           .maybeSingle()
       : { data: null };
 
-  if (!user || !notification || !value) {
+  if (!user || !notification) {
     // Always answer the callback so the client stops its loading spinner.
     await telegram("answerCallbackQuery", { callback_query_id: query.id });
     if (chatId && !user) {
@@ -308,17 +399,27 @@ async function handleCallback(supabase: ServiceClient, query: TelegramCallbackQu
     return;
   }
 
-  const outcome = await answerServiceReminder(supabase, user, notification, value);
-  const t = (key: "doneAck" | "notDoneAck" | "alreadyAnswered") => botText(user.language, key);
+  let ack: string;
+  let keepButtons = false;
+  if (isReadingAction) {
+    const outcome =
+      action === CALLBACK_CONFIRM_READING
+        ? await confirmPendingReading(supabase, user, notification)
+        : await clearPendingReading(supabase, user, notification);
+    ack = botText(
+      user.language,
+      outcome === "saved" ? "confirmAck" : outcome === "cleared" ? "reenterAck" : "alreadyAnswered",
+    );
+  } else {
+    const outcome = await answerServiceReminder(supabase, user, notification, action === CALLBACK_DONE ? "done" : "not_done");
+    ack = botText(user.language, outcome === "done" ? "doneAck" : outcome === "not_done" ? "notDoneAck" : "alreadyAnswered");
+    // "Not done" keeps the buttons so the user can still tap Done later.
+    keepButtons = outcome === "not_done";
+  }
 
-  await telegram("answerCallbackQuery", {
-    callback_query_id: query.id,
-    text: outcome === "done" ? t("doneAck") : outcome === "not_done" ? t("notDoneAck") : t("alreadyAnswered"),
-  });
+  await telegram("answerCallbackQuery", { callback_query_id: query.id, text: ack });
 
-  // A resolved reminder loses its buttons; "Not done" keeps them so the user
-  // can still tap Done on the same message later.
-  if (outcome !== "not_done" && query.message) {
+  if (!keepButtons && query.message) {
     await telegram("editMessageReplyMarkup", {
       chat_id: query.message.chat.id,
       message_id: query.message.message_id,
@@ -419,6 +520,11 @@ async function reply(chatId: number, text: string) {
 
 function numberFormat(locale: Locale) {
   return new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US");
+}
+
+function formatDate(iso: string | null, locale: Locale) {
+  if (!iso) return "—";
+  return new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-GB", { day: "numeric", month: "short", year: "numeric" }).format(new Date(iso));
 }
 
 function dashboardUrl() {

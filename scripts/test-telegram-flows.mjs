@@ -187,7 +187,7 @@ async function seed() {
     .insert([
       { user_id: ids.a, make: "Hyundai", model: "Accent", year: 2025, current_odometer: 20000 },
       { user_id: ids.a, make: "Toyota", model: "Camry", year: 2022, current_odometer: 50000 },
-      { user_id: ids.b, make: "Kia", model: "Rio", year: 2024, current_odometer: 10000 },
+      { user_id: ids.b, make: "Kia", model: "Rio", year: 2024, current_odometer: 10000, odometer_updated_at: new Date(Date.now() - 30 * 86400000).toISOString() },
       { user_id: ids.c, make: "Nissan", model: "Sunny", year: 2023, current_odometer: 1000 },
       { user_id: ids.d, make: "Ford", model: "Focus", year: 2021, current_odometer: 1000 },
     ])
@@ -204,7 +204,7 @@ async function seed() {
       { vehicle_id: v.Camry, service_type: "brake_fluid", interval_km: null, interval_months: 24, last_service_odometer: 40000, last_service_date: monthsAgo(25) },
       { vehicle_id: v.Camry, service_type: "air_filter", interval_km: 20000, interval_months: 12, last_service_odometer: 45000, last_service_date: monthsAgo(13) },
       // Rio: nothing due.
-      { vehicle_id: v.Rio, service_type: "engine_oil", interval_km: 5000, interval_months: 6, last_service_odometer: 9000, last_service_date: today },
+      { vehicle_id: v.Rio, service_type: "engine_oil", interval_km: 30000, interval_months: 12, last_service_odometer: 9000, last_service_date: today },
     ])
     .select("id, vehicle_id, service_type");
   if (itemsError) throw itemsError;
@@ -233,8 +233,19 @@ async function cleanup() {
 
 await new Promise((resolve) => mock.listen(MOCK_PORT, "127.0.0.1", resolve));
 
-const server = spawn("npx", ["next", "start", "-p", String(APP_PORT)], {
+// Refuse to run against a leftover server from an earlier run (it would be
+// serving an old build).
+if (await fetch(`${APP}/`).then(() => true, () => false)) {
+  console.error(`Port ${APP_PORT} is already in use — stop the old server first.`);
+  process.exit(1);
+}
+
+// Spawned directly (not via npx) and in its own process group, so killing it
+// at the end really stops next-server instead of orphaning it.
+const server = spawn("node_modules/.bin/next", ["start", "-p", String(APP_PORT)], {
+  detached: true,
   env: {
+    SCHEDULER_TEST_USER_PREFIX: `test_tg_`,
     ...process.env,
     TELEGRAM_API_BASE: `http://127.0.0.1:${MOCK_PORT}`,
     TELEGRAM_BOT_TOKEN: "test-token",
@@ -372,14 +383,41 @@ try {
     assert.match(call.params.text, /٥٠٬٠٠٠/);
     assert.equal((await row("vehicles", "id", f.camry)).current_odometer, 50000);
   });
-  await scenario("implausible jump on the 3rd bad attempt → flagged for follow-up, bot stops asking", async () => {
+  await scenario("big jump (above the time-scaled allowance) → confirmation prompt, not an error", async () => {
     const [call] = await send(text(CHAT_A, "99999", { replyTo: Number(camryRequest.provider_message_id) }), 1);
-    assert.match(call.params.text, /سنترك هذا الطلب/);
+    assert.match(call.params.text, /هل الرقم صحيح/);
+    assert.match(call.params.text, /٤٩٬٩٩٩/, "shows the jump");
+    const [yes, no] = call.params.reply_markup.inline_keyboard[0];
+    assert.equal(yes.callback_data, `okread:${camryRequest.id}`);
+    assert.equal(no.callback_data, `reread:${camryRequest.id}`);
     const note = await row("notifications", "id", camryRequest.id);
-    assert.equal(note.reply_attempts, 3);
-    assert.equal(note.needs_follow_up, true);
-    assert.equal(note.responded_at, null, "thread stays open");
-    assert.equal((await rows("odometer_readings", "vehicle_id", f.camry)).length, 0);
+    assert.equal(note.pending_reading_km, 99999);
+    assert.equal(note.reply_attempts, 2, "a confirmation isn't a failed attempt");
+    assert.equal((await row("vehicles", "id", f.camry)).current_odometer, 50000, "nothing saved yet");
+  });
+  await scenario("'No, re-enter' button → pending reading dropped, asks again", async () => {
+    const made = await send(tap(CHAT_A, `reread:${camryRequest.id}`, 7001), 3);
+    assert.match(made[0].params.text, /أرسل قراءة العداد الصحيحة/);
+    assert.equal(made[1].method, "answerCallbackQuery");
+    assert.equal(made[2].method, "editMessageReplyMarkup", "prompt buttons removed");
+    assert.equal((await row("notifications", "id", camryRequest.id)).pending_reading_km, null);
+    assert.equal((await row("vehicles", "id", f.camry)).current_odometer, 50000);
+  });
+  await scenario("typed 'نعم' answers a pending big-jump confirmation → saved + due reminders", async () => {
+    await send(text(CHAT_A, "60000", { replyTo: Number(camryRequest.provider_message_id) }), 1);
+    const made = await send(text(CHAT_A, "نعم"), 3); // saved + brake fluid + air filter reminders
+    assert.match(made[0].params.text, /تم حفظ القراءة: ٦٠٬٠٠٠ كم/);
+    const vehicle = await row("vehicles", "id", f.camry);
+    assert.equal(vehicle.current_odometer, 60000);
+    const note = await row("notifications", "id", camryRequest.id);
+    assert.ok(note.responded_at);
+    assert.equal(note.pending_reading_km, null);
+    assert.equal(made.slice(1).filter((c) => c.params.reply_markup?.inline_keyboard).length, 2);
+  });
+  await scenario("'Yes' tapped on a prompt that was already answered → already answered", async () => {
+    const made = await send(tap(CHAT_A, `okread:${camryRequest.id}`, 7002), 3);
+    assert.match(made[0].params.text, /مسبقاً/);
+    assert.equal((await rows("odometer_readings", "vehicle_id", f.camry)).length, 1, "no duplicate reading");
   });
   let oilReminder;
   await scenario("valid reply (Arabic digits + كم) is saved, closes the request, and triggers the due reminder", async () => {
@@ -409,15 +447,10 @@ try {
     assert.match(call.params.text, /مسبقاً/);
     assert.equal((await row("vehicles", "id", f.accent)).current_odometer, 21000);
   });
-  await scenario("the flagged thread still accepts a valid reading later", async () => {
-    const [call] = await send(text(CHAT_A, "50,500"), 1 + 2); // saved + 2 Camry service reminders
-    assert.match(call.params.text, /تم حفظ القراءة/);
-    assert.equal((await row("vehicles", "id", f.camry)).current_odometer, 50500);
-  });
   await scenario("a number with no open request is refused (no unprompted readings)", async () => {
-    const [call] = await send(text(CHAT_A, "60000"), 1);
+    const [call] = await send(text(CHAT_A, "70000"), 1);
     assert.match(call.params.text, /كرد على طلب منا/);
-    assert.equal((await row("vehicles", "id", f.camry)).current_odometer, 50500);
+    assert.equal((await row("vehicles", "id", f.camry)).current_odometer, 60000);
   });
 
   // --- Service reminders ------------------------------------------------------
@@ -475,13 +508,13 @@ try {
     assert.equal(made[1].method, "answerCallbackQuery");
     assert.equal(made[2].method, "editMessageReplyMarkup", "buttons removed once resolved");
     const item = await row("vehicle_service_items", "id", f.airFilter);
-    assert.equal(item.last_service_odometer, 50500);
+    assert.equal(item.last_service_odometer, 60000);
     assert.equal(item.last_service_date, today);
     assert.equal(item.status, "ok");
     const history = await rows("service_history", "vehicle_id", f.camry);
     assert.equal(history.length, 1);
     assert.equal(history[0].service_type, "air_filter");
-    assert.equal(history[0].odometer_at_service, 50500);
+    assert.equal(history[0].odometer_at_service, 60000);
   });
   await scenario("typed 'تم' with two reminders still open → asks which one", async () => {
     // Brake fluid (not done) and oil (re-reminder) are both open for A.
@@ -531,9 +564,21 @@ try {
     const [call] = await send(text(CHAT_B, "what is this?", { languageCode: "en" }), 1);
     assert.match(call.params.text, /doesn't look like an odometer reading/);
   });
-  await scenario("English user's valid reading reply is answered in English", async () => {
-    const [call] = await send(text(CHAT_B, "10500 km", { languageCode: "en" }), 1);
-    assert.match(call.params.text, /Saved: 10,500 km for Kia Rio/);
+  await scenario("3rd bad attempt → flagged for follow-up, bot stops asking (English)", async () => {
+    const [second] = await send(text(CHAT_B, "abc", { languageCode: "en" }), 1);
+    assert.match(second.params.text, /doesn't look like an odometer reading/);
+    const [third] = await send(text(CHAT_B, "1", { languageCode: "en" }), 1);
+    assert.match(third.params.text, /we'll leave this request for now/);
+    const rio = (await rows("notifications", "vehicle_id", f.rio)).find((n) => n.message_type === "odometer_request");
+    assert.equal(rio.reply_attempts, 3);
+    assert.equal(rio.needs_follow_up, true);
+    assert.equal(rio.responded_at, null, "thread stays open");
+    assert.equal((await rows("odometer_readings", "vehicle_id", f.rio)).length, 0);
+  });
+  await scenario("flagged thread still accepts a valid reading; 30 days allows +25,000 km without asking", async () => {
+    const [call] = await send(text(CHAT_B, "35000 km", { languageCode: "en" }), 1);
+    assert.match(call.params.text, /Saved: 35,000 km for Kia Rio/);
+    assert.equal((await row("vehicles", "id", f.rio)).current_odometer, 35000);
   });
   await scenario("linked user with nothing open gets help for free text", async () => {
     const [call] = await send(text(CHAT_B, "hello?", { languageCode: "en" }), 1);
@@ -545,7 +590,11 @@ try {
   });
 } finally {
   await cleanup().catch((error) => console.error("cleanup failed", error));
-  server.kill();
+  try {
+    process.kill(-server.pid, "SIGTERM");
+  } catch {
+    // already gone
+  }
   mock.close();
 }
 

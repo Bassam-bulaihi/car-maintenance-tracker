@@ -7,6 +7,9 @@ export type BotCopyKey = keyof (typeof dictionaries)["en"]["telegramBot"];
 // Inline-button payloads (callback_data, max 64 bytes): "<action>:<notification id>".
 export const CALLBACK_DONE = "done";
 export const CALLBACK_NOT_DONE = "notdone";
+// On an odometer confirmation prompt: "yes, that reading is right" / "re-enter".
+export const CALLBACK_CONFIRM_READING = "okread";
+export const CALLBACK_REENTER_READING = "reread";
 
 export function fill(template: string, values: Record<string, string | number>) {
   return template.replace(/\{(\w+)\}/g, (match, key: string) =>
@@ -57,6 +60,26 @@ export function buildOutboundMessage(
         [
           { text: t.doneButton, callback_data: `${CALLBACK_DONE}:${values.notificationId}` },
           { text: t.notDoneButton, callback_data: `${CALLBACK_NOT_DONE}:${values.notificationId}` },
+        ],
+      ],
+    },
+  };
+}
+
+/** "Is this big jump right?" — sent instead of rejecting a reading above the allowance. */
+export function buildReadingConfirmation(
+  locale: Locale,
+  notificationId: string,
+  values: { reading: string; jump: string; current: string; date: string },
+): OutboundMessage {
+  const t = dictionaries[locale].telegramBot;
+  return {
+    text: fill(t.odometerConfirm, values),
+    replyMarkup: {
+      inline_keyboard: [
+        [
+          { text: t.confirmYesButton, callback_data: `${CALLBACK_CONFIRM_READING}:${notificationId}` },
+          { text: t.confirmNoButton, callback_data: `${CALLBACK_REENTER_READING}:${notificationId}` },
         ],
       ],
     },

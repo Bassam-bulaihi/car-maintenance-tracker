@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { sendOdometerRequest } from "@/lib/messaging/send";
-import { ODOMETER_REQUEST_INTERVAL_DAYS } from "@/lib/config";
+import { ODOMETER_REQUEST_INTERVAL_DAYS, schedulerUserIdPrefix } from "@/lib/config";
 import type { Locale } from "@/lib/i18n/dictionaries";
 
 // Runs on the Vercel Cron schedule in vercel.json. The cron itself fires
@@ -24,10 +24,14 @@ export async function GET(request: NextRequest) {
     Date.now() - ODOMETER_REQUEST_INTERVAL_DAYS * 24 * 60 * 60 * 1000,
   ).toISOString();
 
-  const { data: vehicles, error } = await supabase
+  let query = supabase
     .from("vehicles")
     .select("id, make, model, odometer_updated_at, users(id, telegram_chat_id, language)")
     .or(`odometer_updated_at.is.null,odometer_updated_at.lt.${cutoff}`);
+  const testPrefix = schedulerUserIdPrefix();
+  if (testPrefix) query = query.like("user_id", `${testPrefix}%`);
+
+  const { data: vehicles, error } = await query;
 
   if (error) {
     console.error("odometer-requests cron: vehicle query failed", error);

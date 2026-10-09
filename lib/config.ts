@@ -1,9 +1,17 @@
 // Single-source config values the PRD calls out as "must be stored as
 // configuration, not hardcoded across the codebase" (docs/PRD.md §5.3, §5.5).
 
-// A reading further than this past the last recorded reading is rejected as
-// an implausible jump rather than silently accepted (docs/PRD.md §5.3/§7.5).
-export const ODOMETER_MAX_JUMP_KM = 5000;
+// Plausibility check for a new odometer reading (docs/PRD.md §5.3/§7.5).
+// The allowance scales with the time since the last reading — 5,000 km in
+// one day is suspicious, after two months it's normal:
+//   allowance = max(ODOMETER_MIN_ALLOWANCE_KM, days × ODOMETER_MAX_KM_PER_DAY)
+// A reading above the allowance isn't rejected; the user is asked to confirm
+// it (catches a typo'd extra zero without refusing a genuine reading).
+// Anything below the last reading, non-numeric, or above
+// ODOMETER_ABSOLUTE_MAX_KM is always rejected.
+export const ODOMETER_MAX_KM_PER_DAY = 1000;
+export const ODOMETER_MIN_ALLOWANCE_KM = 2000;
+export const ODOMETER_ABSOLUTE_MAX_KM = 1_000_000;
 
 // How often the system asks for an odometer reading, and how much more
 // aggressively it re-chases a service item that is still due. Consumed by
@@ -40,4 +48,14 @@ export function appBaseUrl() {
 /** Deep link to one vehicle's page — attached to every reminder. */
 export function vehiclePageUrl(vehicleId: string) {
   return `${appBaseUrl()}/dashboard/vehicles/${vehicleId}`;
+}
+
+/**
+ * Integration tests (scripts/test-telegram-flows.mjs) run the real cron
+ * routes against the shared database; this confines the schedulers to the
+ * test's own seeded users so real users' vehicles are never touched. Unset
+ * everywhere else.
+ */
+export function schedulerUserIdPrefix() {
+  return process.env.SCHEDULER_TEST_USER_PREFIX || null;
 }
