@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LayoutDashboard, LogOut } from "lucide-react";
+import { Database, LayoutDashboard, LogOut, MessageSquareWarning } from "lucide-react";
 import { requireAdmin } from "@/lib/admin/data";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { getDictionary } from "@/lib/i18n/locale";
@@ -25,7 +25,23 @@ export default async function AdminLayout({
             {t.admin.nav.title}
           </span>
         </Link>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center justify-end gap-3">
+          <nav aria-label={t.admin.nav.title} className="flex items-center gap-3">
+            <Link
+              href="/admin/presets"
+              className="flex h-10 items-center gap-2 rounded-none border border-hairline px-3 text-sm text-body hover:border-on-dark hover:text-on-dark"
+            >
+              <Database className="h-4 w-4" aria-hidden="true" />
+              {t.admin.nav.presets}
+            </Link>
+            <Link
+              href="/admin/follow-ups"
+              className="flex h-10 items-center gap-2 rounded-none border border-hairline px-3 text-sm text-body hover:border-on-dark hover:text-on-dark"
+            >
+              <MessageSquareWarning className="h-4 w-4" aria-hidden="true" />
+              {t.admin.nav.followUps}
+            </Link>
+          </nav>
           <LanguageToggle locale={locale} />
           <Link
             href="/dashboard"
