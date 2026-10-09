@@ -369,3 +369,17 @@ export async function undoLatestReading(vehicleId: string) {
   revalidatePath(`/dashboard/vehicles/${vehicleId}`);
   revalidatePath("/dashboard");
 }
+
+/** Sets or clears a vehicle's plate number after registration. */
+export async function updateVehiclePlate(vehicleId: string, formData: FormData) {
+  const { supabase, user } = await requireUserAction();
+  const plateNo = String(formData.get("plate_no") ?? "").trim().slice(0, 20) || null;
+  const { error } = await supabase
+    .from("vehicles")
+    .update({ plate_no: plateNo })
+    .eq("id", vehicleId)
+    .eq("user_id", user.id);
+  if (error) throw error;
+  revalidatePath(`/dashboard/vehicles/${vehicleId}`);
+  revalidatePath("/dashboard");
+}

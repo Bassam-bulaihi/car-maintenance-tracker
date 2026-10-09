@@ -1,4 +1,8 @@
 import { notFound } from "next/navigation";
+import { PenLine, Save } from "lucide-react";
+import { updateVehiclePlate } from "@/lib/dashboard/actions";
+import { TextInput } from "@/components/ui/text-input";
+import { Button } from "@/components/ui/button";
 import { getVehicle, listOdometerReadings, listServiceHistory } from "@/lib/dashboard/data";
 import { getDictionary } from "@/lib/i18n/locale";
 import { BackLink } from "@/components/ui/back-link";
@@ -39,6 +43,26 @@ export default async function VehicleDetailPage({
             {vehicle.make} {vehicle.model}{" "}
             <span className="font-mono text-body">/ {vehicle.year}</span>
           </h1>
+          <details className="group">
+            <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 text-xs text-muted hover:text-on-dark [&::-webkit-details-marker]:hidden">
+              <PenLine className="h-3.5 w-3.5" aria-hidden="true" />
+              {t.dashboard.editPlate}
+            </summary>
+            <form action={updateVehiclePlate.bind(null, vehicle.id)} className="mt-2 flex flex-wrap items-center gap-2">
+              <TextInput
+                uiSize="sm"
+                name="plate_no"
+                defaultValue={vehicle.plate_no ?? ""}
+                maxLength={20}
+                aria-label={t.dashboard.plateLabel}
+                dir="auto"
+                className="w-48"
+              />
+              <Button type="submit" size="sm" variant="outline" locale={locale} icon={<Save className="h-4 w-4" />}>
+                {t.dashboard.saveItem}
+              </Button>
+            </form>
+          </details>
         </div>
       </div>
 
