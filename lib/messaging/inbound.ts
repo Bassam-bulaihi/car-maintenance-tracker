@@ -25,7 +25,11 @@ import { computeServiceStatus } from "@/lib/dashboard/service-status";
 import { serviceTypeLabel, type ServiceType } from "@/lib/admin/service-types";
 import {
   appBaseUrl,
+  BOT_MESSAGES_PER_MINUTE,
   MAX_REPLY_ATTEMPTS,
+  SUPPORT_MESSAGE_MAX_LENGTH,
+  SUPPORT_MESSAGES_PER_DAY,
+  SUPPORT_PROMPT_WINDOW_MINUTES,
   SERVICE_DUE_REMINDER_INTERVAL_DAYS,
   vehiclePageUrl,
 } from "@/lib/config";
@@ -35,7 +39,13 @@ import { formatDate, formatNumber } from "@/lib/i18n/format";
 
 type ServiceClient = ReturnType<typeof createServiceClient>;
 type Notification = Database["public"]["Tables"]["notifications"]["Row"];
-type LinkedUser = { id: string; name: string; language: Locale; telegram_chat_id: number };
+type LinkedUser = {
+  id: string;
+  name: string;
+  language: Locale;
+  telegram_chat_id: number;
+  awaiting_support_since?: string | null;
+};
 
 const SERVICE_TYPES_SENT = ["service_due", "re_reminder"] as const;
 
@@ -56,11 +66,32 @@ const SERVICE_TYPES_SENT = ["service_due", "re_reminder"] as const;
 export async function handleTelegramUpdate(update: TelegramUpdate) {
   const supabase = createServiceClient();
 
+  const chatId = update.message?.chat.id ?? update.callback_query?.message?.chat.id ?? null;
+
   // PRD §7.3: deliveries aren't guaranteed unique — process each update_id once.
   const { error: dedupeError } = await supabase
     .from("inbound_message_events")
-    .insert({ event_id: String(update.update_id) });
+    .insert({ event_id: String(update.update_id), chat_id: chatId });
   if (dedupeError) return;
+
+  // Flood control: past BOT_MESSAGES_PER_MINUTE a chat's updates are dropped;
+  // the first one over the limit gets a single "slow down" reply.
+  if (chatId !== null) {
+    const { count } = await supabase
+      .from("inbound_message_events")
+      .select("event_id", { count: "exact", head: true })
+      .eq("chat_id", chatId)
+      .gte("received_at", new Date(Date.now() - 60_000).toISOString());
+    if ((count ?? 0) > BOT_MESSAGES_PER_MINUTE) {
+      if (count === BOT_MESSAGES_PER_MINUTE + 1) {
+        const user = await findLinkedUser(supabase, chatId);
+        const locale: Locale = user?.language ?? (update.message?.from?.language_code?.startsWith("en") ? "en" : "ar");
+        await reply(chatId, botText(locale, "rateLimited"));
+      }
+      if (update.callback_query) await telegram("answerCallbackQuery", { callback_query_id: update.callback_query.id });
+      return;
+    }
+  }
 
   if (update.callback_query) {
     await handleCallback(supabase, update.callback_query);
@@ -94,6 +125,26 @@ async function handleMessage(supabase: ServiceClient, message: TelegramMessage) 
   const user = await findLinkedUser(supabase, chatId);
   if (!user) {
     await reply(chatId, botText(fallbackLocale, "notLinked", { link: accountUrl() }));
+    return;
+  }
+
+  if (command?.[1] === "support") {
+    const body = command[2]?.trim();
+    if (body) {
+      await storeSupportMessage(supabase, user, body);
+    } else {
+      await supabase.from("users").update({ awaiting_support_since: new Date().toISOString() }).eq("id", user.id);
+      await reply(chatId, botText(user.language, "supportPrompt", { max: numberFormat(user.language).format(SUPPORT_MESSAGE_MAX_LENGTH) }));
+    }
+    return;
+  }
+
+  // The message right after a bare /support is the support message itself.
+  const awaitingSupport =
+    !!user.awaiting_support_since &&
+    Date.now() - new Date(user.awaiting_support_since).getTime() < SUPPORT_PROMPT_WINDOW_MINUTES * 60_000;
+  if (awaitingSupport && !command && !message.reply_to_message) {
+    await storeSupportMessage(supabase, user, text);
     return;
   }
 
@@ -437,6 +488,35 @@ async function handleCallback(supabase: ServiceClient, query: TelegramCallbackQu
   }
 }
 
+/** Stores a /support message for the admin inbox, within length and daily limits. */
+async function storeSupportMessage(supabase: ServiceClient, user: LinkedUser, body: string) {
+  const nf = numberFormat(user.language);
+  if (body.length > SUPPORT_MESSAGE_MAX_LENGTH) {
+    // Keep waiting so a shortened resend still counts.
+    await supabase.from("users").update({ awaiting_support_since: new Date().toISOString() }).eq("id", user.id);
+    await reply(user.telegram_chat_id, botText(user.language, "supportTooLong", { max: nf.format(SUPPORT_MESSAGE_MAX_LENGTH) }));
+    return;
+  }
+
+  await supabase.from("users").update({ awaiting_support_since: null }).eq("id", user.id);
+
+  const { count } = await supabase
+    .from("support_messages")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .gte("created_at", new Date(Date.now() - 24 * 60 * 60_000).toISOString());
+  if ((count ?? 0) >= SUPPORT_MESSAGES_PER_DAY) {
+    await reply(user.telegram_chat_id, botText(user.language, "supportLimit", { max: nf.format(SUPPORT_MESSAGES_PER_DAY) }));
+    return;
+  }
+
+  const { error } = await supabase
+    .from("support_messages")
+    .insert({ user_id: user.id, chat_id: user.telegram_chat_id, body });
+  if (error) throw error;
+  await reply(user.telegram_chat_id, botText(user.language, "supportReceived"));
+}
+
 /** /status — each car's odometer and what's due right now. */
 async function sendStatus(supabase: ServiceClient, user: LinkedUser) {
   const { data: vehicles } = await supabase
@@ -480,7 +560,7 @@ async function sendStatus(supabase: ServiceClient, user: LinkedUser) {
 async function findLinkedUser(supabase: ServiceClient, chatId: number): Promise<LinkedUser | null> {
   const { data } = await supabase
     .from("users")
-    .select("id, name, language, telegram_chat_id")
+    .select("id, name, language, telegram_chat_id, awaiting_support_since")
     .eq("telegram_chat_id", chatId)
     .maybeSingle();
   if (!data || data.telegram_chat_id === null) return null;

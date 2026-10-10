@@ -26,6 +26,20 @@ export const SERVICE_DUE_REMINDER_INTERVAL_DAYS = 3;
 // left open and flagged for follow-up rather than looping indefinitely").
 export const MAX_REPLY_ATTEMPTS = 3;
 
+// Anti-abuse limits. Each is enforced server-side where the thing is created.
+/** Vehicles one account can register (web, preset or custom). */
+export const MAX_VEHICLES_PER_USER = 10;
+/** Inbound Telegram updates accepted per chat per minute; the rest are dropped. */
+export const BOT_MESSAGES_PER_MINUTE = 20;
+/** Support messages one user can send through the bot per 24 hours. */
+export const SUPPORT_MESSAGES_PER_DAY = 5;
+/** Longest support message stored (longer ones are refused, not truncated). */
+export const SUPPORT_MESSAGE_MAX_LENGTH = 1000;
+/** How long after /support the next plain message counts as the support message. */
+export const SUPPORT_PROMPT_WINDOW_MINUTES = 10;
+/** Telegram link tokens one account can issue per hour. */
+export const TELEGRAM_LINK_TOKENS_PER_HOUR = 5;
+
 // Lifetime of the one-time t.me/<bot>?start=<token> link issued from the
 // account page.
 export const TELEGRAM_LINK_TOKEN_TTL_MINUTES = 30;

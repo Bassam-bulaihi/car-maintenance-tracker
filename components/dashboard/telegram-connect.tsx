@@ -8,12 +8,14 @@ import { formatDate } from "@/lib/i18n/format";
 // Account-page panel for the Telegram link: status line plus connect /
 // reconnect / disconnect. Same surface treatment as AccountForm beside it.
 export function TelegramConnect({
+  rateLimited = false,
   linked,
   linkedAt,
   botUsername,
   locale,
   t,
 }: {
+  rateLimited?: boolean;
   linked: boolean;
   linkedAt: string | null;
   botUsername: string | null;
@@ -73,6 +75,11 @@ export function TelegramConnect({
         <p className="text-sm text-muted">{copy.unavailable}</p>
       )}
 
+      {rateLimited && (
+        <p className="text-sm text-m-red" role="alert">
+          {copy.rateLimited}
+        </p>
+      )}
       {available && <p className="text-xs text-muted">{copy.hint}</p>}
     </section>
   );

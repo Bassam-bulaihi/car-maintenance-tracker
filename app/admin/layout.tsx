@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Database, Gauge, LayoutDashboard, LogOut } from "lucide-react";
+import { Database, Gauge, Inbox, LayoutDashboard, LogOut } from "lucide-react";
 import { requireAdmin } from "@/lib/admin/data";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { getDictionary } from "@/lib/i18n/locale";
@@ -16,7 +16,7 @@ export default async function AdminLayout({
   return (
     <div className="flex flex-1 flex-col">
       <MStripeDivider />
-      <header className="flex items-center justify-between border-b border-hairline px-6 py-4">
+      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-hairline px-4 py-4 sm:px-6">
         <Link href="/admin" className="flex flex-col gap-0.5">
           <BracketLabel>{t.admin.nav.eyebrow}</BracketLabel>
           <span
@@ -41,6 +41,13 @@ export default async function AdminLayout({
               <Database className="h-4 w-4" aria-hidden="true" />
               {t.admin.nav.presets}
             </Link>
+            <Link
+              href="/admin/messages"
+              className="flex h-10 items-center gap-2 rounded-none border border-hairline px-3 text-sm text-body hover:border-on-dark hover:text-on-dark"
+            >
+              <Inbox className="h-4 w-4" aria-hidden="true" />
+              {t.admin.nav.messages}
+            </Link>
           </nav>
           <LanguageToggle locale={locale} />
           <Link
@@ -61,7 +68,7 @@ export default async function AdminLayout({
           </LogoutButton>
         </div>
       </header>
-      <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-16 px-6 py-12">
+      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-16 px-4 py-10 sm:px-6 sm:py-12">
         {children}
       </main>
     </div>

@@ -8,7 +8,7 @@ import { getLocale } from "@/lib/i18n/locale";
 import { formatDate, formatNumber } from "@/lib/i18n/format";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 import { SERVICE_TYPES, type ServiceType } from "@/lib/admin/service-types";
-import { ODOMETER_ABSOLUTE_MAX_KM, todayInAppTimeZone } from "@/lib/config";
+import { MAX_VEHICLES_PER_USER, ODOMETER_ABSOLUTE_MAX_KM, todayInAppTimeZone } from "@/lib/config";
 import { closeServiceReminders, markServiceDone } from "@/lib/dashboard/service-confirmation";
 import { checkOdometerReading, recordOdometerReading } from "@/lib/dashboard/odometer";
 import { notifyDueServices } from "@/lib/messaging/due-services";
@@ -75,6 +75,14 @@ export async function registerVehicle(
 
   if (!Number.isSafeInteger(currentOdometer) || currentOdometer < 0 || currentOdometer > ODOMETER_ABSOLUTE_MAX_KM) {
     return { error: t.errors.invalidOdometer };
+  }
+
+  const { count: vehicleCount } = await supabase
+    .from("vehicles")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id);
+  if ((vehicleCount ?? 0) >= MAX_VEHICLES_PER_USER) {
+    return { error: t.errors.vehicleLimit.replace("{max}", formatNumber(locale, MAX_VEHICLES_PER_USER)) };
   }
 
   let identity: { make: string; model: string; year: number };

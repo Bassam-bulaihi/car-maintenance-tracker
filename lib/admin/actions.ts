@@ -341,3 +341,15 @@ export async function resyncPresetVehicles(presetId: string, _prev: ResyncState,
   revalidatePath(`/admin/presets/${presetId}`);
   return { synced: vehicles?.length ?? 0 };
 }
+
+/** Marks a user's /support message as handled (or reopens it). */
+export async function setSupportMessageStatus(id: string, status: "open" | "resolved", _formData: FormData) {
+  await requireAdminAction();
+  const { error } = await createServiceClient()
+    .from("support_messages")
+    .update({ status, resolved_at: status === "resolved" ? new Date().toISOString() : null })
+    .eq("id", id);
+  if (error) throw error;
+  revalidatePath("/admin/messages");
+  revalidatePath("/admin");
+}

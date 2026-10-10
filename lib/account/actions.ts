@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createServiceClient } from "@/lib/supabase/service";
 import { createLinkToken, telegramBotUsername } from "@/lib/messaging/linking";
+import { TELEGRAM_LINK_TOKENS_PER_HOUR } from "@/lib/config";
 import { requireProfile } from "@/lib/auth/profile";
 import { getLocale } from "@/lib/i18n/locale";
 import { dictionaries } from "@/lib/i18n/dictionaries";
@@ -47,7 +48,15 @@ export async function connectTelegram() {
   const username = telegramBotUsername();
   if (!username) redirect("/dashboard/account");
 
-  const token = await createLinkToken(createServiceClient(), user.id);
+  const service = createServiceClient();
+  const { count } = await service
+    .from("telegram_link_tokens")
+    .select("token", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .gte("created_at", new Date(Date.now() - 60 * 60 * 1000).toISOString());
+  if ((count ?? 0) >= TELEGRAM_LINK_TOKENS_PER_HOUR) redirect("/dashboard/account?link=limit");
+
+  const token = await createLinkToken(service, user.id);
   redirect(`https://t.me/${username}?start=${token}`);
 }
 

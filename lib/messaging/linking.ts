@@ -20,7 +20,14 @@ export async function createLinkToken(supabase: ServiceClient, userId: string) {
   const token = randomBytes(24).toString("base64url");
   const expiresAt = new Date(Date.now() + TELEGRAM_LINK_TOKEN_TTL_MINUTES * 60 * 1000).toISOString();
 
-  await supabase.from("telegram_link_tokens").delete().eq("user_id", userId).is("used_at", null);
+  // Expire (not delete) earlier unused links: only the newest works, and the
+  // rows still count toward TELEGRAM_LINK_TOKENS_PER_HOUR.
+  await supabase
+    .from("telegram_link_tokens")
+    .update({ expires_at: new Date().toISOString() })
+    .eq("user_id", userId)
+    .is("used_at", null)
+    .gt("expires_at", new Date().toISOString());
   const { error } = await supabase
     .from("telegram_link_tokens")
     .insert({ token, user_id: userId, expires_at: expiresAt });

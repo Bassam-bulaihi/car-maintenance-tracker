@@ -41,14 +41,17 @@ export type Database = {
     Tables: {
       inbound_message_events: {
         Row: {
+          chat_id: number | null
           event_id: string
           received_at: string
         }
         Insert: {
+          chat_id?: number | null
           event_id: string
           received_at?: string
         }
         Update: {
+          chat_id?: number | null
           event_id?: string
           received_at?: string
         }
@@ -251,6 +254,44 @@ export type Database = {
           },
         ]
       }
+      support_messages: {
+        Row: {
+          body: string
+          chat_id: number
+          created_at: string
+          id: string
+          resolved_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          chat_id: number
+          created_at?: string
+          id?: string
+          resolved_at?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          chat_id?: number
+          created_at?: string
+          id?: string
+          resolved_at?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_messages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       telegram_link_tokens: {
         Row: {
           created_at: string
@@ -285,6 +326,7 @@ export type Database = {
       }
       users: {
         Row: {
+          awaiting_support_since: string | null
           created_at: string
           email: string
           id: string
@@ -295,6 +337,7 @@ export type Database = {
           telegram_linked_at: string | null
         }
         Insert: {
+          awaiting_support_since?: string | null
           created_at?: string
           email: string
           id: string
@@ -305,6 +348,7 @@ export type Database = {
           telegram_linked_at?: string | null
         }
         Update: {
+          awaiting_support_since?: string | null
           created_at?: string
           email?: string
           id?: string

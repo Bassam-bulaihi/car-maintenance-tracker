@@ -6,10 +6,11 @@ import { AccountForm } from "@/components/dashboard/account-form";
 import { TelegramConnect } from "@/components/dashboard/telegram-connect";
 import { telegramBotUsername } from "@/lib/messaging/linking";
 
-export default async function AccountPage() {
-  const [{ user, profile }, { locale, t }] = await Promise.all([
+export default async function AccountPage({ searchParams }: PageProps<"/dashboard/account">) {
+  const [{ user, profile }, { locale, t }, params] = await Promise.all([
     requireProfile(),
     getDictionary(),
+    searchParams,
   ]);
 
   return (
@@ -32,6 +33,7 @@ export default async function AccountPage() {
       />
 
       <TelegramConnect
+        rateLimited={params.link === "limit"}
         linked={profile.telegram_chat_id !== null}
         linkedAt={profile.telegram_linked_at}
         botUsername={telegramBotUsername()}
