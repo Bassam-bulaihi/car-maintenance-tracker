@@ -13,6 +13,13 @@ import { BracketLabel } from "@/components/ui/bracket-label";
 // card overlapping the hero band, holding four inputs plus a primary
 // action. Semantics adapted from "rent a car" to "preview this car's
 // maintenance schedule".
+// Static class names so Tailwind generates them: fields + the submit column.
+const LG_COLUMNS: Record<number, string> = {
+  2: "lg:grid-cols-[1fr_1fr_auto]",
+  3: "lg:grid-cols-[1fr_1fr_1fr_auto]",
+  4: "lg:grid-cols-[1fr_1fr_1fr_1fr_auto]",
+};
+
 export function VehicleLookupWidget({
   catalog,
   locale,
@@ -54,6 +61,10 @@ export function VehicleLookupWidget({
     };
   }, [matched, odometer]);
 
+  // Model only appears once a make is chosen, year once a model is — no
+  // dead dropdowns to click before there's anything to pick.
+  const visibleFields = 2 + (make ? 1 : 0) + (matched ? 1 : 0);
+
   const nf = new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US");
   const showResult = submitted && !!matched;
 
@@ -73,7 +84,7 @@ export function VehicleLookupWidget({
             e.preventDefault();
             setSubmitted(true);
           }}
-          className="grid grid-cols-1 gap-px bg-hairline/60 md:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1fr_auto]"
+          className={`grid grid-cols-1 gap-px bg-hairline/60 md:grid-cols-2 ${LG_COLUMNS[visibleFields]}`}
         >
           <div className="flex flex-col gap-1.5 bg-surface-card/70 backdrop-blur-sm p-5">
             <DataLabel htmlFor="lookup-make">{t.home.lookup.make}</DataLabel>
@@ -97,13 +108,13 @@ export function VehicleLookupWidget({
             </Select>
           </div>
 
+          {make && (
           <div className="flex flex-col gap-1.5 bg-surface-card/70 backdrop-blur-sm p-5">
             <DataLabel htmlFor="lookup-model">{t.home.lookup.model}</DataLabel>
             <Select
               uiSize="sm"
               id="lookup-model"
               value={model}
-              disabled={!make}
               onChange={(e) => {
                 setModel(e.target.value);
                 setYear("");
@@ -118,14 +129,15 @@ export function VehicleLookupWidget({
               ))}
             </Select>
           </div>
+          )}
 
+          {matched && (
           <div className="flex flex-col gap-1.5 bg-surface-card/70 backdrop-blur-sm p-5">
             <DataLabel htmlFor="lookup-year">{t.home.lookup.year}</DataLabel>
             <Select
               uiSize="sm"
               id="lookup-year"
               value={year}
-              disabled={!matched}
               onChange={(e) => setYear(e.target.value)}
               className="font-mono"
             >
@@ -137,6 +149,7 @@ export function VehicleLookupWidget({
               ))}
             </Select>
           </div>
+          )}
 
           <div className="flex flex-col gap-1.5 bg-surface-card/70 backdrop-blur-sm p-5">
             <DataLabel htmlFor="lookup-odometer">{t.home.lookup.odometer}</DataLabel>
