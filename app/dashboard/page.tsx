@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Plus, Car, Send } from "lucide-react";
+import { Plus, Car } from "lucide-react";
+import { FaTelegram } from "react-icons/fa6";
 import { requireProfile } from "@/lib/auth/profile";
 import { getDictionary } from "@/lib/i18n/locale";
 import { listVehicles } from "@/lib/dashboard/data";
@@ -43,7 +44,7 @@ export default async function DashboardPage() {
             className="flex flex-wrap items-center justify-between gap-3 border border-hairline bg-surface-card/70 px-5 py-4 text-sm text-body backdrop-blur-sm transition-colors hover:border-on-dark hover:text-on-dark"
           >
             <span className="flex items-center gap-3">
-              <Send className="h-4 w-4 shrink-0 text-muted rtl:scale-x-[-1]" aria-hidden="true" />
+              <FaTelegram className="h-5 w-5 shrink-0 text-on-dark" aria-hidden="true" />
               {t.account.telegram.notConnected}
             </span>
             <span className={`font-bold text-on-dark ${locale === "en" ? "uppercase tracking-[1.5px]" : ""}`}>

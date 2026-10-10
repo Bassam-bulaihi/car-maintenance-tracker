@@ -1,4 +1,5 @@
-import { ExternalLink, Send, Unlink } from "lucide-react";
+import { Unlink } from "lucide-react";
+import { FaTelegram } from "react-icons/fa6";
 import { connectTelegram, disconnectTelegram } from "@/lib/account/actions";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import { Button, ButtonLink } from "@/components/ui/button";
@@ -43,7 +44,7 @@ export function TelegramConnect({
               type="submit"
               variant={linked ? "outline" : "primary"}
               locale={locale}
-              icon={<Send className="h-4 w-4 rtl:scale-x-[-1]" />}
+              icon={<FaTelegram className="h-4 w-4" aria-hidden="true" />}
             >
               {linked ? copy.reconnect : copy.connect}
             </Button>
@@ -55,7 +56,7 @@ export function TelegramConnect({
               rel="noopener noreferrer"
               variant="outline"
               locale={locale}
-              icon={<ExternalLink className="h-4 w-4" />}
+              icon={<FaTelegram className="h-4 w-4" aria-hidden="true" />}
             >
               {copy.openChat}
             </ButtonLink>
