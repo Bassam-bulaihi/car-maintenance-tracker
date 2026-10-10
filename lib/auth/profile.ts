@@ -6,6 +6,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { requireSessionUser, type SessionUser } from "@/lib/auth/session";
 import { validateProfileFields } from "@/lib/auth/validation";
 import type { Locale } from "@/lib/i18n/dictionaries";
+import { getLocale } from "@/lib/i18n/locale";
 
 type ProfileInput = { name: string; language: Locale };
 
@@ -34,11 +35,14 @@ export const requireProfile = cache(async () => {
   const { data: existing } = await supabase.from("users").select("*").eq("id", user.id).maybeSingle();
   if (existing) return { supabase, user, profile: existing };
 
-  const { name = "", language } = user.unsafeMetadata;
+  // Email signups carry the name they typed; Google (and other social)
+  // signups bring the name from their provider instead.
+  const { language } = user.unsafeMetadata;
+  const name = user.unsafeMetadata.name ?? user.fullName ?? "";
   if (validateProfileFields(name) === null) {
     const { error } = await createProfile(user, {
       name,
-      language: language === "en" ? "en" : "ar",
+      language: language === "en" ? "en" : language === "ar" ? "ar" : await getLocale(),
     });
     if (!error) {
       const { data: created } = await supabase.from("users").select("*").eq("id", user.id).single();

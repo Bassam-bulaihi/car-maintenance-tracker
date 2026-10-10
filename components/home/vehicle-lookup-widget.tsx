@@ -4,7 +4,9 @@ import { useMemo, useState } from "react";
 import { Search, ArrowRight, Gauge, Droplet, CalendarClock } from "lucide-react";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import type { CatalogModel } from "@/lib/home/catalog";
-import { TextInput, Select } from "@/components/ui/text-input";
+import { TextInput } from "@/components/ui/text-input";
+import { Combobox } from "@/components/ui/combobox";
+import { makeName, modelName } from "@/lib/i18n/vehicle-names";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { DataLabel } from "@/components/ui/data-label";
 import { BracketLabel } from "@/components/ui/bracket-label";
@@ -86,72 +88,61 @@ export function VehicleLookupWidget({
           }}
           className={`grid grid-cols-1 gap-px bg-hairline/60 md:grid-cols-2 ${LG_COLUMNS[visibleFields]}`}
         >
-          <div className="flex flex-col gap-1.5 bg-surface-card/70 backdrop-blur-sm p-5">
+          <div className="relative flex flex-col gap-1.5 bg-surface-card/70 p-5 backdrop-blur-sm focus-within:z-30">
             <DataLabel htmlFor="lookup-make">{t.home.lookup.make}</DataLabel>
-            <Select
-              uiSize="sm"
+            <Combobox
               id="lookup-make"
+              size="sm"
               value={make}
-              onChange={(e) => {
-                setMake(e.target.value);
+              onChange={(next) => {
+                setMake(next);
                 setModel("");
                 setYear("");
                 setSubmitted(false);
               }}
-            >
-              <option value="">{t.home.lookup.makePlaceholder}</option>
-              {makes.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </Select>
+              options={makes.map((m) => ({ value: m, label: makeName(m, locale), hint: locale === "ar" ? m : undefined }))}
+              placeholder={t.home.lookup.makePlaceholder}
+              searchPlaceholder={t.dashboard.searchList}
+              emptyLabel={t.dashboard.noListMatches}
+            />
           </div>
 
           {make && (
-          <div className="flex flex-col gap-1.5 bg-surface-card/70 backdrop-blur-sm p-5">
+          <div className="relative flex flex-col gap-1.5 bg-surface-card/70 p-5 backdrop-blur-sm focus-within:z-30">
             <DataLabel htmlFor="lookup-model">{t.home.lookup.model}</DataLabel>
-            <Select
-              uiSize="sm"
+            <Combobox
               id="lookup-model"
+              size="sm"
               value={model}
-              onChange={(e) => {
-                setModel(e.target.value);
+              onChange={(next) => {
+                setModel(next);
                 setYear("");
                 setSubmitted(false);
               }}
-            >
-              <option value="">{t.home.lookup.modelPlaceholder}</option>
-              {modelsForMake.map((c) => (
-                <option key={c.model} value={c.model}>
-                  {c.model}
-                </option>
-              ))}
-            </Select>
+              options={modelsForMake.map((c) => ({ value: c.model, label: modelName(c.model, locale), hint: locale === "ar" ? c.model : undefined }))}
+              placeholder={t.home.lookup.modelPlaceholder}
+              searchPlaceholder={t.dashboard.searchList}
+              emptyLabel={t.dashboard.noListMatches}
+            />
           </div>
           )}
 
           {matched && (
-          <div className="flex flex-col gap-1.5 bg-surface-card/70 backdrop-blur-sm p-5">
+          <div className="relative flex flex-col gap-1.5 bg-surface-card/70 p-5 backdrop-blur-sm focus-within:z-30">
             <DataLabel htmlFor="lookup-year">{t.home.lookup.year}</DataLabel>
-            <Select
-              uiSize="sm"
+            <Combobox
               id="lookup-year"
+              size="sm"
               value={year}
-              onChange={(e) => setYear(e.target.value)}
-              className="font-mono"
-            >
-              <option value="">{t.home.lookup.yearPlaceholder}</option>
-              {(matched?.years ?? []).map((y) => (
-                <option key={y} value={y}>
-                  {y}
-                </option>
-              ))}
-            </Select>
+              onChange={setYear}
+              options={(matched?.years ?? []).map((y) => ({ value: String(y), label: String(y) }))}
+              placeholder={t.home.lookup.yearPlaceholder}
+              mono
+            />
           </div>
           )}
 
-          <div className="flex flex-col gap-1.5 bg-surface-card/70 backdrop-blur-sm p-5">
+          <div className="relative flex flex-col gap-1.5 bg-surface-card/70 p-5 backdrop-blur-sm focus-within:z-30">
             <DataLabel htmlFor="lookup-odometer">{t.home.lookup.odometer}</DataLabel>
             <TextInput
               uiSize="sm"

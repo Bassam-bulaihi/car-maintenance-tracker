@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database.types";
 import type { Locale } from "@/lib/i18n/dictionaries";
+import { vehicleName } from "@/lib/i18n/vehicle-names";
 import { sendMessage, TelegramApiError } from "@/lib/messaging/telegram-client";
 import { buildOutboundMessage, type OutboundMessageType } from "@/lib/messaging/templates";
 import { vehiclePageUrl } from "@/lib/config";
@@ -12,8 +13,9 @@ type ServiceClient = SupabaseClient<Database>;
 export type NotifiableUser = { id: string; telegram_chat_id: number; language: Locale };
 type NotifiableVehicle = { id: string; make: string; model: string; recommendedOil?: string | null };
 
-export function vehicleLabel(vehicle: { make: string; model: string }) {
-  return `${vehicle.make} ${vehicle.model}`;
+/** The car as named in the user's language ("تويوتا كامري" / "Toyota Camry"). */
+export function vehicleLabel(vehicle: { make: string; model: string }, locale: Locale) {
+  return vehicleName(vehicle, locale);
 }
 
 /**
@@ -49,7 +51,7 @@ async function sendNotification(
   try {
     const outbound = buildOutboundMessage(messageType, user.language, {
       notificationId: notification.id,
-      vehicle: vehicleLabel(vehicle),
+      vehicle: vehicleLabel(vehicle, user.language),
       link: vehiclePageUrl(vehicle.id),
       service: serviceItem ? serviceTypeLabel(serviceItem.service_type, user.language) : undefined,
       oil:

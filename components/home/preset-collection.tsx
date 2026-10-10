@@ -7,6 +7,7 @@ import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import { SHOWCASE_PRESETS, BODY_TYPES, type PresetCategory } from "@/lib/home/content";
 import type { ModelFilter } from "@/components/home/models-explorer";
 import type { CatalogModel } from "@/lib/home/catalog";
+import { makeName, modelName, vehicleName } from "@/lib/i18n/vehicle-names";
 import { PresetCard } from "@/components/home/preset-card";
 import { BracketLabel } from "@/components/ui/bracket-label";
 import { Reveal } from "@/components/motion/reveal";
@@ -50,7 +51,7 @@ export const PresetCollection = forwardRef<
 
   const filterName =
     filter.kind === "make"
-      ? filter.value
+      ? makeName(filter.value, locale)
       : filter.kind === "body"
         ? (BODY_TYPES.find((b) => b.slug === filter.value)?.label[locale] ?? filter.value)
         : "";
@@ -143,7 +144,7 @@ export const PresetCollection = forwardRef<
                   className="border border-hairline px-3 py-1.5 text-sm text-on-dark"
                   title={`${Math.min(...entry.years)}–${Math.max(...entry.years)}`}
                 >
-                  {filter.kind === "body" ? `${entry.make} ${entry.model}` : entry.model}{" "}
+                  {filter.kind === "body" ? vehicleName(entry, locale) : modelName(entry.model, locale)}{" "}
                   <span className="font-mono text-xs text-muted">
                     {Math.min(...entry.years)}–{Math.max(...entry.years)}
                   </span>

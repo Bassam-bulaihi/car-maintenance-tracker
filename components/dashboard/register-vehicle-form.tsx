@@ -5,7 +5,9 @@ import { ArrowLeftRight, Car, Droplet, PenLine } from "lucide-react";
 import { registerVehicle } from "@/lib/dashboard/actions";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import { DEFAULT_SERVICE_SCHEDULE, serviceTypesFor } from "@/lib/admin/service-types";
-import { TextInput, Select, FieldLabel } from "@/components/ui/text-input";
+import { TextInput, FieldLabel } from "@/components/ui/text-input";
+import { Combobox } from "@/components/ui/combobox";
+import { makeName, modelName } from "@/lib/i18n/vehicle-names";
 import { Button } from "@/components/ui/button";
 import { DataLabel } from "@/components/ui/data-label";
 
@@ -55,73 +57,58 @@ export function RegisterVehicleForm({
 
       {mode === "preset" ? (
         <div className="flex flex-col gap-4">
+          {/* Model appears once a make is chosen, year once a model is — same
+              progressive reveal as the landing-page quick check. */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div className="flex flex-col gap-1.5">
               <FieldLabel htmlFor="make">{d.makeLabel}</FieldLabel>
-              <Select
+              <Combobox
                 id="make"
                 value={make}
-                required
-                onChange={(event) => {
-                  setMake(event.target.value);
+                onChange={(next) => {
+                  setMake(next);
                   setModel("");
                   setPresetId("");
                 }}
-              >
-                <option value="" disabled>
-                  {d.chooseMake}
-                </option>
-                {makes.map((m) => (
-                  <option key={m} value={m}>
-                    {m}
-                  </option>
-                ))}
-              </Select>
+                options={makes.map((m) => ({ value: m, label: makeName(m, locale), hint: locale === "ar" ? m : undefined }))}
+                placeholder={d.chooseMake}
+                searchPlaceholder={d.searchList}
+                emptyLabel={d.noListMatches}
+              />
             </div>
-            <div className="flex flex-col gap-1.5">
-              <FieldLabel htmlFor="model">{d.modelLabel}</FieldLabel>
-              <Select
-                id="model"
-                value={model}
-                required
-                disabled={!make}
-                onChange={(event) => {
-                  setModel(event.target.value);
-                  const onlyYear = presets.filter((p) => p.make === make && p.model === event.target.value);
-                  setPresetId(onlyYear.length === 1 ? onlyYear[0].id : "");
-                }}
-              >
-                <option value="" disabled>
-                  {d.chooseModel}
-                </option>
-                {models.map((m) => (
-                  <option key={m} value={m}>
-                    {m}
-                  </option>
-                ))}
-              </Select>
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <FieldLabel htmlFor="preset_id">{d.yearLabel}</FieldLabel>
-              <Select
-                id="preset_id"
-                name="preset_id"
-                value={presetId}
-                required
-                disabled={!model}
-                onChange={(event) => setPresetId(event.target.value)}
-                className="font-mono"
-              >
-                <option value="" disabled>
-                  {d.chooseYear}
-                </option>
-                {years.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.year}
-                  </option>
-                ))}
-              </Select>
-            </div>
+            {make && (
+              <div className="flex flex-col gap-1.5">
+                <FieldLabel htmlFor="model">{d.modelLabel}</FieldLabel>
+                <Combobox
+                  id="model"
+                  value={model}
+                  onChange={(next) => {
+                    setModel(next);
+                    const onlyYear = presets.filter((p) => p.make === make && p.model === next);
+                    setPresetId(onlyYear.length === 1 ? onlyYear[0].id : "");
+                  }}
+                  options={models.map((m) => ({ value: m, label: modelName(m, locale), hint: locale === "ar" ? m : undefined }))}
+                  placeholder={d.chooseModel}
+                  searchPlaceholder={d.searchList}
+                  emptyLabel={d.noListMatches}
+                />
+              </div>
+            )}
+            {model && (
+              <div className="flex flex-col gap-1.5">
+                <FieldLabel htmlFor="preset_id">{d.yearLabel}</FieldLabel>
+                <Combobox
+                  id="preset_id"
+                  name="preset_id"
+                  value={presetId}
+                  onChange={setPresetId}
+                  options={years.map((p) => ({ value: p.id, label: String(p.year) }))}
+                  placeholder={d.chooseYear}
+                  required
+                  mono
+                />
+              </div>
+            )}
           </div>
 
           {selected && (

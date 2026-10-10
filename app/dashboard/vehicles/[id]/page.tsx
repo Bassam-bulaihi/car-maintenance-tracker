@@ -5,6 +5,7 @@ import { TextInput } from "@/components/ui/text-input";
 import { Button } from "@/components/ui/button";
 import { getRecommendedOil, getVehicle, listOdometerReadings, listServiceHistory } from "@/lib/dashboard/data";
 import { getDictionary } from "@/lib/i18n/locale";
+import { vehicleName } from "@/lib/i18n/vehicle-names";
 import { BackLink } from "@/components/ui/back-link";
 import { BracketLabel } from "@/components/ui/bracket-label";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -41,7 +42,7 @@ export default async function VehicleDetailPage({
           <h1
             className={`text-[30px] font-bold leading-[0.95] text-on-dark break-words sm:text-[40px] ${locale === "en" ? "uppercase tracking-[-0.02em]" : ""}`}
           >
-            {vehicle.make} {vehicle.model}{" "}
+            {vehicleName(vehicle, locale)}{" "}
             <span className="font-mono text-body">/ {vehicle.year}</span>
           </h1>
           {recommendedOil && (
@@ -113,7 +114,7 @@ export default async function VehicleDetailPage({
         <DeleteVehicleButton
           vehicleId={vehicle.id}
           label={t.dashboard.removeVehicle}
-          confirmText={t.dashboard.removeVehicleConfirm.replace("{vehicle}", `${vehicle.make} ${vehicle.model}`)}
+          confirmText={t.dashboard.removeVehicleConfirm.replace("{vehicle}", vehicleName(vehicle, locale))}
           confirmLabel={t.common.confirm}
           cancelLabel={t.common.cancel}
           locale={locale}

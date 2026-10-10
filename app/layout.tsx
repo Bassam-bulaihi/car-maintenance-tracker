@@ -2,7 +2,9 @@ import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter, Noto_Sans_Arabic } from "next/font/google";
 import { getLocale } from "@/lib/i18n/locale";
+import { Suspense } from "react";
 import { NeatBackground } from "@/components/layout/neat-background";
+import { NavigationProgress } from "@/components/layout/navigation-progress";
 import "./globals.css";
 
 // Arabic UI/editorial text — docs/arabic-web-design.md: "do not substitute
@@ -69,6 +71,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         className={`min-h-full flex flex-col ${locale === "ar" ? "font-arabic" : "font-latin"}`}
       >
         <ClerkProvider>
+          <Suspense fallback={null}>
+            <NavigationProgress />
+          </Suspense>
           <NeatBackground />
           {children}
         </ClerkProvider>

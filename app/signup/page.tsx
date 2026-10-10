@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { SignupForm } from "@/components/auth/signup-form";
 import { LanguageToggle } from "@/components/layout/language-toggle";
+import { SocialSignIn } from "@/components/auth/social-sign-in";
 import { getDictionary } from "@/lib/i18n/locale";
 
 export default async function SignupPage() {
@@ -16,6 +17,7 @@ export default async function SignupPage() {
         <LanguageToggle locale={locale} />
       </div>
       <h1 className="text-[32px] font-bold leading-tight text-on-dark">{t.auth.signup.title}</h1>
+      <SocialSignIn mode="signUp" locale={locale} t={t} />
       <SignupForm locale={locale} t={t} />
     </main>
   );

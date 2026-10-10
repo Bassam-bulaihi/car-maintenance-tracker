@@ -25,6 +25,12 @@ const ar = {
       noAccount: "ليس لديك حساب؟",
       signupLink: "إنشاء حساب جديد",
     },
+    social: {
+      google: "المتابعة باستخدام Google",
+      or: "أو بالبريد الإلكتروني",
+      redirecting: "جارٍ التحويل...",
+      finishing: "جارٍ إكمال تسجيل الدخول...",
+    },
     verify: {
       codeLabel: "رمز التحقق",
       sentTo: "أرسلنا رمز تحقق إلى",
@@ -77,6 +83,8 @@ const ar = {
     chooseMake: "اختر الماركة...",
     chooseModel: "اختر الموديل...",
     chooseYear: "اختر السنة...",
+    searchList: "ابحث...",
+    noListMatches: "لا توجد نتائج",
     presetSummary: "الزيت الموصى به: {oil} · {count} خدمات تُتابَع تلقائياً",
     notListed: "سيارتي غير موجودة في القائمة",
     backToList: "الاختيار من القائمة",
@@ -625,6 +633,12 @@ const en: typeof ar = {
       noAccount: "Don't have an account?",
       signupLink: "Create an account",
     },
+    social: {
+      google: "Continue with Google",
+      or: "or with email",
+      redirecting: "Redirecting...",
+      finishing: "Finishing sign-in...",
+    },
     verify: {
       codeLabel: "Verification code",
       sentTo: "We sent a verification code to",
@@ -677,6 +691,8 @@ const en: typeof ar = {
     chooseMake: "Choose a make...",
     chooseModel: "Choose a model...",
     chooseYear: "Choose a year...",
+    searchList: "Search...",
+    noListMatches: "No matches",
     presetSummary: "Recommended oil: {oil} · {count} services tracked automatically",
     notListed: "My car isn't listed",
     backToList: "Choose from the list",

@@ -6,6 +6,8 @@ import { currentUser } from "@clerk/nextjs/server";
 export type SessionUser = {
   id: string;
   email: string;
+  /** Name from the identity provider (Google etc.), when there is one. */
+  fullName: string | null;
   isAdmin: boolean;
   unsafeMetadata: UserUnsafeMetadata;
 };
@@ -20,6 +22,7 @@ export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
   return {
     id: user.id,
     email: user.primaryEmailAddress?.emailAddress ?? "",
+    fullName: [user.firstName, user.lastName].filter(Boolean).join(" ").trim() || null,
     isAdmin: user.publicMetadata.role === "admin",
     unsafeMetadata: user.unsafeMetadata,
   };

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Droplet, Gauge, Search, Wrench } from "lucide-react";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import type { CatalogModel } from "@/lib/home/catalog";
+import { makeName, modelName, vehicleName } from "@/lib/i18n/vehicle-names";
 import { TextInput } from "@/components/ui/text-input";
 
 // The full preset catalog, grouped by make, with instant search and make
@@ -20,7 +21,9 @@ export function CatalogBrowser({ catalog, locale, t }: { catalog: CatalogModel[]
   const groups = useMemo(() => {
     const q = query.trim().toLowerCase();
     const matches = catalog.filter(
-      (m) => (!make || m.make === make) && (!q || `${m.make} ${m.model}`.toLowerCase().includes(q)),
+      (m) =>
+        (!make || m.make === make) &&
+        (!q || `${m.make} ${m.model} ${vehicleName(m, "ar")}`.toLowerCase().includes(q)),
     );
     const byMake = new Map<string, CatalogModel[]>();
     for (const m of matches) byMake.set(m.make, [...(byMake.get(m.make) ?? []), m]);
@@ -55,7 +58,7 @@ export function CatalogBrowser({ catalog, locale, t }: { catalog: CatalogModel[]
                   active ? "border-on-dark bg-on-dark text-canvas" : "border-hairline text-body hover:border-on-dark hover:text-on-dark"
                 }`}
               >
-                {m ?? c.allMakes}
+                {m ? makeName(m, locale) : c.allMakes}
               </button>
             );
           })}
@@ -68,13 +71,13 @@ export function CatalogBrowser({ catalog, locale, t }: { catalog: CatalogModel[]
         groups.map(([groupMake, models]) => (
           <section key={groupMake} className="flex flex-col gap-3" aria-labelledby={`make-${groupMake}`}>
             <h2 id={`make-${groupMake}`} className={`text-xl font-bold text-on-dark ${locale === "en" ? "uppercase tracking-[-0.01em]" : ""}`}>
-              {groupMake} <span className="font-mono text-sm font-normal text-muted">({nf.format(models.length)})</span>
+              {makeName(groupMake, locale)} <span className="font-mono text-sm font-normal text-muted">({nf.format(models.length)})</span>
             </h2>
             <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {models.map((m) => (
                 <li key={m.model} className="flex flex-col gap-3 border border-hairline bg-surface-card/70 p-5 backdrop-blur-sm">
                   <div className="flex items-baseline justify-between gap-3">
-                    <span className="font-bold text-on-dark">{m.model}</span>
+                    <span className="font-bold text-on-dark">{modelName(m.model, locale)}</span>
                     <span className="font-mono text-xs text-muted">
                       {Math.min(...m.years)}–{Math.max(...m.years)}
                     </span>

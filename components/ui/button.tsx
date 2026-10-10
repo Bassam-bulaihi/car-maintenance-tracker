@@ -1,5 +1,9 @@
+"use client";
+
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "react";
 import Link from "next/link";
+import { useFormStatus } from "react-dom";
+import { Loader2 } from "lucide-react";
 import type { Locale } from "@/lib/i18n/dictionaries";
 
 type Variant = "primary" | "outline" | "danger";
@@ -47,13 +51,20 @@ export function Button({
   icon?: ReactNode;
 }) {
   const caseClass = locale === "en" ? "uppercase tracking-[1.5px]" : "";
+  // Every submit button reports its own form's progress: spinner in place of
+  // the icon, disabled, aria-busy (which also switches the cursor — see
+  // globals.css). No per-form wiring needed, and no double submits.
+  const { pending } = useFormStatus();
+  const busy = props.type === "submit" && pending;
 
   return (
     <button
-      className={`${base} ${variants[variant]} ${sizes[size]} ${caseClass} ${className}`}
+      className={`${base} ${variants[variant]} ${sizes[size]} ${caseClass} ${busy ? "cursor-progress" : ""} ${className}`}
       {...props}
+      disabled={props.disabled || busy}
+      aria-busy={busy || undefined}
     >
-      {icon}
+      {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : icon}
       {children}
     </button>
   );

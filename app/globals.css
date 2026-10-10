@@ -117,6 +117,15 @@ p {
   outline-offset: 2px;
 }
 
+/* While a page or form is working (NavigationProgress sets html.is-busy;
+   pending submit buttons carry aria-busy), the cursor says so everywhere. */
+html.is-busy,
+html.is-busy *,
+html:has([aria-busy="true"]),
+html:has([aria-busy="true"]) * {
+  cursor: progress !important;
+}
+
 /* Numeric data lines up in columns wherever it is rendered. */
 .font-mono {
   font-variant-numeric: tabular-nums;

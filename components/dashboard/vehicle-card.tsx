@@ -4,6 +4,7 @@ import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import { computeNextDue, computeServiceStatus } from "@/lib/dashboard/service-status";
 import { serviceTypeLabel } from "@/lib/admin/service-types";
 import { formatDate, formatNumber } from "@/lib/i18n/format";
+import { vehicleName } from "@/lib/i18n/vehicle-names";
 
 type VehicleCardData = {
   id: string;
@@ -72,7 +73,7 @@ export function VehicleCard({
             <span
               className={`text-lg font-bold text-on-dark ${locale === "en" ? "uppercase tracking-[-0.01em]" : ""}`}
             >
-              {vehicle.make} {vehicle.model}
+              {vehicleName(vehicle, locale)}
             </span>
             <span className="font-mono text-xs text-muted">
               {vehicle.year}

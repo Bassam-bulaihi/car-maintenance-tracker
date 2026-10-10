@@ -366,7 +366,7 @@ async function saveReading(
     user.telegram_chat_id,
     botText(user.language, "odometerSaved", {
       reading: numberFormat(user.language).format(reading),
-      vehicle: vehicleLabel(vehicle),
+      vehicle: vehicleLabel(vehicle, user.language),
     }),
   );
 
@@ -426,7 +426,7 @@ async function answerServiceReminder(
       chatId,
       botText(user.language, "serviceDoneRecorded", {
         service,
-        vehicle: vehicleLabel(item.vehicles),
+        vehicle: vehicleLabel(item.vehicles, user.language),
         odometer: numberFormat(user.language).format(item.vehicles.current_odometer),
       }),
     );
@@ -558,7 +558,7 @@ async function sendStatus(supabase: ServiceClient, user: LinkedUser) {
       .map((item) => serviceTypeLabel(item.service_type, user.language));
     return [
       botText(user.language, "statusVehicle", {
-        vehicle: vehicleLabel(vehicle),
+        vehicle: vehicleLabel(vehicle, user.language),
         odometer: numberFormat(user.language).format(vehicle.current_odometer),
       }),
       due.length

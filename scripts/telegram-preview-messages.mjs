@@ -29,7 +29,7 @@ const t = dictionaries[locale].telegramBot;
 const nf = new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US");
 const base = (env.APP_BASE_URL && !env.APP_BASE_URL.includes("localhost") ? env.APP_BASE_URL : "https://car-auto-g.vercel.app").replace(/\/+$/, "");
 const sample = {
-  vehicle: "Honda Civic",
+  vehicle: locale === "ar" ? "هوندا سيفيك" : "Honda Civic",
   service: locale === "ar" ? "زيت المحرك" : "Engine oil",
   link: `${base}/dashboard`,
   reading: nf.format(25500),

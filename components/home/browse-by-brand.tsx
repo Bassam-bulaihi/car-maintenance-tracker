@@ -17,6 +17,7 @@ import {
 } from "react-icons/si";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import { BRANDS } from "@/lib/home/content";
+import { makeName } from "@/lib/i18n/vehicle-names";
 import { SectionHeading } from "@/components/home/section-heading";
 import { Reveal } from "@/components/motion/reveal";
 
@@ -91,7 +92,7 @@ export function BrowseByBrand({
                     isActive ? "text-on-dark" : "text-body group-hover:text-on-dark"
                   }`}
                 />
-                <span className="text-sm font-bold text-on-dark">{brand.name}</span>
+                <span className="text-sm font-bold text-on-dark">{makeName(brand.name, locale)}</span>
                 {ready ? (
                   <span className="font-mono text-[11px] text-muted">
                     {nf.format(modelCount)}

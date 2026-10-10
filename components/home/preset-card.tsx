@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Gauge, Droplet, CalendarClock, Wrench, Tag } from "lucide-react";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import type { ShowcasePreset } from "@/lib/home/content";
+import { vehicleName } from "@/lib/i18n/vehicle-names";
 
 // Mirrors the Figma car card (Group 115): image · badge row · title+metric
 // row · four-up spec strip · CTA button.
@@ -57,7 +58,7 @@ export function PresetCard({
 
         <div className="flex items-baseline justify-between gap-3">
           <h3 className="text-lg font-bold text-on-dark">
-            {preset.make} {preset.model}
+            {vehicleName(preset, locale)}
           </h3>
           <span className="font-mono text-sm text-body">{preset.year}</span>
         </div>

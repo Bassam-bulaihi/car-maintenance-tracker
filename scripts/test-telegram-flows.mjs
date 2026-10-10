@@ -601,8 +601,8 @@ try {
   await scenario("/status lists each car with its odometer and what's due (Arabic)", async () => {
     const [call] = await send(text(CHAT_A, "/status"), 1);
     assert.match(call.params.text, /حالة سياراتك/);
-    assert.match(call.params.text, /Hyundai Accent — ٤٠٬٠٠٠ كم/);
-    assert.match(call.params.text, /Toyota Camry — ٦٠٬٠٠٠ كم/);
+    assert.match(call.params.text, /هيونداي أكسنت — ٤٠٬٠٠٠ كم/);
+    assert.match(call.params.text, /تويوتا كامري — ٦٠٬٠٠٠ كم/);
     assert.match(call.params.text, /مستحق: زيت المحرك/, "Accent oil is due again at 40,000");
     assert.match(call.params.text, /لا توجد صيانة مستحقة/, "Camry has nothing due");
   });
