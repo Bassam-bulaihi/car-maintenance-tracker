@@ -34,7 +34,7 @@ export function DashboardHeader({
             aria-label={t.dashboard.vehiclesTitle}
             className="shrink-0 text-on-dark transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-on-dark"
           >
-            <Logo markClassName="h-7" />
+            <Logo markClassName="h-7" wordmarkClassName="max-[420px]:hidden" />
           </Link>
           <span className="hidden h-6 w-px bg-hairline md:block" aria-hidden="true" />
           <span className="hidden truncate text-[15px] font-bold text-on-dark md:inline">

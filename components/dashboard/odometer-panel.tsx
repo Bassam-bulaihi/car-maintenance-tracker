@@ -45,7 +45,7 @@ export function OdometerPanel({
       <div className="grid grid-cols-1 items-end gap-6 sm:grid-cols-[minmax(0,1fr)_auto]">
         <div className="flex flex-col gap-1">
           <DataLabel>{t.dashboard.currentOdometer}</DataLabel>
-          <span className="font-mono text-[40px] font-bold leading-none text-on-dark">
+          <span className="font-mono text-[32px] font-bold leading-none text-on-dark sm:text-[40px]">
             {formatNumber(locale, currentOdometer)}{" "}
             <span className="text-base font-normal text-muted">{t.common.km}</span>
           </span>

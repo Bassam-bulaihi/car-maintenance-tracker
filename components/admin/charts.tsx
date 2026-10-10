@@ -33,12 +33,12 @@ function useWidth<T extends HTMLElement>() {
   return [ref, width] as const;
 }
 
-/** Clean y ticks (0, nice step, …) covering `max`. */
+/** Clean y ticks (0, nice step, …) covering `max`. Counts → whole-number steps. */
 function niceTicks(max: number, count = 4) {
   if (max <= 0) return [0, 1];
   const raw = max / count;
   const magnitude = 10 ** Math.floor(Math.log10(raw));
-  const step = [1, 2, 5, 10].map((m) => m * magnitude).find((s) => s >= raw) ?? raw;
+  const step = Math.max(1, [1, 2, 5, 10].map((m) => m * magnitude).find((s) => s >= raw) ?? raw);
   const top = Math.ceil(max / step) * step;
   return Array.from({ length: Math.round(top / step) + 1 }, (_, i) => i * step);
 }
@@ -90,7 +90,7 @@ export function ChartCard({
       </div>
       {children}
       <details className="text-xs">
-        <summary className="cursor-pointer text-muted hover:text-on-dark">{tableLabel}</summary>
+        <summary className="inline-flex min-h-8 cursor-pointer items-center text-muted hover:text-on-dark">{tableLabel}</summary>
         <div className="mt-2 max-h-64 overflow-auto">
           <table className="w-full border-collapse font-mono">
             <thead>
@@ -179,7 +179,7 @@ export function ColumnChart({
   const band = points.length ? plotW / points.length : 0;
   const barW = Math.max(2, Math.min(24, band * 0.6));
   const y = (v: number) => PAD.top + plotH - (v / top) * plotH;
-  const labelEvery = Math.ceil(points.length / 6);
+  const labelEvery = Math.ceil(points.length / Math.max(2, Math.floor(plotW / 72)));
 
   return (
     <div ref={ref} className="relative" dir="ltr">
@@ -269,7 +269,7 @@ export function AreaChart({
   const line = values.map((v, i) => `${i ? "L" : "M"}${x(i)},${y(v)}`).join(" ");
   const area = `${line} L${x(values.length - 1)},${y(0)} L${x(0)},${y(0)} Z`;
   const last = values.length - 1;
-  const labelEvery = Math.ceil(points.length / 6);
+  const labelEvery = Math.ceil(points.length / Math.max(2, Math.floor(plotW / 72)));
 
   const nearest = (clientX: number, rect: DOMRect) => {
     const rel = clientX - rect.left - PAD.left;

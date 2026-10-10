@@ -22,7 +22,7 @@ export default async function ModelsPage() {
         <BackLink href="/">{t.home.brand}</BackLink>
         <div className="flex flex-col gap-3">
           <BracketLabel>{c.eyebrow}</BracketLabel>
-          <h1 className={`text-[40px] font-bold leading-[1.02] text-on-dark ${locale === "en" ? "uppercase tracking-[-0.02em]" : ""}`}>
+          <h1 className={`text-[30px] font-bold leading-[1.02] text-on-dark sm:text-[40px] ${locale === "en" ? "uppercase tracking-[-0.02em]" : ""}`}>
             {c.title}
           </h1>
           <p className="max-w-2xl text-body">

@@ -29,41 +29,46 @@ export default async function AdminLayout({
           <nav aria-label={t.admin.nav.title} className="flex items-center gap-3">
             <Link
               href="/admin"
+              aria-label={t.admin.nav.overview}
               className="flex h-10 items-center gap-2 rounded-none border border-hairline px-3 text-sm text-body hover:border-on-dark hover:text-on-dark"
             >
               <Gauge className="h-4 w-4" aria-hidden="true" />
-              {t.admin.nav.overview}
+              <span className="hidden sm:inline">{t.admin.nav.overview}</span>
             </Link>
             <Link
               href="/admin/presets"
+              aria-label={t.admin.nav.presets}
               className="flex h-10 items-center gap-2 rounded-none border border-hairline px-3 text-sm text-body hover:border-on-dark hover:text-on-dark"
             >
               <Database className="h-4 w-4" aria-hidden="true" />
-              {t.admin.nav.presets}
+              <span className="hidden sm:inline">{t.admin.nav.presets}</span>
             </Link>
             <Link
               href="/admin/messages"
+              aria-label={t.admin.nav.messages}
               className="flex h-10 items-center gap-2 rounded-none border border-hairline px-3 text-sm text-body hover:border-on-dark hover:text-on-dark"
             >
               <Inbox className="h-4 w-4" aria-hidden="true" />
-              {t.admin.nav.messages}
+              <span className="hidden sm:inline">{t.admin.nav.messages}</span>
             </Link>
           </nav>
           <LanguageToggle locale={locale} />
           <Link
             href="/dashboard"
+            aria-label={t.admin.nav.backToDashboard}
             className="flex h-10 items-center gap-2 rounded-none border border-hairline px-3 text-sm text-body hover:border-on-dark hover:text-on-dark"
           >
             <LayoutDashboard className="h-4 w-4" aria-hidden="true" />
-            {t.admin.nav.backToDashboard}
+            <span className="hidden sm:inline">{t.admin.nav.backToDashboard}</span>
           </Link>
           <LogoutButton>
             <button
               type="button"
+              aria-label={t.common.logout}
               className="flex h-10 items-center gap-2 rounded-none border border-hairline px-3 text-sm text-body hover:border-on-dark hover:text-on-dark"
             >
               <LogOut className="h-4 w-4" aria-hidden="true" />
-              {t.common.logout}
+              <span className="hidden sm:inline">{t.common.logout}</span>
             </button>
           </LogoutButton>
         </div>

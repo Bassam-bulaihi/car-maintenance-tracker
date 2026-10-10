@@ -13,7 +13,7 @@ export function UndoReadingButton({ vehicleId, label, confirmText }: { vehicleId
       onClick={() => {
         if (window.confirm(confirmText)) startTransition(() => undoLatestReading(vehicleId));
       }}
-      className="inline-flex items-center gap-1 text-xs text-muted underline-offset-4 hover:text-m-red hover:underline disabled:opacity-50"
+      className="inline-flex min-h-8 items-center gap-1 py-1.5 text-xs text-muted underline-offset-4 hover:text-m-red hover:underline disabled:opacity-50"
     >
       <Undo2 className="h-3.5 w-3.5" aria-hidden="true" />
       {label}

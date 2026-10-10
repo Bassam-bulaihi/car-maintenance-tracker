@@ -7,16 +7,18 @@ export function Logo({
   className = "",
   markClassName = "h-7",
   showWordmark = true,
+  wordmarkClassName = "",
 }: {
   className?: string;
   markClassName?: string;
   showWordmark?: boolean;
+  wordmarkClassName?: string;
 }) {
   return (
     <span className={`inline-flex items-center gap-2.5 ${className}`}>
       <CarAutoMark className={`${markClassName} w-auto shrink-0`} />
       {showWordmark && (
-        <span className="text-lg font-bold uppercase leading-none tracking-[0.06em]">
+        <span className={`text-lg font-bold uppercase leading-none tracking-[0.06em] ${wordmarkClassName}`}>
           Car Auto
         </span>
       )}

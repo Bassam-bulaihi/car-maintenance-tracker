@@ -33,7 +33,7 @@ export function ContentPage({
 
         <div className="flex flex-col gap-3">
           {eyebrow && <BracketLabel>{eyebrow}</BracketLabel>}
-          <h1 className={`text-[40px] font-bold leading-[1.02] text-on-dark ${upper}`}>{title}</h1>
+          <h1 className={`text-[30px] font-bold leading-[1.02] text-on-dark sm:text-[40px] ${upper}`}>{title}</h1>
         </div>
 
         {sections && (

@@ -78,7 +78,7 @@ export function SiteFooter({ t }: { t: Dictionary }) {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-body transition-colors hover:text-on-dark focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-on-dark"
+                    className="inline-flex min-h-8 items-center text-sm text-body transition-colors hover:text-on-dark focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-on-dark"
                   >
                     {link.label}
                   </Link>

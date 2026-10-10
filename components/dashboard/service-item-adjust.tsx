@@ -39,7 +39,7 @@ export function ServiceItemAdjust({
 
   return (
     <details className="group sm:col-span-2">
-      <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 text-xs text-muted hover:text-on-dark [&::-webkit-details-marker]:hidden">
+      <summary className="inline-flex min-h-8 cursor-pointer list-none items-center gap-1.5 py-1.5 text-xs text-muted hover:text-on-dark [&::-webkit-details-marker]:hidden">
         <SlidersHorizontal className="h-3.5 w-3.5" aria-hidden="true" />
         {d.adjust}
       </summary>

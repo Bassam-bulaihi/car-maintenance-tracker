@@ -28,7 +28,7 @@ export default async function DashboardPage() {
           <div className="flex flex-col gap-2">
             <BracketLabel>{t.dashboard.eyebrow}</BracketLabel>
             <h1
-              className={`text-[40px] font-bold leading-[0.95] text-on-dark break-words ${locale === "en" ? "uppercase tracking-[-0.02em]" : ""}`}
+              className={`text-[30px] font-bold leading-[0.95] text-on-dark break-words sm:text-[40px] ${locale === "en" ? "uppercase tracking-[-0.02em]" : ""}`}
             >
               {t.dashboard.vehiclesTitle}
             </h1>

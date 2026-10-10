@@ -39,7 +39,7 @@ export default async function VehicleDetailPage({
             {vehicle.plate_no ? `${t.dashboard.plateLabelShort} / ${vehicle.plate_no}` : t.dashboard.vehicleEyebrow}
           </BracketLabel>
           <h1
-            className={`text-[40px] font-bold leading-[0.95] text-on-dark break-words ${locale === "en" ? "uppercase tracking-[-0.02em]" : ""}`}
+            className={`text-[30px] font-bold leading-[0.95] text-on-dark break-words sm:text-[40px] ${locale === "en" ? "uppercase tracking-[-0.02em]" : ""}`}
           >
             {vehicle.make} {vehicle.model}{" "}
             <span className="font-mono text-body">/ {vehicle.year}</span>
@@ -51,7 +51,7 @@ export default async function VehicleDetailPage({
             </p>
           )}
           <details className="group">
-            <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 text-xs text-muted hover:text-on-dark [&::-webkit-details-marker]:hidden">
+            <summary className="inline-flex min-h-8 cursor-pointer list-none items-center gap-1.5 py-1.5 text-xs text-muted hover:text-on-dark [&::-webkit-details-marker]:hidden">
               <PenLine className="h-3.5 w-3.5" aria-hidden="true" />
               {t.dashboard.editPlate}
             </summary>
