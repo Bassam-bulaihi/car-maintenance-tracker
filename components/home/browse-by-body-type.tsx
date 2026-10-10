@@ -62,7 +62,7 @@ export function BrowseByBodyType({
                 }`}
               >
                 <Icon
-                  className={`h-8 w-8 transition-[color,transform] duration-200 group-hover:scale-110 ${
+                  className={`h-9 w-[4.5rem] transition-[color,transform] duration-200 group-hover:scale-105 ${
                     isActive ? "text-on-dark" : "text-muted group-hover:text-on-dark"
                   }`}
                   aria-hidden="true"
