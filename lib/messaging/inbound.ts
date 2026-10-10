@@ -50,12 +50,59 @@ type LinkedUser = {
 const SERVICE_TYPES_SENT = ["service_due", "re_reminder"] as const;
 
 /**
- * Processes one verified Telegram update (the webhook has already checked
- * the secret-token header). Covers every inbound path:
+ * Runs synchronously in the webhook before it responds, so arrival order is
+ * what decides admission:
+ * - dedupe (PRD §7.3: deliveries aren't guaranteed unique — each update_id
+ *   is processed once);
+ * - flood control: past BOT_MESSAGES_PER_MINUTE a chat's updates are
+ *   dropped, and the first one over the limit gets a single "slow down"
+ *   reply.
+ */
+export async function admitTelegramUpdate(update: TelegramUpdate): Promise<"process" | "drop" | "throttle-notice"> {
+  const supabase = createServiceClient();
+  const chatId = update.message?.chat.id ?? update.callback_query?.message?.chat.id ?? null;
+
+  const { data: event, error } = await supabase
+    .from("inbound_message_events")
+    .insert({ event_id: String(update.update_id), chat_id: chatId })
+    .select("received_at")
+    .single();
+  if (error || !event) return "drop";
+  if (chatId === null) return "process";
+
+  // This update's rank among the chat's updates in the last minute.
+  const { count } = await supabase
+    .from("inbound_message_events")
+    .select("event_id", { count: "exact", head: true })
+    .eq("chat_id", chatId)
+    .gte("received_at", new Date(new Date(event.received_at).getTime() - 60_000).toISOString())
+    .lte("received_at", event.received_at);
+  const rank = count ?? 0;
+  if (rank <= BOT_MESSAGES_PER_MINUTE) return "process";
+  return rank === BOT_MESSAGES_PER_MINUTE + 1 ? "throttle-notice" : "drop";
+}
+
+/** The one reply a throttled chat gets (and the callback spinner cleared). */
+export async function sendThrottleNotice(update: TelegramUpdate) {
+  const supabase = createServiceClient();
+  const chatId = update.message?.chat.id ?? update.callback_query?.message?.chat.id;
+  if (update.callback_query) await telegram("answerCallbackQuery", { callback_query_id: update.callback_query.id });
+  if (!chatId) return;
+  const user = await findLinkedUser(supabase, chatId);
+  const locale: Locale =
+    user?.language ?? ((update.message?.from ?? update.callback_query?.from)?.language_code?.startsWith("en") ? "en" : "ar");
+  await reply(chatId, botText(locale, "rateLimited"));
+}
+
+/**
+ * Processes one admitted Telegram update (the webhook has already checked
+ * the secret-token header and run admitTelegramUpdate). Covers every
+ * inbound path:
  *
  * - /start <token>     link this chat to the account that issued the token
  * - /start, /help      help (linked) or how-to-link (unlinked)
- * - button tap         Done / Not done on a service reminder
+ * - /status, /support  cars' status; a message for the admin inbox
+ * - button tap         Done / Not done, Yes / Re-enter
  * - reply / free text  an odometer number or a typed "تم / لم يتم"
  *
  * A reply is only ever applied to a notification we sent to this chat:
@@ -65,33 +112,6 @@ const SERVICE_TYPES_SENT = ["service_due", "re_reminder"] as const;
  */
 export async function handleTelegramUpdate(update: TelegramUpdate) {
   const supabase = createServiceClient();
-
-  const chatId = update.message?.chat.id ?? update.callback_query?.message?.chat.id ?? null;
-
-  // PRD §7.3: deliveries aren't guaranteed unique — process each update_id once.
-  const { error: dedupeError } = await supabase
-    .from("inbound_message_events")
-    .insert({ event_id: String(update.update_id), chat_id: chatId });
-  if (dedupeError) return;
-
-  // Flood control: past BOT_MESSAGES_PER_MINUTE a chat's updates are dropped;
-  // the first one over the limit gets a single "slow down" reply.
-  if (chatId !== null) {
-    const { count } = await supabase
-      .from("inbound_message_events")
-      .select("event_id", { count: "exact", head: true })
-      .eq("chat_id", chatId)
-      .gte("received_at", new Date(Date.now() - 60_000).toISOString());
-    if ((count ?? 0) > BOT_MESSAGES_PER_MINUTE) {
-      if (count === BOT_MESSAGES_PER_MINUTE + 1) {
-        const user = await findLinkedUser(supabase, chatId);
-        const locale: Locale = user?.language ?? (update.message?.from?.language_code?.startsWith("en") ? "en" : "ar");
-        await reply(chatId, botText(locale, "rateLimited"));
-      }
-      if (update.callback_query) await telegram("answerCallbackQuery", { callback_query_id: update.callback_query.id });
-      return;
-    }
-  }
 
   if (update.callback_query) {
     await handleCallback(supabase, update.callback_query);

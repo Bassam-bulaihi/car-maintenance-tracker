@@ -1,6 +1,6 @@
 import { timingSafeEqual } from "node:crypto";
 import { after, NextResponse, type NextRequest } from "next/server";
-import { handleTelegramUpdate } from "@/lib/messaging/inbound";
+import { admitTelegramUpdate, handleTelegramUpdate, sendThrottleNotice } from "@/lib/messaging/inbound";
 import type { TelegramUpdate } from "@/lib/messaging/telegram-client";
 
 // Telegram's single webhook (registered with setWebhook — see
@@ -12,7 +12,7 @@ import type { TelegramUpdate } from "@/lib/messaging/telegram-client";
 // The update is acknowledged with 200 straight away and processed in
 // after(), so a slow database or Bot API call never makes Telegram time out
 // and redeliver (PRD §7.3). Redeliveries that do happen are dropped by the
-// update_id dedupe in handleTelegramUpdate.
+// update_id dedupe in admitTelegramUpdate.
 export async function POST(request: NextRequest) {
   if (!hasValidSecret(request.headers.get("x-telegram-bot-api-secret-token"))) {
     return new NextResponse("Unauthorized", { status: 401 });
@@ -28,13 +28,27 @@ export async function POST(request: NextRequest) {
     return new NextResponse("Bad request", { status: 400 });
   }
 
-  after(async () => {
-    try {
-      await handleTelegramUpdate(update);
-    } catch (error) {
-      console.error("telegram webhook: failed to process update", update.update_id, error);
-    }
-  });
+  // Admission (dedupe + per-chat flood control) is one insert and one count,
+  // done before acknowledging so arrival order decides it; the real work runs
+  // after the response.
+  let admission: Awaited<ReturnType<typeof admitTelegramUpdate>>;
+  try {
+    admission = await admitTelegramUpdate(update);
+  } catch (error) {
+    console.error("telegram webhook: admission failed", update.update_id, error);
+    return new NextResponse(null, { status: 200 });
+  }
+
+  if (admission !== "drop") {
+    after(async () => {
+      try {
+        if (admission === "throttle-notice") await sendThrottleNotice(update);
+        else await handleTelegramUpdate(update);
+      } catch (error) {
+        console.error("telegram webhook: failed to process update", update.update_id, error);
+      }
+    });
+  }
 
   return new NextResponse(null, { status: 200 });
 }

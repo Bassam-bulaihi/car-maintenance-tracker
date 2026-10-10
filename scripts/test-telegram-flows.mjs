@@ -250,6 +250,9 @@ const server = spawn("node_modules/.bin/next", ["start", "-p", String(APP_PORT)]
   detached: true,
   env: {
     SCHEDULER_TEST_USER_PREFIX: `test_tg_`,
+    // The suite drives one chat far faster than a person; the flood scenario
+    // below exercises the limit with its own chat.
+    BOT_MESSAGES_PER_MINUTE: "100",
     ...process.env,
     TELEGRAM_API_BASE: `http://127.0.0.1:${MOCK_PORT}`,
     TELEGRAM_BOT_TOKEN: "test-token",
@@ -678,6 +681,53 @@ try {
     assert.match(help.params.text, /I'm the Car Auto bot/);
     const [refused] = await send(text(CHAT_B, "36000", { languageCode: "en" }), 1);
     assert.match(refused.params.text, /only accepted here as a reply/);
+  });
+
+  // --- Support messages ----------------------------------------------------------
+  await scenario("/support <text> stores the message for the admin inbox", async () => {
+    const [call] = await send(text(CHAT_A, "/support التذكير وصلني متأخر"), 1);
+    assert.match(call.params.text, /وصلتنا رسالتك/);
+    const msgs = await rows("support_messages", "user_id", ids.a);
+    assert.equal(msgs.length, 1);
+    assert.equal(msgs[0].body, "التذكير وصلني متأخر");
+    assert.equal(msgs[0].status, "open");
+  });
+  await scenario("bare /support asks for the message; the next text is stored", async () => {
+    const [prompt] = await send(text(CHAT_A, "/support"), 1);
+    assert.match(prompt.params.text, /اكتب رسالتك أو شكواك/);
+    const [ack] = await send(text(CHAT_A, "أقترح إضافة تذكير بتجديد الاستمارة"), 1);
+    assert.match(ack.params.text, /وصلتنا رسالتك/);
+    assert.equal((await rows("support_messages", "user_id", ids.a)).length, 2);
+    assert.equal((await row("users", "id", ids.a)).awaiting_support_since, null);
+  });
+  await scenario("support message over the length limit is refused (nothing stored)", async () => {
+    const [call] = await send(text(CHAT_A, `/support ${"ا".repeat(1001)}`), 1);
+    assert.match(call.params.text, /طويلة جداً/);
+    assert.equal((await rows("support_messages", "user_id", ids.a)).length, 2);
+    await db.from("users").update({ awaiting_support_since: null }).eq("id", ids.a);
+  });
+  await scenario("support messages are capped per 24 hours", async () => {
+    await db.from("support_messages").insert(
+      [1, 2, 3].map((i) => ({ user_id: ids.a, chat_id: CHAT_A, body: `filler ${i}` })),
+    );
+    const [call] = await send(text(CHAT_A, "/support one more"), 1);
+    assert.match(call.params.text, /خلال آخر ٢٤ ساعة/);
+    assert.equal((await rows("support_messages", "user_id", ids.a)).length, 5);
+  });
+
+  // --- Flood control ----------------------------------------------------------
+  await scenario("a chat flooding the bot gets one 'slow down' reply, then is ignored", async () => {
+    const FLOOD_CHAT = 900000321;
+    const before = calls.length;
+    for (let i = 0; i < 102; i++) {
+      await postUpdate(text(FLOOD_CHAT, `spam ${i}`));
+    }
+    const deadline = Date.now() + 30000;
+    while (calls.slice(before).filter((c) => c.params.chat_id === FLOOD_CHAT).length < 101 && Date.now() < deadline) await sleep(200);
+    await sleep(1500);
+    const toFlood = calls.slice(before).filter((c) => c.params.chat_id === FLOOD_CHAT);
+    assert.equal(toFlood.length, 101, "100 normal replies + 1 rate-limit notice, the 102nd dropped");
+    assert.equal(toFlood.filter((c) => /رسائل كثيرة في وقت قصير/.test(c.params.text)).length, 1);
   });
 
   // --- Copy coverage ----------------------------------------------------------

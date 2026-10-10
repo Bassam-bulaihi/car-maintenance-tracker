@@ -29,8 +29,12 @@ export const MAX_REPLY_ATTEMPTS = 3;
 // Anti-abuse limits. Each is enforced server-side where the thing is created.
 /** Vehicles one account can register (web, preset or custom). */
 export const MAX_VEHICLES_PER_USER = 10;
-/** Inbound Telegram updates accepted per chat per minute; the rest are dropped. */
-export const BOT_MESSAGES_PER_MINUTE = 20;
+/**
+ * Inbound Telegram updates accepted per chat per minute; the rest are
+ * dropped. BOT_MESSAGES_PER_MINUTE in the environment overrides it (the
+ * integration tests drive one chat much faster than any person would).
+ */
+export const BOT_MESSAGES_PER_MINUTE = Number(process.env.BOT_MESSAGES_PER_MINUTE) || 20;
 /** Support messages one user can send through the bot per 24 hours. */
 export const SUPPORT_MESSAGES_PER_DAY = 5;
 /** Longest support message stored (longer ones are refused, not truncated). */
