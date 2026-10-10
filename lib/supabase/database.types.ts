@@ -290,7 +290,6 @@ export type Database = {
           id: string
           language: Database["public"]["Enums"]["app_language"]
           name: string
-          phone_number: string
           role: Database["public"]["Enums"]["user_role"]
           telegram_chat_id: number | null
           telegram_linked_at: string | null
@@ -301,7 +300,6 @@ export type Database = {
           id: string
           language?: Database["public"]["Enums"]["app_language"]
           name: string
-          phone_number: string
           role?: Database["public"]["Enums"]["user_role"]
           telegram_chat_id?: number | null
           telegram_linked_at?: string | null
@@ -312,7 +310,6 @@ export type Database = {
           id?: string
           language?: Database["public"]["Enums"]["app_language"]
           name?: string
-          phone_number?: string
           role?: Database["public"]["Enums"]["user_role"]
           telegram_chat_id?: number | null
           telegram_linked_at?: string | null

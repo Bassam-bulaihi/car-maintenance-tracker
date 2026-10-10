@@ -27,7 +27,6 @@ export default async function AccountPage() {
       <AccountForm
         name={profile.name}
         email={user.email}
-        phoneNumber={profile.phone_number}
         locale={locale}
         t={t}
       />

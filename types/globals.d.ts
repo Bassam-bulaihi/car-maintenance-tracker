@@ -13,7 +13,6 @@ declare global {
   // sign-in (lib/auth/profile.ts).
   interface UserUnsafeMetadata {
     name?: string;
-    phone_number?: string;
     language?: "ar" | "en";
   }
 

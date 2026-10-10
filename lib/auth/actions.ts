@@ -21,16 +21,11 @@ export async function completeOnboarding(
   const t = dictionaries[locale].auth.errors;
 
   const name = String(formData.get("name") ?? "").trim();
-  const phoneNumber = String(formData.get("phone_number") ?? "").trim();
-
-  const fieldError = validateProfileFields(name, phoneNumber);
+  const fieldError = validateProfileFields(name);
   if (fieldError) return { error: t[fieldError] };
 
-  const { error } = await createProfile(user, { name, phoneNumber, language: locale });
-  if (error) {
-    // 23505 = unique_violation; phone_number is unique per account.
-    return { error: error.code === "23505" ? t.phoneTaken : t.generic };
-  }
+  const { error } = await createProfile(user, { name, language: locale });
+  if (error) return { error: t.generic };
 
   redirect("/dashboard");
 }

@@ -26,7 +26,6 @@ export default async function OnboardingPage() {
       </div>
       <OnboardingForm
         name={user.unsafeMetadata.name ?? ""}
-        phoneNumber={user.unsafeMetadata.phone_number ?? ""}
         locale={locale}
         t={t}
       />

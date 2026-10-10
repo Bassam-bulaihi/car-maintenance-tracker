@@ -175,12 +175,11 @@ const monthsAgo = (n) => {
 const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Riyadh" }).format(new Date());
 
 async function seed() {
-  const phone = (n) => `+9665${suffix.replace(/\D/g, "").padEnd(4, "0").slice(0, 4)}${n}0000`.slice(0, 13);
   const { error: usersError } = await db.from("users").insert([
-    { id: ids.a, name: "مستخدم أ", email: `${ids.a}@example.com`, phone_number: phone(1), language: "ar" },
-    { id: ids.b, name: "User B", email: `${ids.b}@example.com`, phone_number: phone(2), language: "en", telegram_chat_id: CHAT_B },
-    { id: ids.c, name: "Blocked C", email: `${ids.c}@example.com`, phone_number: phone(3), language: "en", telegram_chat_id: BLOCKED_CHAT },
-    { id: ids.d, name: "Unlinked D", email: `${ids.d}@example.com`, phone_number: phone(4), language: "ar" },
+    { id: ids.a, name: "مستخدم أ", email: `${ids.a}@example.com`, language: "ar" },
+    { id: ids.b, name: "User B", email: `${ids.b}@example.com`, language: "en", telegram_chat_id: CHAT_B },
+    { id: ids.c, name: "Blocked C", email: `${ids.c}@example.com`, language: "en", telegram_chat_id: BLOCKED_CHAT },
+    { id: ids.d, name: "Unlinked D", email: `${ids.d}@example.com`, language: "ar" },
   ]);
   if (usersError) throw usersError;
 

@@ -39,27 +39,6 @@ export async function getPresetWithItems(presetId: string) {
   return data;
 }
 
-/**
- * Telegram threads flagged after MAX_REPLY_ATTEMPTS invalid replies and not
- * yet resolved (PRD §7.5: "flagged for follow-up rather than looping").
- * Notifications are only readable by their owner under RLS, so the admin
- * view reads them with the service role after the admin check.
- */
-export async function listFollowUps() {
-  await requireAdmin();
-  const { data, error } = await createServiceClient()
-    .from("notifications")
-    .select(
-      "id, message_type, reply_attempts, response_text, sent_at, vehicles!inner(id, make, model, current_odometer, users!inner(name, email, phone_number))",
-    )
-    .eq("needs_follow_up", true)
-    .is("responded_at", null)
-    .order("sent_at", { ascending: false });
-
-  if (error) throw error;
-  return data;
-}
-
 /** How many registered vehicles a preset re-sync would touch. */
 export async function countVehiclesForPreset(preset: { make: string; model: string; year: number }) {
   await requireAdmin();

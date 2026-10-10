@@ -10,13 +10,11 @@ import { Button } from "@/components/ui/button";
 export function AccountForm({
   name,
   email,
-  phoneNumber,
   locale,
   t,
 }: {
   name: string;
   email: string;
-  phoneNumber: string;
   locale: Locale;
   t: Dictionary;
 }) {
@@ -35,17 +33,6 @@ export function AccountForm({
         <p className="text-xs text-muted">{t.account.emailNote}</p>
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <FieldLabel htmlFor="phone_number">{t.account.phoneLabel}</FieldLabel>
-        <TextInput
-          id="phone_number"
-          name="phone_number"
-          defaultValue={phoneNumber}
-          required
-          dir="ltr"
-          placeholder="+9665XXXXXXXX"
-        />
-      </div>
 
       <div className="flex flex-wrap items-center gap-4">
         <Button type="submit" disabled={pending} locale={locale} icon={<Save className="h-4 w-4" />}>

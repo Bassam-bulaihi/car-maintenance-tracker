@@ -32,7 +32,7 @@ const ar = {
     },
     onboarding: {
       title: "أكمل حسابك",
-      intro: "نحتاج اسمك ورقم جوالك لإكمال حسابك.",
+      intro: "نحتاج اسمك لإكمال حسابك.",
       submit: "حفظ ومتابعة",
       submitting: "جارِ الحفظ...",
     },
@@ -40,7 +40,6 @@ const ar = {
       title: "إنشاء حساب",
       name: "الاسم الكامل",
       email: "البريد الإلكتروني",
-      phone: "رقم الجوال",
       password: "كلمة المرور",
       submit: "إنشاء حساب",
       submitting: "جارِ الإنشاء...",
@@ -49,11 +48,9 @@ const ar = {
     },
     errors: {
       name: "الرجاء إدخال الاسم الكامل.",
-      phone: "رقم الجوال غير صالح. استخدم الصيغة الدولية، مثال: 966501234567+",
       password: "كلمة المرور يجب أن تكون 8 أحرف على الأقل.",
       invalidCredentials: "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
       emailTaken: "هذا البريد الإلكتروني مسجّل بالفعل. سجّل الدخول بدلاً من ذلك.",
-      phoneTaken: "رقم الجوال هذا مستخدم في حساب آخر.",
       weakPassword: "كلمة المرور هذه ضعيفة أو مكشوفة في تسريب سابق. اختر كلمة مرور أخرى.",
       invalidCode: "رمز التحقق غير صحيح أو منتهي الصلاحية.",
       generic: "حدث خطأ ما. حاول مرة أخرى.",
@@ -152,7 +149,6 @@ const ar = {
     nameLabel: "الاسم الكامل",
     emailLabel: "البريد الإلكتروني",
     emailNote: "لا يمكن تغيير البريد الإلكتروني من هنا.",
-    phoneLabel: "رقم الجوال",
     save: "حفظ التغييرات",
     saving: "جارِ الحفظ...",
     success: "تم تحديث بياناتك بنجاح.",
@@ -538,11 +534,11 @@ const ar = {
       sections: [
         {
           heading: "البيانات التي نجمعها",
-          body: "عند إنشاء الحساب نجمع الاسم والبريد الإلكتروني ورقم الجوال. عند تسجيل مركبة نحفظ الماركة والموديل وسنة الصنع ورقم اللوحة إن أدخلته، إضافة إلى قراءات العداد التي ترسلها وسجل الصيانة المؤكد.",
+          body: "عند إنشاء الحساب نجمع الاسم والبريد الإلكتروني فقط. عند تسجيل مركبة نحفظ الماركة والموديل وسنة الصنع ورقم اللوحة إن أدخلته، إضافة إلى قراءات العداد التي ترسلها وسجل الصيانة المؤكد.",
         },
         {
-          heading: "لماذا نحتاج رقم الجوال",
-          body: "نرسل طلبات قراءة العداد وتنبيهات الصيانة عبر تيليجرام فقط بعد أن تربط حسابك بنفسك، ونحفظ معرّف المحادثة لهذا الغرض وحده. لا نستخدم رقم جوالك أو حساب تيليجرام لأي غرض تسويقي ولا نشاركهما مع معلنين.",
+          heading: "كيف نستخدم تيليجرام",
+          body: "نرسل طلبات قراءة العداد وتنبيهات الصيانة عبر تيليجرام فقط بعد أن تربط حسابك بنفسك، ونحفظ معرّف المحادثة لهذا الغرض وحده. لا نستخدم حساب تيليجرام لأي غرض تسويقي ولا نشاركه مع معلنين.",
         },
         {
           heading: "أين تُحفظ بياناتك",
@@ -608,7 +604,7 @@ const en: typeof ar = {
     },
     onboarding: {
       title: "Finish your account",
-      intro: "We need your name and phone number to finish your account.",
+      intro: "We need your name to finish your account.",
       submit: "Save and continue",
       submitting: "Saving...",
     },
@@ -616,7 +612,6 @@ const en: typeof ar = {
       title: "Create an account",
       name: "Full name",
       email: "Email",
-      phone: "Phone number",
       password: "Password",
       submit: "Create account",
       submitting: "Creating...",
@@ -625,11 +620,9 @@ const en: typeof ar = {
     },
     errors: {
       name: "Please enter your full name.",
-      phone: "Invalid phone number. Use international format, e.g. +966501234567",
       password: "Password must be at least 8 characters.",
       invalidCredentials: "Incorrect email or password.",
       emailTaken: "This email is already registered. Log in instead.",
-      phoneTaken: "This phone number is already used by another account.",
       weakPassword: "This password is too weak or has appeared in a data breach. Choose another.",
       invalidCode: "The verification code is incorrect or has expired.",
       generic: "Something went wrong. Please try again.",
@@ -728,7 +721,6 @@ const en: typeof ar = {
     nameLabel: "Full name",
     emailLabel: "Email",
     emailNote: "Email can't be changed here.",
-    phoneLabel: "Phone number",
     save: "Save changes",
     saving: "Saving...",
     success: "Your details have been updated.",
@@ -1112,11 +1104,11 @@ const en: typeof ar = {
       sections: [
         {
           heading: "What we collect",
-          body: "When you create an account we collect your name, email, and phone number. When you register a vehicle we store its make, model, year, plate number if you enter one, along with the odometer readings you send and the service history you confirm.",
+          body: "When you create an account we collect only your name and email. When you register a vehicle we store its make, model, year, plate number if you enter one, along with the odometer readings you send and the service history you confirm.",
         },
         {
-          heading: "Why we need your phone number",
-          body: "We send odometer requests and service reminders over Telegram only after you link your account yourself, and we store the chat id for that purpose alone. Your phone number and Telegram account are never used for marketing and never shared with advertisers.",
+          heading: "How we use Telegram",
+          body: "We send odometer requests and service reminders over Telegram only after you link your account yourself, and we store the chat id for that purpose alone. Your Telegram account is never used for marketing and never shared with advertisers.",
         },
         {
           heading: "Where your data lives",

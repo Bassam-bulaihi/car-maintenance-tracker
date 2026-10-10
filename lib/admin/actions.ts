@@ -287,18 +287,6 @@ export async function deleteRecommendedPart(
   revalidatePath(`/admin/presets/${presetId}`);
 }
 
-/** Closes a flagged Telegram thread once an admin has followed up with the user. */
-export async function resolveFollowUp(notificationId: string, _formData: FormData) {
-  await requireAdminAction();
-  const { error } = await createServiceClient()
-    .from("notifications")
-    .update({ responded_at: new Date().toISOString(), response: "invalid", needs_follow_up: false })
-    .eq("id", notificationId)
-    .eq("needs_follow_up", true);
-  if (error) throw error;
-  revalidatePath("/admin/follow-ups");
-}
-
 export type ResyncState = { synced: number } | { error: string } | undefined;
 
 /**

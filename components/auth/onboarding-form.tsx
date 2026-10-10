@@ -9,12 +9,10 @@ import { Button } from "@/components/ui/button";
 
 export function OnboardingForm({
   name,
-  phoneNumber,
   locale,
   t,
 }: {
   name: string;
-  phoneNumber: string;
   locale: Locale;
   t: Dictionary;
 }) {
@@ -30,19 +28,6 @@ export function OnboardingForm({
         <TextInput id="name" name="name" autoComplete="name" defaultValue={name} required />
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <FieldLabel htmlFor="phone_number">{t.auth.signup.phone}</FieldLabel>
-        <TextInput
-          id="phone_number"
-          name="phone_number"
-          type="tel"
-          autoComplete="tel"
-          placeholder="+966501234567"
-          defaultValue={phoneNumber}
-          required
-          dir="ltr"
-        />
-      </div>
 
       {state?.error && (
         <p className="text-sm text-m-red" role="alert">

@@ -33,22 +33,21 @@ export function SignupForm({ locale, t }: { locale: Locale; t: Dictionary }) {
     const form = new FormData(event.currentTarget);
     const name = String(form.get("name") ?? "").trim();
     const emailValue = String(form.get("email") ?? "").trim();
-    const phoneNumber = String(form.get("phone_number") ?? "").trim();
     const password = String(form.get("password") ?? "");
 
-    const fieldError = validateProfileFields(name, phoneNumber);
+    const fieldError = validateProfileFields(name);
     if (fieldError) return setError(t.auth.errors[fieldError]);
     if (password.length < MIN_PASSWORD_LENGTH) return setError(t.auth.errors.password);
 
     setEmail(emailValue);
 
-    // name/phone/language ride along in unsafeMetadata and become the
+    // name/language ride along in unsafeMetadata and become the
     // public.users row on first sign-in (lib/auth/profile.ts), where they are
     // validated again server-side.
     const { error } = await signUp.password({
       emailAddress: emailValue,
       password,
-      unsafeMetadata: { name, phone_number: phoneNumber, language: locale },
+      unsafeMetadata: { name, language: locale },
     });
     if (error) return setError(clerkErrorMessage(error, t));
 
@@ -99,18 +98,6 @@ export function SignupForm({ locale, t }: { locale: Locale; t: Dictionary }) {
         <TextInput id="email" name="email" type="email" autoComplete="email" required dir="ltr" />
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <FieldLabel htmlFor="phone_number">{t.auth.signup.phone}</FieldLabel>
-        <TextInput
-          id="phone_number"
-          name="phone_number"
-          type="tel"
-          autoComplete="tel"
-          placeholder="+966501234567"
-          required
-          dir="ltr"
-        />
-      </div>
 
       <div className="flex flex-col gap-1.5">
         <FieldLabel htmlFor="password">{t.auth.signup.password}</FieldLabel>
