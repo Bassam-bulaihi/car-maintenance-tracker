@@ -37,11 +37,14 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: `${SITE_NAME} — Telegram car maintenance reminders`,
     description: SITE_DESCRIPTION,
+    // The hero photograph — link previews show a car, not a blank card.
+    images: [{ url: "/cars/hero.jpg", alt: "Car Auto — maintenance reminders over Telegram" }],
   },
   twitter: {
     card: "summary_large_image",
     title: `${SITE_NAME} — Telegram car maintenance reminders`,
     description: SITE_DESCRIPTION,
+    images: ["/cars/hero.jpg"],
   },
 };
 

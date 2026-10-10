@@ -114,6 +114,8 @@ export default async function VehicleDetailPage({
           vehicleId={vehicle.id}
           label={t.dashboard.removeVehicle}
           confirmText={t.dashboard.removeVehicleConfirm.replace("{vehicle}", `${vehicle.make} ${vehicle.model}`)}
+          confirmLabel={t.common.confirm}
+          cancelLabel={t.common.cancel}
           locale={locale}
         />
       </div>

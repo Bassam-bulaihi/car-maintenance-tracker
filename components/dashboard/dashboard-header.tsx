@@ -4,6 +4,7 @@ import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import { LanguageToggle } from "@/components/layout/language-toggle";
 import { MStripeDivider } from "@/components/layout/m-stripe-divider";
 import { Button, ButtonLink } from "@/components/ui/button";
+import { NavButtonLink } from "@/components/ui/nav-link";
 import { Logo } from "@/components/brand/logo";
 import { LogoutButton } from "@/components/auth/logout-button";
 
@@ -44,9 +45,9 @@ export function DashboardHeader({
         </div>
         <nav aria-label={t.account.navLabel} className="flex shrink-0 items-center gap-2 sm:gap-3">
           <LanguageToggle locale={locale} />
-          <ButtonLink href="/dashboard/account" aria-label={t.account.navLabel} variant="outline" size="sm" locale={locale} icon={<UserCog className="h-4 w-4" />}>
+          <NavButtonLink href="/dashboard/account" aria-label={t.account.navLabel} size="sm" locale={locale} icon={<UserCog className="h-4 w-4" />}>
               {label(t.account.navLabel)}
-            </ButtonLink>
+            </NavButtonLink>
           {isAdmin && (
             <ButtonLink href="/admin" aria-label={t.admin.nav.title} variant="outline" size="sm" locale={locale} icon={<Shield className="h-4 w-4" />}>
                 {label(t.admin.nav.title)}

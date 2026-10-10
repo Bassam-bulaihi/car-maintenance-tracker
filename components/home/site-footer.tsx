@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FaXTwitter, FaInstagram, FaLinkedinIn, FaTelegram } from "react-icons/fa6";
+import { FaTelegram } from "react-icons/fa6";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { telegramBotUsername } from "@/lib/messaging/linking";
 import { Logo } from "@/components/brand/logo";
@@ -13,9 +13,6 @@ export function SiteFooter({ t }: { t: Dictionary }) {
   const botUsername = telegramBotUsername();
 
   const social = [
-    { icon: FaXTwitter, label: t.home.footer.social.twitter, href: "https://x.com" },
-    { icon: FaInstagram, label: t.home.footer.social.instagram, href: "https://instagram.com" },
-    { icon: FaLinkedinIn, label: t.home.footer.social.linkedin, href: "https://linkedin.com" },
     { icon: FaTelegram, label: t.home.footer.social.telegram, href: botUsername ? `https://t.me/${botUsername}` : "https://telegram.org" },
   ];
 

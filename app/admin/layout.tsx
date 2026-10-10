@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Database, Gauge, Inbox, LayoutDashboard, LogOut } from "lucide-react";
 import { requireAdmin } from "@/lib/admin/data";
 import { LogoutButton } from "@/components/auth/logout-button";
+import { NavLink } from "@/components/ui/nav-link";
 import { getDictionary } from "@/lib/i18n/locale";
 import { LanguageToggle } from "@/components/layout/language-toggle";
 import { MStripeDivider } from "@/components/layout/m-stripe-divider";
@@ -27,30 +28,31 @@ export default async function AdminLayout({
         </Link>
         <div className="flex flex-wrap items-center justify-end gap-3">
           <nav aria-label={t.admin.nav.title} className="flex items-center gap-3">
-            <Link
+            <NavLink
               href="/admin"
+              exact
               aria-label={t.admin.nav.overview}
-              className="flex h-10 items-center gap-2 rounded-none border border-hairline px-3 text-sm text-body hover:border-on-dark hover:text-on-dark"
+              className="flex h-10 items-center gap-2 rounded-none border border-hairline px-3 text-sm text-body hover:border-on-dark hover:text-on-dark" activeClassName="!border-on-dark !text-on-dark bg-surface-elevated"
             >
               <Gauge className="h-4 w-4" aria-hidden="true" />
               <span className="hidden sm:inline">{t.admin.nav.overview}</span>
-            </Link>
-            <Link
+            </NavLink>
+            <NavLink
               href="/admin/presets"
               aria-label={t.admin.nav.presets}
-              className="flex h-10 items-center gap-2 rounded-none border border-hairline px-3 text-sm text-body hover:border-on-dark hover:text-on-dark"
+              className="flex h-10 items-center gap-2 rounded-none border border-hairline px-3 text-sm text-body hover:border-on-dark hover:text-on-dark" activeClassName="!border-on-dark !text-on-dark bg-surface-elevated"
             >
               <Database className="h-4 w-4" aria-hidden="true" />
               <span className="hidden sm:inline">{t.admin.nav.presets}</span>
-            </Link>
-            <Link
+            </NavLink>
+            <NavLink
               href="/admin/messages"
               aria-label={t.admin.nav.messages}
-              className="flex h-10 items-center gap-2 rounded-none border border-hairline px-3 text-sm text-body hover:border-on-dark hover:text-on-dark"
+              className="flex h-10 items-center gap-2 rounded-none border border-hairline px-3 text-sm text-body hover:border-on-dark hover:text-on-dark" activeClassName="!border-on-dark !text-on-dark bg-surface-elevated"
             >
               <Inbox className="h-4 w-4" aria-hidden="true" />
               <span className="hidden sm:inline">{t.admin.nav.messages}</span>
-            </Link>
+            </NavLink>
           </nav>
           <LanguageToggle locale={locale} />
           <Link

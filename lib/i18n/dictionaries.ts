@@ -4,6 +4,8 @@ export const defaultLocale: Locale = "ar";
 
 const ar = {
   common: {
+    confirm: "تأكيد",
+    cancel: "إلغاء",
     save: "حفظ",
     saving: "جارِ الحفظ...",
     add: "إضافة",
@@ -181,7 +183,7 @@ const ar = {
     notDoneButton: "❌ لم يتم التغيير",
     doneAck: "تم التسجيل ✅",
     notDoneAck: "حسناً — ما زالت مستحقة",
-    odometerSaved: "✅ تم حفظ القراءة: {reading} كم لسيارة {vehicle}. شكراً!",
+    odometerSaved: "✅ تم حفظ القراءة: {reading} كم لسيارة {vehicle}. شكراً لك.",
     odometerInvalid: "لم أفهم القراءة. أرسل الرقم فقط بالكيلومتر، مثال: 25000",
     odometerTooLow: "هذه القراءة أقل من آخر قراءة مسجّلة ({current} كم). تحقق من العداد وأرسل الرقم الحالي.",
     odometerConfirm:
@@ -206,7 +208,7 @@ const ar = {
       "أنا بوت Car Auto. أسألك عن قراءة العداد وأنبّهك عند استحقاق الصيانة.\n\n• رُدّ على طلب العداد بالرقم بالكيلومتر\n• اضغط «تم التغيير» أو «لم يتم التغيير» على تذكير الصيانة\n• /status لعرض حالة سياراتك\n• /support لمراسلة فريقنا\n\nلوحة التحكم:\n{link}",
     notLinked:
       "هذه المحادثة غير مرتبطة بحساب في Car Auto بعد. افتح إعدادات الحساب على الموقع واضغط «ربط تيليجرام»:\n{link}",
-    linked: "✅ تم ربط تيليجرام بحسابك يا {name}! ستصلك طلبات قراءة العداد وتذكيرات الصيانة هنا.",
+    linked: "✅ تم ربط تيليجرام بحسابك يا {name}. ستصلك طلبات قراءة العداد وتذكيرات الصيانة هنا.",
     linkInvalid: "انتهت صلاحية هذا الرابط أو استُخدم من قبل. أنشئ رابطاً جديداً من إعدادات الحساب:\n{link}",
     supportPrompt: "✍️ اكتب رسالتك أو شكواك في رسالة واحدة (حتى {max} حرف) وسيقرؤها فريقنا.",
     supportReceived: "✅ وصلتنا رسالتك، شكراً لك. سيراجعها فريقنا قريباً.",
@@ -485,9 +487,6 @@ const ar = {
         credits: "حقوق الصور",
       },
       social: {
-        twitter: "منصة إكس",
-        instagram: "إنستغرام",
-        linkedin: "لينكدإن",
         telegram: "تيليجرام",
       },
       copyright: "جميع الحقوق محفوظة.",
@@ -605,6 +604,8 @@ const ar = {
 
 const en: typeof ar = {
   common: {
+    confirm: "Confirm",
+    cancel: "Cancel",
     save: "Save",
     saving: "Saving...",
     add: "Add",
@@ -782,7 +783,7 @@ const en: typeof ar = {
     notDoneButton: "❌ Not done",
     doneAck: "Recorded ✅",
     notDoneAck: "OK — still due",
-    odometerSaved: "✅ Saved: {reading} km for {vehicle}. Thanks!",
+    odometerSaved: "✅ Saved: {reading} km for {vehicle}. Thank you.",
     odometerInvalid: "That doesn't look like an odometer reading. Please send just the number in km, e.g. 25000",
     odometerTooLow: "That's lower than the last recorded reading ({current} km). Please check the odometer and send the current number.",
     odometerConfirm:
@@ -806,7 +807,7 @@ const en: typeof ar = {
       "I'm the Car Auto bot. I ask for your odometer reading and tell you when a service is due.\n\n• Reply to an odometer request with the number in km\n• Tap Done or Not done on a service reminder\n• /status to see your cars\n• /support to message our team\n\nDashboard:\n{link}",
     notLinked:
       "This chat isn't linked to a Car Auto account yet. Open Account settings on the website and tap \"Connect Telegram\":\n{link}",
-    linked: "✅ Telegram connected, {name}! Odometer requests and service reminders will arrive here.",
+    linked: "✅ Telegram connected, {name}. Odometer requests and service reminders will arrive here.",
     linkInvalid: "This link has expired or was already used. Create a new one from Account settings:\n{link}",
     supportPrompt: "✍️ Write your message or complaint in one message (up to {max} characters) and our team will read it.",
     supportReceived: "✅ We got your message — thank you. Our team will review it soon.",
@@ -1085,9 +1086,6 @@ const en: typeof ar = {
         credits: "Image credits",
       },
       social: {
-        twitter: "X",
-        instagram: "Instagram",
-        linkedin: "LinkedIn",
         telegram: "Telegram",
       },
       copyright: "All rights reserved.",

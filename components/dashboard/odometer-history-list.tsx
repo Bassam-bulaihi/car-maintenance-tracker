@@ -44,6 +44,9 @@ export function OdometerHistoryList({
               {canUndo && (
                 <UndoReadingButton
                   vehicleId={vehicleId}
+                  locale={locale}
+                  confirmLabel={t.common.confirm}
+                  cancelLabel={t.common.cancel}
                   label={t.dashboard.undoReading}
                   confirmText={t.dashboard.undoReadingConfirm
                     .replace("{reading}", formatNumber(locale, reading.reading_km))
